@@ -18,22 +18,28 @@ export default function SideBar() {
         <div className="flex items-center gap-5">
           {isOpen && (
             <div className="flex flex-col gap-5 items-start">
-              <Button variant={"outline"}>
-                <FaRegNoteSticky />
-                <p>WebSite Test</p>
-              </Button>
-              <Button variant={"outline"}>
-                <FaPenFancy />
-                <p>Write Blog</p>
-              </Button>
-              <Button variant={"outline"}>
-                <FaRegNewspaper />
-                <p>IT News</p>
-              </Button>
-              <Button variant={"outline"}>
-                <IoSettings />
-                <p>Settings</p>
-              </Button>
+              <h1 className="flex gap-3 font-bold text-2xl flex-col">
+                <span className="text-blue-500">Software</span>Communtiy
+              </h1>
+
+              <div className="h-screen flex flex-col mt-50 gap-15">
+                <Button variant={"outline"}>
+                  <FaRegNoteSticky />
+                  <p>User Test</p>
+                </Button>
+                <Button variant={"outline"}>
+                  <FaPenFancy />
+                  <p>Write Blog</p>
+                </Button>
+                <Button variant={"outline"}>
+                  <FaRegNewspaper />
+                  <p>IT News</p>
+                </Button>
+                <Button variant={"outline"}>
+                  <IoSettings />
+                  <p>Settings</p>
+                </Button>
+              </div>
             </div>
           )}
         </div>
