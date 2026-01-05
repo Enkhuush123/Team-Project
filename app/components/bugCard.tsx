@@ -4,7 +4,7 @@ export default function BugCard() {
   return (
     <div className="flex flex-col gap-5 shadow-sm p-5 h-70 ">
       <div className="border-b p-2">
-        <h2 className="font-bold text-2xl">WebSite test & points</h2>
+        <h2 className="font-bold text-2xl">User Test & points</h2>
       </div>
       <div className="flex flex-col gap-3 border-b p-2">
         <p>Submit bug and earn points.</p>
