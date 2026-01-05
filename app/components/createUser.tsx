@@ -16,7 +16,7 @@ export const CreateUser = () => {
         }),
       });
     } catch (err) {
-      console.log(err);
+      console.log(err, "err");
     }
   };
   useEffect(() => {
