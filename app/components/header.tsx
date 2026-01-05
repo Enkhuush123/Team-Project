@@ -1,3 +1,11 @@
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
+
 export default function Header() {
   return (
     <div className="flex justify-between p-3 border-b items-center">
@@ -15,8 +23,20 @@ export default function Header() {
         </div>
       </div>
       <div className="flex gap-5">
-        <button className="bg-black rounded-lg text-white p-2">Login</button>
-        <button className="p-2 rounded-lg">SignUp</button>
+        <SignedOut>
+          <SignInButton>
+            <button className="bg-black rounded-lg text-white p-2">
+              Login
+            </button>
+          </SignInButton>
+          <SignUpButton>
+            <button className="p-2 rounded-lg border ">Sign Up</button>
+          </SignUpButton>
+        </SignedOut>
+
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
     </div>
   );

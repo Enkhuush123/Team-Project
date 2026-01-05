@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./components/header";
 import SideBar from "./components/sidebar";
+import { ClerkProvider } from "@clerk/nextjs";
+import { CreateUser } from "./components/createUser";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,11 +31,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        <div className="flex gap-10">
-          <SideBar />
-          {children}
-        </div>
+        <ClerkProvider>
+          <CreateUser />
+          <Header />
+          <div className="flex gap-10">
+            <SideBar />
+            {children}
+          </div>
+        </ClerkProvider>
       </body>
     </html>
   );
