@@ -14,15 +14,63 @@ datasource db {
 }
 
 model User {
-  id String @id @default(cuid())
-  clerkId String @unique
-  email String
-  name String? 
-  role Role @default(USER)
-  createdAt DateTime @default(now())
+  id        String    @id @default(cuid())
+  clerkId   String    @unique
+  email     String
+  name      String?
+  role      Role      @default(USER)
+  websites  Website[]
+  reviews   Review[]
+  comments  Comment[]
+  blogs     Blog[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
 }
 
 enum Role {
-USER 
-ADMIN
+  USER
+  ADMIN
+}
+
+model Website {
+  id          String   @id @unique @default(cuid())
+  title       String
+  description String
+  link        String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+}
+
+model Review {
+  id            String   @id @unique @default(cuid())
+  description   String
+  screenshotUrl String
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+}
+
+model Blog {
+  id        String    @id @unique @default(cuid())
+  title     String
+  imageUrl  String
+  comments  Comment[]
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+}
+
+model Comment {
+  id        String   @id @unique @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  blogId    String
+  blog      Blog     @relation(fields: [blogId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
