@@ -58,6 +58,8 @@ model Review {
 model Blog {
   id        String    @id @unique @default(cuid())
   title     String
+  description String
+  link String
   imageUrl  String
   comments  Comment[]
   userId    String
