@@ -14,6 +14,8 @@
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@radix-ui/react-slot": "^1.2.4",
+    "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^1.12.29",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
