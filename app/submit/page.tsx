@@ -13,6 +13,7 @@ import {
   ArrowRight,
   X,
 } from "lucide-react";
+import { title } from "node:process";
 
 function GlassCard({
   children,
@@ -38,17 +39,28 @@ export default function SubmitPage() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    url: "",
+    link: "",
     screenshot: "",
   });
 
   const clearAll = () =>
-    setFormData({ title: "", description: "", url: "", screenshot: "" });
+    setFormData({ title: "", description: "", link: "", screenshot: "" });
 
-  const onSubmitUIOnly = (e: React.FormEvent) => {
+  const onSubmitUIOnly = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("UI only submit:", formData);
-    // энд API/route байхгүй (frontend only)
+
+    const res = await fetch(`/api/website`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: formData.title,
+        description: formData.description,
+        link: formData.link,
+        screenshot: formData.screenshot,
+      }),
+    });
+    const data = await res.json();
+    console.log(data);
   };
 
   return (
@@ -116,7 +128,7 @@ export default function SubmitPage() {
               <form onSubmit={onSubmitUIOnly} className="mt-6 space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    Гарчиг <span className="text-white/50">*</span>
+                    Title <span className="text-white/50">*</span>
                   </label>
                   <Input
                     value={formData.title}
@@ -135,7 +147,7 @@ export default function SubmitPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    Тайлбар <span className="text-white/50">*</span>
+                    Description <span className="text-white/50">*</span>
                   </label>
                   <Textarea
                     value={formData.description}
@@ -158,14 +170,14 @@ export default function SubmitPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    URL (сонголттой)
+                    URL
                   </label>
                   <div className="relative">
                     <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                     <Input
-                      value={formData.url}
+                      value={formData.link}
                       onChange={(e) =>
-                        setFormData({ ...formData, url: e.target.value })
+                        setFormData({ ...formData, link: e.target.value })
                       }
                       placeholder="https://example.com"
                       className="h-11 pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40
@@ -177,7 +189,7 @@ export default function SubmitPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    Скриншот URL (сонголттой)
+                    Screenshot
                   </label>
                   <div className="relative">
                     <ImgIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
@@ -197,6 +209,7 @@ export default function SubmitPage() {
                 <div className="pt-2 flex flex-col sm:flex-row gap-3">
                   <Button
                     type="submit"
+                    onClick={onSubmitUIOnly}
                     className={[
                       "h-11 text-white font-semibold",
                       "bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600",
