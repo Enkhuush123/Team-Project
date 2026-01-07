@@ -11,9 +11,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-/* =======================
-   Mock data (Design only)
-   ======================= */
 const MOCK_PROJECTS = [
   {
     id: "p1",
