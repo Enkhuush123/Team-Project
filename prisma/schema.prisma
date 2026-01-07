@@ -11,8 +11,9 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
+
+
 
 model User {
   id        String    @id @default(cuid())
@@ -27,12 +28,12 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())
 }
-
+ 
 enum Role {
   USER
   ADMIN
 }
-
+ 
 model Website {
   id          String   @id @unique @default(cuid())
   title       String
@@ -43,7 +44,7 @@ model Website {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
 }
-
+ 
 model Review {
   id               String   @id @unique @default(cuid())
   description      String
@@ -54,18 +55,20 @@ model Review {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @default(now())
 }
-
+ 
 model Blog {
   id        String    @id @unique @default(cuid())
   title     String
-  imageUrl  String
+  description String
+  link String?
+  imageUrl  String?
   comments  Comment[]
   userId    String
   user      User      @relation(fields: [userId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())
 }
-
+ 
 model Comment {
   id        String   @id @unique @default(cuid())
   content   String
