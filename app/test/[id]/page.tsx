@@ -102,14 +102,12 @@ export default function TestPage() {
 
   return (
     <div className=" bg-black">
-      {/* Glow bg */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 w-[420px] h-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6 md:px-10 py-10 space-y-6">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
           <div>
             <h1 className="text-4xl font-extrabold">
@@ -122,7 +120,6 @@ export default function TestPage() {
             </p>
           </div>
 
-          {/* Filters */}
           <GlassCard className="p-3">
             <div className="flex items-center gap-2 text-white/70 text-sm mb-2">
               <Filter className="h-4 w-4" /> Filter
@@ -147,7 +144,6 @@ export default function TestPage() {
           </GlassCard>
         </div>
 
-        {/* Recommended */}
         {recommended && (
           <GlassCard className="p-6">
             <div className="flex justify-between items-center gap-4">
@@ -169,7 +165,6 @@ export default function TestPage() {
           </GlassCard>
         )}
 
-        {/* Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((p) => (
             <GlassCard key={p.id}>
