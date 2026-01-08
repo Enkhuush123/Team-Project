@@ -10,6 +10,7 @@ import {
   Filter,
   ArrowRight,
 } from "lucide-react";
+import { ChatbotPage } from "../components/chatbot";
 
 type Project = {
   id: string;
