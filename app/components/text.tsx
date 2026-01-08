@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 export const Text = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");

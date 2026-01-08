@@ -1,3 +1,5 @@
+"use client";
+import { FaRegQuestionCircle } from "react-icons/fa";
 import {
   SignInButton,
   SignUpButton,
@@ -5,8 +7,10 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter();
   return (
     <div className="flex justify-evenly p-3 border-b items-center">
       <div className="flex gap-40">
@@ -22,7 +26,17 @@ export default function Header() {
           <button className="p-2 border rounded-lg">IT News</button>
         </div>
       </div>
-      <div className="flex gap-5">
+
+      <div className="flex gap-3">
+        <div className="flex items-center justify-center gap-[10spx]">
+          <button
+            className="cursor-pointer flex items-center gap-[5px]"
+            onClick={() => router.push("/helpcenter")}
+          >
+            <FaRegQuestionCircle />
+            <p className="">Help center</p>
+          </button>
+        </div>
         <SignedOut>
           <SignInButton>
             <button className="bg-black rounded-lg text-white p-2">
