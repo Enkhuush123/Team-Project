@@ -157,7 +157,7 @@ export default function SubmitPage() {
                         description: e.target.value,
                       })
                     }
-                    placeholder={`Юуг шалгах вэ?\n- Page: /pricing\n- Flow: sign up → checkout\n- Expected vs actual\n- Device/Browser`}
+                    placeholder={"Write your description"}
                     rows={7}
                     className="bg-white/5 border-white/15 text-white placeholder:text-white/40
                                focus-visible:ring-0 focus-visible:border-white/30
