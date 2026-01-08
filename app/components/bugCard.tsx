@@ -34,7 +34,7 @@ export default function BugCard() {
           <div className="text-white/80 font-medium">How it works</div>
           <ul className="mt-2 text-white/65 text-sm space-y-1">
             <li>• Project оруулна</li>
-            <li>• Community bug олно</li>
+
             <li>• Зөв report → point авна</li>
           </ul>
         </div>

@@ -10,6 +10,20 @@ import {
   Filter,
   ArrowRight,
 } from "lucide-react";
+import { ChatbotPage } from "../components/chatbot";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type Project = {
   id: string;
@@ -21,7 +35,6 @@ type Project = {
   user?: { name?: string | null; email?: string | null } | null;
 };
 
-/* ✅ Design харах mock data */
 const MOCK_PROJECTS: Project[] = [
   {
     id: "p1",
@@ -119,14 +132,12 @@ export default function TestPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* subtle glow background */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
 
       <div className="relative mx-auto w-full max-w-7xl px-6 md:px-10 py-10 space-y-6">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
@@ -143,7 +154,6 @@ export default function TestPage() {
             </p>
           </div>
 
-          {/* Filters (working UI) */}
           <GlassCard className="p-3">
             <div className="flex items-center gap-2 text-white/70 text-sm px-1">
               <Filter className="h-4 w-4" />
@@ -169,7 +179,6 @@ export default function TestPage() {
           </GlassCard>
         </div>
 
-        {/* Recommended */}
         {recommended ? (
           <GlassCard className="p-5 md:p-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -219,7 +228,6 @@ export default function TestPage() {
           </GlassCard>
         )}
 
-        {/* List */}
         {filtered.length > 0 && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((p) => (
@@ -252,33 +260,47 @@ export default function TestPage() {
                     {p.user?.name || p.user?.email || ""}
                   </p>
 
-                  <div className="mt-5 flex gap-2">
-                    <Link href={`/test/${p.id}`} className="flex-1">
-                      <Button className="w-full h-10 text-white font-semibold bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-[0_10px_28px_rgba(79,70,229,0.35)] hover:brightness-110">
-                        Шалгах
-                      </Button>
-                    </Link>
-
-                    {p.url && (
-                      <Button
-                        variant="secondary"
-                        className="h-10 bg-white/10 text-white border border-white/15 hover:bg-white/15"
-                        onClick={() => window.open(p.url!, "_blank")}
-                      >
-                        Нээх
-                      </Button>
-                    )}
+                  <div className="mt-5 flex gap-2 w-full">
+                    <Dialog>
+                      <form>
+                        <DialogTrigger asChild>
+                          <Button className="w-full h-10 text-white font-semibold bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-[0_10px_28px_rgba(79,70,229,0.35)] hover:brightness-110">
+                            Шалгах
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-137.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl overflow-hidden shadow-[0_20px_60px_rgba(99,102,241,0.10)]">
+                          <DialogHeader>
+                            <DialogTitle>Title</DialogTitle>
+                          </DialogHeader>
+                          <div>
+                            <div>
+                              <h2 className="text-white">Description</h2>
+                              <div className="border  h-30 rounded-xl"></div>
+                            </div>
+                            <div>
+                              <h2 className="text-white">URL</h2>
+                              <div className="border  h-10 rounded-xl"></div>
+                            </div>
+                            <div>
+                              <h2 className="text-white">screenshotUrl</h2>
+                              <div className="border  h-10 rounded-xl"></div>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button variant="outline">Cancel</Button>
+                            </DialogClose>
+                            <Button type="submit">Save changes</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </form>
+                    </Dialog>
                   </div>
                 </div>
               </GlassCard>
             ))}
           </div>
         )}
-
-        <div className="text-white/45 text-xs">
-          Tip: Design харах mock data ашиглаж байна. (Дараа нь API/DB холбоход
-          mock-оо салгана)
-        </div>
       </div>
     </div>
   );

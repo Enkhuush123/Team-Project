@@ -25,7 +25,6 @@ export default function Header() {
     if (href === "/") return pathname === "/";
     return pathname?.startsWith(href);
   };
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
@@ -89,25 +88,23 @@ export default function Header() {
               </div>
             </SignedIn>
           </div>
-        </div>
-
-        {/* Mobile nav */}
-        <div className="md:hidden pb-3">
-          <div className="flex gap-2 overflow-x-auto no-scrollbar">
-            {nav.map((item) => (
-              <button
-                key={item.href}
-                onClick={() => router.push(item.href)}
-                className={[
-                  "h-9 px-3 rounded-full text-sm whitespace-nowrap transition border",
-                  isActive(item.href)
-                    ? "bg-white/12 border-white/25 text-white"
-                    : "bg-white/5 border-white/10 text-white/70 hover:bg-white/8 hover:text-white",
-                ].join(" ")}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="md:hidden pb-3">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar">
+              {nav.map((item) => (
+                <button
+                  key={item.href}
+                  onClick={() => router.push(item.href)}
+                  className={[
+                    "h-9 px-3 rounded-full text-sm whitespace-nowrap transition border",
+                    isActive(item.href)
+                      ? "bg-white/12 border-white/25 text-white"
+                      : "bg-white/5 border-white/10 text-white/70 hover:bg-white/8 hover:text-white",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
