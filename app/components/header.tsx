@@ -12,6 +12,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import CoinIcon from "../_icons/CoinIcon";
 import { useEffect, useState } from "react";
+import { usePoints } from "../providers/PointProvider";
 
 type User = {
   points: number;
@@ -21,21 +22,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const getUserData = async () => {
-      const res = await fetch("/api/user", {
-        method: "GET",
-      });
-
-      const data = await res.json();
-      console.log(data);
-      setUser(data);
-    };
-
-    getUserData();
-  }, []);
+  const { points } = usePoints();
 
   const nav = [
     { label: "Home", href: "/" },
@@ -110,11 +97,11 @@ export default function Header() {
 
             <SignedIn>
               <div className="flex items-center gap-2">
-                <span className="flex items-center border border-gray-500 rounded-full w-20 justify-between px-2">
-                  <button onClick={() => router.push("/userPoints")}>
+                <span className="flex items-center border border-gray-500 rounded-full  justify-between px-2">
+                  <button onClick={() => router.push("/pointPage")}>
                     <CoinIcon />
                   </button>
-                  <p className="text-gray-300 text-center">{user?.points}</p>
+                  <p className="text-gray-300 text-center">{points}</p>
                 </span>
                 <span className="hidden sm:inline text-white/60 text-sm">
                   Account
