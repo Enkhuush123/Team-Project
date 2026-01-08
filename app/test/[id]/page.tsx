@@ -144,6 +144,7 @@ export default function TestPage() {
           </GlassCard>
         </div>
 
+<<<<<<< HEAD
         {recommended && (
           <GlassCard className="p-6">
             <div className="flex justify-between items-center gap-4">
@@ -164,6 +165,9 @@ export default function TestPage() {
             </div>
           </GlassCard>
         )}
+=======
+        {/* Recommended */}
+>>>>>>> ecad6c8 (manlai2)
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((p) => (
