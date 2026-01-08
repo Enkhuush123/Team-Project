@@ -7,6 +7,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Header from "./components/header";
 
 import { CreateUser } from "./components/createUser";
+import { ChatbotPage } from "./components/chatbot";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default function RootLayout({
             <main className="flex-1 min-w-0 ">{children}</main>
           </div>
         </ClerkProvider>
+        <ChatbotPage />
       </body>
     </html>
   );
