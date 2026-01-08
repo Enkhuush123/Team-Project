@@ -1,18 +1,41 @@
 "use client";
-
+import { FaRegCircleQuestion } from "react-icons/fa6";
 import {
   SignInButton,
   SignUpButton,
   SignedIn,
   SignedOut,
   UserButton,
+  useUser,
 } from "@clerk/nextjs";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import CoinIcon from "../_icons/CoinIcon";
+import { useEffect, useState } from "react";
+
+type User = {
+  points: number;
+};
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
+
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      const res = await fetch("/api/user", {
+        method: "GET",
+      });
+
+      const data = await res.json();
+      console.log(data);
+      setUser(data);
+    };
+
+    getUserData();
+  }, []);
 
   const nav = [
     { label: "Home", href: "/" },
@@ -25,7 +48,6 @@ export default function Header() {
     if (href === "/") return pathname === "/";
     return pathname?.startsWith(href);
   };
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
@@ -59,7 +81,15 @@ export default function Header() {
               </button>
             ))}
           </nav>
-
+          <div>
+            <button
+              className="cursor-pointer flex text-white items-center gap-4"
+              onClick={() => router.push("/helpcenter")}
+            >
+              <FaRegCircleQuestion />
+              <p className="">Help center</p>
+            </button>
+          </div>
           <div className="flex items-center gap-3">
             <SignedOut>
               <SignInButton>
@@ -80,6 +110,12 @@ export default function Header() {
 
             <SignedIn>
               <div className="flex items-center gap-2">
+                <span className="flex items-center border border-gray-500 rounded-full w-20 justify-between px-2">
+                  <button onClick={() => router.push("/userPoints")}>
+                    <CoinIcon />
+                  </button>
+                  <p className="text-gray-300 text-center">{user?.points}</p>
+                </span>
                 <span className="hidden sm:inline text-white/60 text-sm">
                   Account
                 </span>
@@ -89,25 +125,23 @@ export default function Header() {
               </div>
             </SignedIn>
           </div>
-        </div>
-
-        {/* Mobile nav */}
-        <div className="md:hidden pb-3">
-          <div className="flex gap-2 overflow-x-auto no-scrollbar">
-            {nav.map((item) => (
-              <button
-                key={item.href}
-                onClick={() => router.push(item.href)}
-                className={[
-                  "h-9 px-3 rounded-full text-sm whitespace-nowrap transition border",
-                  isActive(item.href)
-                    ? "bg-white/12 border-white/25 text-white"
-                    : "bg-white/5 border-white/10 text-white/70 hover:bg-white/8 hover:text-white",
-                ].join(" ")}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="md:hidden pb-3">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar">
+              {nav.map((item) => (
+                <button
+                  key={item.href}
+                  onClick={() => router.push(item.href)}
+                  className={[
+                    "h-9 px-3 rounded-full text-sm whitespace-nowrap transition border",
+                    isActive(item.href)
+                      ? "bg-white/12 border-white/25 text-white"
+                      : "bg-white/5 border-white/10 text-white/70 hover:bg-white/8 hover:text-white",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

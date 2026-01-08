@@ -14,6 +14,10 @@ import {
   X,
 } from "lucide-react";
 import { title } from "node:process";
+import Image from "next/image";
+
+const UPLOAD_PRESET = "softwarecom";
+const CLOUD_NAME = "dv38igwqg";
 
 function GlassCard({
   children,
@@ -42,6 +46,37 @@ export default function SubmitPage() {
     link: "",
     screenshot: "",
   });
+
+  const uploadToCloudinary = async (file: File) => {
+    const formDataCloudinary = new FormData();
+    formDataCloudinary.append("file", file);
+    formDataCloudinary.append("upload_preset", UPLOAD_PRESET);
+
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formDataCloudinary,
+        }
+      );
+
+      const data = await res.json();
+      return data.secure_url;
+    } catch (err) {
+      console.error("upload failed", err);
+    }
+  };
+
+  const handleImageUpload = async (event: any) => {
+    const file = event.target.files[0];
+    try {
+      const url = await uploadToCloudinary(file);
+      setFormData({ ...formData, screenshot: url });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const clearAll = () =>
     setFormData({ title: "", description: "", link: "", screenshot: "" });
@@ -187,24 +222,44 @@ export default function SubmitPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-white/80 mb-2">
-                    Screenshot
-                  </label>
-                  <div className="relative">
-                    <ImgIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-                    <Input
-                      value={formData.screenshot}
-                      onChange={(e) =>
-                        setFormData({ ...formData, screenshot: e.target.value })
-                      }
-                      placeholder="https://example.com/screenshot.png"
-                      className="h-11 pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40
-                                 focus-visible:ring-0 focus-visible:border-white/30
-                                 transition hover:border-white/25"
-                    />
+                {formData.screenshot ? (
+                  <div>
+                    <div className="h-60 w-full relative">
+                      <Image
+                        src={formData.screenshot}
+                        alt="image"
+                        fill
+                        className="object-center object-cover rounded-xl"
+                      />
+                    </div>
+                    <Button
+                      className="flex justify-end mt-2"
+                      onClick={() => {
+                        setFormData({ ...formData, screenshot: "" });
+                      }}
+                    >
+                      Delete
+                    </Button>
                   </div>
-                </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium text-white/80 mb-2">
+                      Screenshot
+                    </label>
+                    <div className="relative">
+                      <ImgIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        placeholder="https://example.com/screenshot.png"
+                        className="h-11 pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40
+                                 focus-visible:ring-0 focus-visible:border-white/30
+                                 transition hover:border-white/25 w-full"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 <div className="pt-2 flex flex-col sm:flex-row gap-3">
                   <Button
