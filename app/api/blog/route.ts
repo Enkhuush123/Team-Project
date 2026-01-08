@@ -17,14 +17,14 @@ export const POST = async (request: NextRequest) => {
   if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
   try {
-    const { title, description, link, imageUrl } = await request.json();
+    const { title, description, link, image } = await request.json();
 
-    const blogs = prisma.blog.create({
+    const blogs = await prisma.blog.create({
       data: {
         title,
         description,
         link,
-        imageUrl,
+        imageUrl : image,
         userId,
       },
     });
