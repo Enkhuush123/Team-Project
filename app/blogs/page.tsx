@@ -17,10 +17,10 @@ const Blogs = () => {
     const getBlogs = async () => {
       const res = await fetch("/api/blog", {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
       });
 
       const data = await res.json();
+      console.log(data)
       setBlogs(data);
     };
 
@@ -28,7 +28,7 @@ const Blogs = () => {
   }, []);
 
   return (
-    <div>
+    <div className=" text-white">
       {blogs?.map((item) => (
         <div key={item.id} className="text-white h-50 w-60 border-white border">
           {item.imageUrl && (
