@@ -23,10 +23,11 @@ export default function HelpCenter() {
     {
       title: "About us",
       desc: "More information about us",
-      href: "",
+      href: "/about",
     },
     {
       title: "Report",
+      href: "/report",
     },
   ];
 
