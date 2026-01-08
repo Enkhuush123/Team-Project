@@ -13,12 +13,10 @@ datasource db {
   provider = "postgresql"
 }
 
-
-
 model User {
   id        String    @id @default(cuid())
   clerkId   String    @unique
-  email     String
+  email     String    @unique
   name      String?
   role      Role      @default(USER)
   websites  Website[]
@@ -28,12 +26,12 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())
 }
- 
+
 enum Role {
   USER
   ADMIN
 }
- 
+
 model Website {
   id          String   @id @unique @default(cuid())
   title       String
@@ -44,7 +42,7 @@ model Website {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
 }
- 
+
 model Review {
   id               String   @id @unique @default(cuid())
   description      String
@@ -55,20 +53,20 @@ model Review {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @default(now())
 }
- 
+
 model Blog {
-  id        String    @id @unique @default(cuid())
-  title     String
+  id          String    @id @unique @default(cuid())
+  title       String
   description String
-  link String?
-  imageUrl  String?
-  comments  Comment[]
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+  link        String?
+  imageUrl    String?
+  comments    Comment[]
+  userId      String
+  user        User      @relation(fields: [userId], references: [clerkId])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
 }
- 
+
 model Comment {
   id        String   @id @unique @default(cuid())
   content   String
