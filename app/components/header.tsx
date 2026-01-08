@@ -91,7 +91,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile nav */}
         <div className="md:hidden pb-3">
           <div className="flex gap-2 overflow-x-auto no-scrollbar">
             {nav.map((item) => (
