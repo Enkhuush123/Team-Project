@@ -35,7 +35,6 @@ type Project = {
   user?: { name?: string | null; email?: string | null } | null;
 };
 
-/* ✅ Design харах mock data */
 const MOCK_PROJECTS: Project[] = [
   {
     id: "p1",
@@ -229,7 +228,6 @@ export default function TestPage() {
           </GlassCard>
         )}
 
-        {/* List */}
         {filtered.length > 0 && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((p) => (
