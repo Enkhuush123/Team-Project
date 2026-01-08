@@ -144,31 +144,6 @@ export default function TestPage() {
           </GlassCard>
         </div>
 
-<<<<<<< HEAD
-        {recommended && (
-          <GlassCard className="p-6">
-            <div className="flex justify-between items-center gap-4">
-              <div>
-                <div className="text-xs text-white/60">Recommended</div>
-                <h2 className="text-lg text-white font-semibold">
-                  {recommended.title}
-                </h2>
-                <p className="mt-1 text-white/70 text-sm line-clamp-2">
-                  {recommended.description}
-                </p>
-              </div>
-              <Link href={`/test/${recommended.id}`}>
-                <Button className="bg-gradient-to-r from-blue-600 to-violet-600 text-white">
-                  Эхлүүлэх <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </GlassCard>
-        )}
-=======
-        {/* Recommended */}
->>>>>>> ecad6c8 (manlai2)
-
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((p) => (
             <GlassCard key={p.id}>
