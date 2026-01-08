@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
+      return NextResponse.json({ message: "not signed in" }, { status: 401 });
+    }
+    const user = await currentUser();
+    if (!user) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
@@ -19,12 +23,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const dbUser = await prisma.user.upsert({
-      where: { clerkId: userId },
+    await prisma.user.upsert({
+      where: { id: userId },
       update: {},
       create: {
-        clerkId: userId,
-        email: "unknown@temp.com",
+        id: userId,
+        email: user.emailAddresses[0].emailAddress,
+        name: user.firstName,
+        clerkId: user.id,
       },
     });
 
@@ -33,7 +39,8 @@ export async function POST(req: NextRequest) {
         title,
         description,
         link: link || "",
-        userId: dbUser.id,
+        userId: user.id,
+        screenshot,
       },
     });
 
