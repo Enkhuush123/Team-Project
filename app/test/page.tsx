@@ -212,12 +212,6 @@ export default function TestPage() {
                   </div>
                 </div>
               </div>
-
-              <Link href={`/test/${recommended.id}`}>
-                <Button className="h-11 px-5 text-white font-semibold bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-[0_10px_28px_rgba(79,70,229,0.35)] hover:brightness-110">
-                  Эхлүүлэх <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
             </div>
           </GlassCard>
         ) : (
