@@ -23,6 +23,7 @@ model User {
   reviews   Review[]
   comments  Comment[]
   blogs     Blog[]
+  pointTransaction PointTransaction[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())
 }
@@ -77,3 +78,39 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
+
+model Pack {
+  id String @id @default(cuid())
+  key String @unique
+  name String
+  points Int
+  price Int
+  bonusPct Int @default(0)
+  popular Boolean @default(false)
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  pointTransaction PointTransaction[]
+
+}
+
+model PointTransaction {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  packId String?
+  pack Pack? @relation(fields: [packId], references: [id])
+
+  points Int
+  price Int
+  type TxType @default(PURCHASE)
+  createdAt DateTime @default(now())
+ }
+
+enum TxType {
+  PURCHASE
+  BONUS
+  ADJUSTMENT
+}
+
+
