@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./components/header";
-import SideBar from "./components/sidebar";
+
 import { ClerkProvider } from "@clerk/nextjs";
+
+import Header from "./components/header";
+
 import { CreateUser } from "./components/createUser";
+import { ChatbotPage } from "./components/chatbot";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,11 +37,12 @@ export default function RootLayout({
         <ClerkProvider>
           <CreateUser />
           <Header />
-          <div className="flex gap-10">
-            <SideBar />
-            {children}
+
+          <div className="flex w-full min-h-[calc(100vh-56px)] ">
+            <main className="flex-1 min-w-0 ">{children}</main>
           </div>
         </ClerkProvider>
+        <ChatbotPage />
       </body>
     </html>
   );
