@@ -10,7 +10,6 @@ export default function BlogCard() {
 
   return (
     <div className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl overflow-hidden shadow-[0_20px_60px_rgba(99,102,241,0.10)]">
-      {/* header */}
       <div className="p-5 border-b border-white/10 flex items-center gap-3">
         <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
           <MessageCircle className="h-5 w-5 text-white/80" />
@@ -23,14 +22,13 @@ export default function BlogCard() {
         </div>
       </div>
 
-      {/* body */}
       <div className="p-5">
         <div className="rounded-xl bg-linear-to-br from-white/6 to-white/3 border border-white/10 p-4">
           <div className="text-white/70 text-sm">
             Post бичээд community-тэй санал бодлоо хуваалц.
           </div>
           <div className="mt-3 text-white/45 text-xs">
-            Tip: tag + upvote нэмбэл бүр гоё болно.
+            Create post and share thoughts
           </div>
         </div>
 

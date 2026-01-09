@@ -5,35 +5,40 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-
-
 model User {
-  id        String    @id @default(cuid())
-  clerkId   String    @unique
-  email     String
-  name      String?
-  role      Role      @default(USER)
-  websites  Website[]
-  reviews   Review[]
-  comments  Comment[]
-  blogs     Blog[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+  id      String  @id @default(cuid())
+  clerkId String  @unique
+  email   String  @unique
+  name    String?
+  role    Role    @default(USER)
+
+  points           Int                @default(0)
+  pointTransaction PointTransaction[]
+
+  sentTransfers     PointTransfer[] @relation("Sent")
+  recievedTransfers PointTransfer[] @relation("Recieved")
+
+  websites Website[]
+  reviews  Review[]
+  comments Comment[]
+  blogs    Blog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
- 
+
 enum Role {
   USER
   ADMIN
 }
- 
+
 model Website {
   id          String   @id @unique @default(cuid())
   title       String
@@ -44,30 +49,31 @@ model Website {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
 }
- 
+
 model Review {
-  id            String   @id @unique @default(cuid())
-  description   String
-  screenshotUrl String
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  id               String   @id @unique @default(cuid())
+  description      String
+  screenshotUrl    String
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  geminiConfidence Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now())
 }
- 
+
 model Blog {
-  id        String    @id @unique @default(cuid())
-  title     String
+  id          String    @id @unique @default(cuid())
+  title       String
   description String
-  link String
-  imageUrl  String
-  comments  Comment[]
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+  link        String?
+  imageUrl    String?
+  comments    Comment[]
+  userId      String
+  user        User      @relation(fields: [userId], references: [clerkId])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
 }
- 
+
 model Comment {
   id        String   @id @unique @default(cuid())
   content   String
@@ -77,4 +83,52 @@ model Comment {
   blog      Blog     @relation(fields: [blogId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+model Pack {
+  id               String             @id @default(cuid())
+  key              String             @unique
+  name             String
+  points           Int
+  price            Int
+  bonusPct         Int                @default(0)
+  popular          Boolean            @default(false)
+  active           Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updateAt         DateTime           @updatedAt
+  pointTransaction PointTransaction[]
+}
+
+model PointTransfer {
+  id String @id @default(cuid())
+
+  fromUserId String?
+  toUserId   String?
+
+  fromUser User? @relation("Sent", fields: [fromUserId], references: [clerkId])
+  toUser   User? @relation("Recieved", fields: [toUserId], references: [clerkId])
+
+  amount Int
+
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model PointTransaction {
+  id     String  @id @default(cuid())
+  userId String
+  user   User    @relation(fields: [userId], references: [id])
+  packId String?
+  pack   Pack?   @relation(fields: [packId], references: [id])
+
+  points    Int
+  price     Int
+  type      TxType   @default(PURCHASE)
+  createdAt DateTime @default(now())
+}
+
+enum TxType {
+  PURCHASE
+  BONUS
+  ADJUSTMENT
 }
