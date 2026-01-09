@@ -1,29 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Globe,
   Image as ImgIcon,
   Sparkles,
   Filter,
-  ArrowRight,
+  X,
+  User,
 } from "lucide-react";
-import { ChatbotPage } from "../components/chatbot";
-
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 type Project = {
   id: string;
@@ -118,6 +104,9 @@ export default function TestPage() {
   const [onlyWithUrl, setOnlyWithUrl] = useState(false);
   const [onlyWithShot, setOnlyWithShot] = useState(false);
 
+  // ✅ Dialog оронд — Selected card
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
   const filtered = useMemo(() => {
     return MOCK_PROJECTS.filter((p) => {
       const status = (p.status || "OPEN").toUpperCase();
@@ -130,14 +119,19 @@ export default function TestPage() {
 
   const recommended = filtered[0];
 
+  const selected =
+    (selectedId && MOCK_PROJECTS.find((p) => p.id === selectedId)) || null;
+
   return (
     <div className="min-h-screen bg-black">
+      {/* glow bg */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
 
       <div className="relative mx-auto w-full max-w-7xl px-6 md:px-10 py-10 space-y-6">
+        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
@@ -154,6 +148,7 @@ export default function TestPage() {
             </p>
           </div>
 
+          {/* Filters */}
           <GlassCard className="p-3">
             <div className="flex items-center gap-2 text-white/70 text-sm px-1">
               <Filter className="h-4 w-4" />
@@ -179,53 +174,119 @@ export default function TestPage() {
           </GlassCard>
         </div>
 
-        {recommended ? (
+        {/* Recommended (existing style) */}
+
+        {/* ✅ Selected detail panel (Dialog биш) */}
+        {selected && (
           <GlassCard className="p-5 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <Sparkles className="h-5 w-5 text-white/80" />
-                </div>
-                <div>
-                  <div className="text-white/60 text-xs">Recommended</div>
-                  <div className="text-white font-semibold text-lg">
-                    {recommended.title}
-                  </div>
-                  <div className="mt-1 text-white/70 text-sm line-clamp-2">
-                    {recommended.description}
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Left: info */}
+              <div className="flex-1">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                      <Sparkles className="h-5 w-5 text-white/80" />
+                    </div>
+
+                    <div>
+                      <div className="text-white/60 text-xs">Selected</div>
+                      <div className="text-white font-semibold text-xl">
+                        {selected.title}
+                      </div>
+                      <div className="mt-2 text-white/70 text-sm leading-relaxed">
+                        {selected.description}
+                      </div>
+
+                      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-white/65">
+                        <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1">
+                          {(selected.status || "OPEN").toUpperCase()}
+                        </span>
+
+                        <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1 flex items-center gap-1">
+                          <User className="h-3.5 w-3.5" />
+                          {selected.user?.name ||
+                            selected.user?.email ||
+                            "Unknown"}
+                        </span>
+
+                        <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1 flex items-center gap-1">
+                          <Globe className="h-3.5 w-3.5" />
+                          {selected.url ? "URL байна" : "URL байхгүй"}
+                        </span>
+
+                        <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1 flex items-center gap-1">
+                          <ImgIcon className="h-3.5 w-3.5" />
+                          {selected.screenshot
+                            ? "Screenshot байна"
+                            : "Screenshot байхгүй"}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-white/65">
-                    <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1">
-                      {(recommended.status || "OPEN").toUpperCase()}
-                    </span>
-                    <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1 flex items-center gap-1">
-                      <Globe className="h-3.5 w-3.5" />
-                      {recommended.url ? "URL байна" : "URL байхгүй"}
-                    </span>
-                    <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1 flex items-center gap-1">
-                      <ImgIcon className="h-3.5 w-3.5" />
-                      {recommended.screenshot
-                        ? "Screenshot байна"
-                        : "Screenshot байхгүй"}
-                    </span>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedId(null)}
+                    className="h-9 w-9 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center justify-center text-white/80"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* actions (front-end only) */}
+                <div className="mt-5 flex flex-col sm:flex-row gap-2">
+                  <Button
+                    className="h-11 text-white font-semibold bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-[0_10px_28px_rgba(79,70,229,0.35)] hover:brightness-110"
+                    onClick={() => alert("UI only")}
+                  >
+                    Start testing
+                  </Button>
+
+                  {selected.url && (
+                    <Button
+                      variant="secondary"
+                      className="h-11 bg-white/10 text-white border border-white/15 hover:bg-white/15"
+                      onClick={() => window.open(selected.url!, "_blank")}
+                    >
+                      Open URL
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Right: screenshot */}
+              <div className="w-full lg:w-[420px]">
+                <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+                  {selected.screenshot ? (
+                    <img
+                      src={selected.screenshot}
+                      alt={selected.title}
+                      className="w-full h-[240px] lg:h-[260px] object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-[240px] lg:h-[260px] flex items-center justify-center text-white/40 text-sm">
+                      Screenshot байхгүй
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </GlassCard>
-        ) : (
-          <GlassCard className="p-12 text-center">
-            <p className="text-white/60">
-              Одоогоор шалгах вебсайт байхгүй байна
-            </p>
-          </GlassCard>
         )}
 
+        {/* Cards grid */}
         {filtered.length > 0 && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((p) => (
-              <GlassCard key={p.id} className="overflow-hidden">
+              <GlassCard
+                key={p.id}
+                className={[
+                  "overflow-hidden transition",
+                  selectedId === p.id
+                    ? "border-white/25 shadow-[0_20px_70px_rgba(99,102,241,0.18)]"
+                    : "",
+                ].join(" ")}
+              >
                 {p.screenshot ? (
                   <img
                     src={p.screenshot}
@@ -255,40 +316,12 @@ export default function TestPage() {
                   </p>
 
                   <div className="mt-5 flex gap-2 w-full">
-                    <Dialog>
-                      <form>
-                        <DialogTrigger asChild>
-                          <Button className="w-full h-10 text-white font-semibold bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-[0_10px_28px_rgba(79,70,229,0.35)] hover:brightness-110">
-                            Шалгах
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-137.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl overflow-hidden shadow-[0_20px_60px_rgba(99,102,241,0.10)]">
-                          <DialogHeader>
-                            <DialogTitle>Title</DialogTitle>
-                          </DialogHeader>
-                          <div>
-                            <div>
-                              <h2 className="text-white">Description</h2>
-                              <div className="border  h-30 rounded-xl"></div>
-                            </div>
-                            <div>
-                              <h2 className="text-white">URL</h2>
-                              <div className="border  h-10 rounded-xl"></div>
-                            </div>
-                            <div>
-                              <h2 className="text-white">screenshotUrl</h2>
-                              <div className="border  h-10 rounded-xl"></div>
-                            </div>
-                          </div>
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="outline">Cancel</Button>
-                            </DialogClose>
-                            <Button type="submit">Save changes</Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </form>
-                    </Dialog>
+                    <Button
+                      onClick={() => setSelectedId(p.id)}
+                      className="w-full h-10 text-white font-semibold bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-[0_10px_28px_rgba(79,70,229,0.35)] hover:brightness-110"
+                    >
+                      Шалгах
+                    </Button>
                   </div>
                 </div>
               </GlassCard>
