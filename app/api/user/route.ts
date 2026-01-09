@@ -4,37 +4,41 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const user = await currentUser();
-  if (!user) return new NextResponse("Unauthorized", { status: 401 })
+  if (!user) return new NextResponse("Unauthorized", { status: 401 });
 
-  const userData = await prisma.user.findUnique({ where: { clerkId: user?.id } })
-  console.log(userData)
-  return new NextResponse(JSON.stringify(userData), { status: 200 })
+  const userData = await prisma.user.findUnique({
+    where: { clerkId: user?.id },
+    select: { points: true },
+  });
+  return NextResponse.json({ points: userData?.points ?? 0 }, { status: 200 });
+
+  console.log(userData);
 }
 
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await auth();
-  if (!userId) {
-    return new NextResponse("Not signed in", { status: 401 });
-  }
+    if (!userId) {
+      return new NextResponse("Not signed in", { status: 401 });
+    }
 
-  const user = await currentUser();
-  if (!user) {
-    return new NextResponse("User not found", { status: 404 });
-  }
+    const user = await currentUser();
+    if (!user) {
+      return new NextResponse("User not found", { status: 404 });
+    }
 
-  await prisma.user.upsert({
-    where: { id: userId },
-    update: {},
-    create: {
-      id: userId,
-      email: user.emailAddresses[0].emailAddress,
-      name: user.firstName,
-      clerkId: user.id,
-    },
-  });
+    await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        email: user.emailAddresses[0].emailAddress,
+        name: user.firstName,
+        clerkId: user.id,
+      },
+    });
 
-  return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true });
   } catch (err) {
     return NextResponse.json({ message: "cant", err }, { status: 500 });
   }
