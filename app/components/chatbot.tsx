@@ -75,9 +75,7 @@ export const ChatbotPage = () => {
 
           <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm">
             {messages.length === 0 && (
-              <div className="text-center text-gray-400 mt-6">
-                Message бичээд эхлээрэй 👋
-              </div>
+              <div className="text-center text-gray-400 mt-6"></div>
             )}
 
             {messages.map((m, i) => (
@@ -123,7 +121,7 @@ export const ChatbotPage = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Message бич..."
+              placeholder="asuuh zuilee asuu gicii mini ..."
               disabled={loading}
               className="flex-1 border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400"
             />
