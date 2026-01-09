@@ -58,14 +58,12 @@ export default function Report() {
 
   return (
     <main className="relative min-h-[calc(100vh-56px)] w-full bg-black">
-      {/* Glow background */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
 
       <div className="relative mx-auto w-full max-w-4xl px-6 md:px-10 py-10">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-white/80 text-sm backdrop-blur">
@@ -95,7 +93,6 @@ export default function Report() {
           )}
         </div>
 
-        {/* Form */}
         <div className="mt-8 grid gap-6 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <GlassCard className="p-6 md:p-7">
@@ -107,7 +104,6 @@ export default function Report() {
               </p>
 
               <div className="mt-6 space-y-5">
-                {/* Title */}
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
                     Title *
@@ -125,7 +121,6 @@ export default function Report() {
                   </div>
                 </div>
 
-                {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
                     Description *
@@ -141,7 +136,6 @@ export default function Report() {
                   />
                 </div>
 
-                {/* Email */}
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
                     Email (optional)
@@ -159,7 +153,6 @@ export default function Report() {
                   </div>
                 </div>
 
-                {/* Actions */}
                 <div className="pt-2 flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={handleSubmit}
@@ -191,7 +184,6 @@ export default function Report() {
             </GlassCard>
           </div>
 
-          {/* Tips */}
           <div className="lg:col-span-4">
             <GlassCard className="p-6 sticky top-20">
               <div className="text-white font-semibold text-lg">Tips</div>
