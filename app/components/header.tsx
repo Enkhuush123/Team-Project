@@ -32,11 +32,8 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl">
-      {/* ✅ илүү зах руу шахах: px багасгасан */}
       <div className="mx-auto w-full max-w-8xl px-4 md:px-8">
-        {/* ✅ 3 бүсийг яг тулгах layout (left/center/right) */}
         <div className="h-14 md:h-16 grid grid-cols-[1fr_auto_1fr] items-center">
-          {/* LEFT: Logo */}
           <div className="flex items-center justify-start min-w-0">
             <button
               onClick={() => router.push("/")}
@@ -54,7 +51,6 @@ export default function Header() {
             </button>
           </div>
 
-          {/* CENTER: Desktop Nav (underline active) */}
           <nav className="hidden md:flex items-center justify-center gap-7">
             {nav.map((item) => {
               const active = isActive(item.href);
@@ -77,9 +73,7 @@ export default function Header() {
             })}
           </nav>
 
-          {/* RIGHT: Help + Auth/Account */}
           <div className="flex items-center justify-end gap-2 md:gap-3">
-            {/* Help */}
             <button
               onClick={() => router.push("/helpcenter")}
               className="hidden sm:flex h-9 md:h-10 px-3 md:px-4 rounded-xl
@@ -111,7 +105,6 @@ export default function Header() {
 
             <SignedIn>
               <div className="flex items-center gap-2 md:gap-3">
-                {/* ✅ COIN — premium / царайлаг */}
                 <button
                   onClick={() => router.push("/pointPage")}
                   className="
@@ -137,7 +130,6 @@ export default function Header() {
                   </span>
                 </button>
 
-                {/* User */}
                 <div className="h-9 md:h-10 px-2 rounded-xl border border-white/10 bg-white/5 flex items-center">
                   <UserButton />
                 </div>
@@ -146,7 +138,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* MOBILE NAV */}
         <div className="md:hidden pb-3">
           <div className="flex gap-2 overflow-x-auto no-scrollbar">
             {nav.map((item) => {
