@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Bot, Send, X } from "lucide-react";
 
 interface Message {
   role: "user" | "assistant";
@@ -12,6 +13,14 @@ export const ChatbotPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // ✅ auto-scroll target
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // ✅ auto-scroll when messages / loading changes
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading, open]);
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
@@ -60,22 +69,66 @@ export const ChatbotPage = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
+      {/* ✅ Floating Button (your design) */}
       <button
         onClick={() => setOpen((p) => !p)}
-        className="bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 hover:opacity-90 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-2xl"
+        className={[
+          "relative h-14 w-14 rounded-full flex items-center justify-center",
+          "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600",
+          "text-white",
+          "shadow-[0_18px_55px_rgba(99,102,241,0.45)]",
+          "border border-white/15",
+          "hover:brightness-110 hover:scale-105",
+          "active:scale-95 transition-all duration-200",
+        ].join(" ")}
+        aria-label="Open chatbot"
       >
-        💬
+        <Bot className="h-6 w-6" />
+        <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-white/20" />
       </button>
 
       {open && (
-        <div className="mt-4 w-80 h-125 bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden">
-          <div className="bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 text-white px-4 py-3 font-semibold">
-            AI Chatbot
+        <div
+          className={[
+            "mt-4 w-[360px] h-[520px] flex flex-col overflow-hidden rounded-2xl",
+            "bg-black/70 border border-white/10 backdrop-blur-xl",
+            "shadow-[0_20px_60px_rgba(99,102,241,0.18)]",
+          ].join(" ")}
+        >
+          {/* ✅ Header */}
+          <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-9 w-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                <Bot className="h-5 w-5 text-white/80" />
+              </div>
+              <div>
+                <div className="text-white font-semibold leading-tight">
+                  AI Chatbot
+                </div>
+                <div className="text-white/55 text-xs">UI • mock style</div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setOpen(false)}
+              className="h-9 w-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:bg-white/10 transition"
+              aria-label="Close chatbot"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
 
+          {/* ✅ Messages */}
           <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm">
+<<<<<<< HEAD
             {messages.length === 0 && (
               <div className="text-center text-gray-400 mt-6"></div>
+=======
+            {messages.length === 0 && !loading && (
+              <div className="text-center text-white/45 mt-10">
+                Message бичээд эхлээрэй 👋
+              </div>
+>>>>>>> 7ea77a6a222a577a8802137944a7ea613e26dc6c
             )}
 
             {messages.map((m, i) => (
@@ -86,11 +139,12 @@ export const ChatbotPage = () => {
                 }`}
               >
                 <div
-                  className={`max-w-[80%] rounded-lg px-3 py-2 whitespace-pre-wrap ${
+                  className={[
+                    "max-w-[82%] rounded-2xl px-3 py-2 whitespace-pre-wrap",
                     m.role === "user"
-                      ? "bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 text-white"
-                      : "bg-gray-200"
-                  }`}
+                      ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 text-white shadow-[0_10px_26px_rgba(79,70,229,0.25)]"
+                      : "bg-white/8 border border-white/10 text-white/85",
+                  ].join(" ")}
                 >
                   {m.content}
                 </div>
@@ -99,37 +153,54 @@ export const ChatbotPage = () => {
 
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-gray-200 rounded-lg px-3 py-2">
+                <div className="bg-white/8 border border-white/10 rounded-2xl px-3 py-2">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" />
                     <div
-                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                      className="w-2 h-2 bg-white/60 rounded-full animate-bounce"
                       style={{ animationDelay: "0.2s" }}
                     />
                     <div
-                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                      className="w-2 h-2 bg-white/60 rounded-full animate-bounce"
                       style={{ animationDelay: "0.4s" }}
                     />
                   </div>
                 </div>
               </div>
             )}
+
+            {/* ✅ auto-scroll anchor */}
+            <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-2 border-t flex gap-2">
+          {/* ✅ Input */}
+          <div className="p-3 border-t border-white/10 flex gap-2">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="asuuh zuilee asuu gicii mini ..."
               disabled={loading}
-              className="flex-1 border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400"
+              className={[
+                "flex-1 h-10 rounded-xl px-3 text-sm outline-none",
+                "bg-white/5 border border-white/15 text-white placeholder:text-white/35",
+                "focus:border-white/30 transition",
+              ].join(" ")}
             />
+
             <button
               onClick={handleSend}
               disabled={loading || !input.trim()}
-              className="bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 text-white px-4 rounded-lg text-sm disabled:opacity-50"
+              className={[
+                "h-10 px-4 rounded-xl text-sm font-semibold text-white",
+                "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600",
+                "shadow-[0_10px_26px_rgba(79,70,229,0.25)]",
+                "hover:brightness-110 active:scale-[0.98] transition",
+                "disabled:opacity-50 disabled:hover:brightness-100 disabled:active:scale-100",
+                "flex items-center gap-2",
+              ].join(" ")}
             >
+              <Send className="h-4 w-4" />
               Send
             </button>
           </div>

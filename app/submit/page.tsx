@@ -13,6 +13,11 @@ import {
   ArrowRight,
   X,
 } from "lucide-react";
+import { title } from "node:process";
+import Image from "next/image";
+
+const UPLOAD_PRESET = "softwarecom";
+const CLOUD_NAME = "dv38igwqg";
 
 function GlassCard({
   children,
@@ -38,17 +43,59 @@ export default function SubmitPage() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    url: "",
+    link: "",
     screenshot: "",
   });
 
-  const clearAll = () =>
-    setFormData({ title: "", description: "", url: "", screenshot: "" });
+  const uploadToCloudinary = async (file: File) => {
+    const formDataCloudinary = new FormData();
+    formDataCloudinary.append("file", file);
+    formDataCloudinary.append("upload_preset", UPLOAD_PRESET);
 
-  const onSubmitUIOnly = (e: React.FormEvent) => {
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formDataCloudinary,
+        }
+      );
+
+      const data = await res.json();
+      return data.secure_url;
+    } catch (err) {
+      console.error("upload failed", err);
+    }
+  };
+
+  const handleImageUpload = async (event: any) => {
+    const file = event.target.files[0];
+    try {
+      const url = await uploadToCloudinary(file);
+      setFormData({ ...formData, screenshot: url });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const clearAll = () =>
+    setFormData({ title: "", description: "", link: "", screenshot: "" });
+
+  const onSubmitUIOnly = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("UI only submit:", formData);
-    // энд API/route байхгүй (frontend only)
+
+    const res = await fetch(`/api/website`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: formData.title,
+        description: formData.description,
+        link: formData.link,
+        screenshot: formData.screenshot,
+      }),
+    });
+    const data = await res.json();
+    console.log(data);
   };
 
   return (
@@ -116,7 +163,7 @@ export default function SubmitPage() {
               <form onSubmit={onSubmitUIOnly} className="mt-6 space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    Гарчиг <span className="text-white/50">*</span>
+                    Title <span className="text-white/50">*</span>
                   </label>
                   <Input
                     value={formData.title}
@@ -135,7 +182,7 @@ export default function SubmitPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    Тайлбар <span className="text-white/50">*</span>
+                    Description <span className="text-white/50">*</span>
                   </label>
                   <Textarea
                     value={formData.description}
@@ -145,7 +192,7 @@ export default function SubmitPage() {
                         description: e.target.value,
                       })
                     }
-                    placeholder={`Юуг шалгах вэ?\n- Page: /pricing\n- Flow: sign up → checkout\n- Expected vs actual\n- Device/Browser`}
+                    placeholder={"Write your description"}
                     rows={7}
                     className="bg-white/5 border-white/15 text-white placeholder:text-white/40
                                focus-visible:ring-0 focus-visible:border-white/30
@@ -158,14 +205,14 @@ export default function SubmitPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    URL (сонголттой)
+                    URL
                   </label>
                   <div className="relative">
                     <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                     <Input
-                      value={formData.url}
+                      value={formData.link}
                       onChange={(e) =>
-                        setFormData({ ...formData, url: e.target.value })
+                        setFormData({ ...formData, link: e.target.value })
                       }
                       placeholder="https://example.com"
                       className="h-11 pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40
@@ -175,28 +222,49 @@ export default function SubmitPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-white/80 mb-2">
-                    Скриншот URL (сонголттой)
-                  </label>
-                  <div className="relative">
-                    <ImgIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-                    <Input
-                      value={formData.screenshot}
-                      onChange={(e) =>
-                        setFormData({ ...formData, screenshot: e.target.value })
-                      }
-                      placeholder="https://example.com/screenshot.png"
-                      className="h-11 pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40
-                                 focus-visible:ring-0 focus-visible:border-white/30
-                                 transition hover:border-white/25"
-                    />
+                {formData.screenshot ? (
+                  <div>
+                    <div className="h-60 w-full relative">
+                      <Image
+                        src={formData.screenshot}
+                        alt="image"
+                        fill
+                        className="object-center object-cover rounded-xl"
+                      />
+                    </div>
+                    <Button
+                      className="flex justify-end mt-2"
+                      onClick={() => {
+                        setFormData({ ...formData, screenshot: "" });
+                      }}
+                    >
+                      Delete
+                    </Button>
                   </div>
-                </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium text-white/80 mb-2">
+                      Screenshot
+                    </label>
+                    <div className="relative">
+                      <ImgIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        placeholder="https://example.com/screenshot.png"
+                        className="h-11 pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40
+                                 focus-visible:ring-0 focus-visible:border-white/30
+                                 transition hover:border-white/25 w-full"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 <div className="pt-2 flex flex-col sm:flex-row gap-3">
                   <Button
                     type="submit"
+                    onClick={onSubmitUIOnly}
                     className={[
                       "h-11 text-white font-semibold",
                       "bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600",
