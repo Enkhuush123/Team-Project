@@ -120,15 +120,8 @@ export const ChatbotPage = () => {
 
           {/* ✅ Messages */}
           <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm">
-<<<<<<< HEAD
             {messages.length === 0 && (
               <div className="text-center text-gray-400 mt-6"></div>
-=======
-            {messages.length === 0 && !loading && (
-              <div className="text-center text-white/45 mt-10">
-                Message бичээд эхлээрэй 👋
-              </div>
->>>>>>> 7ea77a6a222a577a8802137944a7ea613e26dc6c
             )}
 
             {messages.map((m, i) => (
