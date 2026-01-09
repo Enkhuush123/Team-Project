@@ -13,19 +13,25 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  clerkId   String    @unique
-  email     String    @unique
-  name      String?
-  role      Role      @default(USER)
-  websites  Website[]
-  points     Int       @default(0)
-  reviews   Review[]
-  comments  Comment[]
-  blogs     Blog[]
+  id      String  @id @default(cuid())
+  clerkId String  @unique
+  email   String  @unique
+  name    String?
+  role    Role    @default(USER)
+
+  points           Int                @default(0)
   pointTransaction PointTransaction[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+
+  sentTransfers     PointTransfer[] @relation("Sent")
+  recievedTransfers PointTransfer[] @relation("Recieved")
+
+  websites Website[]
+  reviews  Review[]
+  comments Comment[]
+  blogs    Blog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 enum Role {
@@ -80,37 +86,49 @@ model Comment {
 }
 
 model Pack {
-  id String @id @default(cuid())
-  key String @unique
-  name String
-  points Int
-  price Int
-  bonusPct Int @default(0)
-  popular Boolean @default(false)
-  active Boolean @default(true)
-  createdAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  id               String             @id @default(cuid())
+  key              String             @unique
+  name             String
+  points           Int
+  price            Int
+  bonusPct         Int                @default(0)
+  popular          Boolean            @default(false)
+  active           Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updateAt         DateTime           @updatedAt
   pointTransaction PointTransaction[]
+}
 
+model PointTransfer {
+  id String @id @default(cuid())
+
+  fromUserId String?
+  toUserId   String?
+
+  fromUser User? @relation("Sent", fields: [fromUserId], references: [clerkId])
+  toUser   User? @relation("Recieved", fields: [toUserId], references: [clerkId])
+
+  amount Int
+
+  description String?
+  createdAt   DateTime @default(now())
 }
 
 model PointTransaction {
-  id String @id @default(cuid())
+  id     String  @id @default(cuid())
   userId String
-  user User @relation(fields: [userId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
   packId String?
-  pack Pack? @relation(fields: [packId], references: [id])
+  pack   Pack?   @relation(fields: [packId], references: [id])
 
-  points Int
-  price Int
-  type TxType @default(PURCHASE)
+  points    Int
+  price     Int
+  type      TxType   @default(PURCHASE)
   createdAt DateTime @default(now())
- }
+}
 
 enum TxType {
   PURCHASE
   BONUS
   ADJUSTMENT
 }
-
-
