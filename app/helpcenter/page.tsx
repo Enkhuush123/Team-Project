@@ -7,25 +7,11 @@ import { Search, ArrowRight, LifeBuoy } from "lucide-react";
 export default function HelpCenter() {
   const categories = [
     {
-      title: "Account & Profile",
-      desc: "Manage your account settings",
-      href: "/help/account",
-    },
-    {
-      title: "Posting & Content",
-      desc: "Create, edit and manage posts",
-      href: "/help/posting",
-    },
-    {
       title: "Community Rules",
       desc: "Learn our rules and policies",
-      href: "/help/rules",
+      href: "/rules",
     },
-    {
-      title: "Technical Issues",
-      desc: "Fix bugs and errors",
-      href: "/help/technical",
-    },
+
     {
       title: "About us",
       desc: "More information about us",
@@ -59,14 +45,12 @@ export default function HelpCenter() {
 
   return (
     <main className="relative min-h-[calc(100vh-56px)] w-full bg-black">
-      {/* ✅ glow background (яг Home шиг) */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
 
       <div className="relative mx-auto w-full max-w-7xl px-6 md:px-10 py-10">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-white/80 text-sm backdrop-blur">
@@ -87,34 +71,8 @@ export default function HelpCenter() {
               олно. Search хийгээд шууд category руу ор.
             </p>
           </div>
-
-          {/* Search */}
-          <div className="w-full md:w-[420px]">
-            <div className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-[0_20px_60px_rgba(99,102,241,0.10)] p-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Search for help..."
-                  className="
-                    w-full h-11 pl-10 pr-3 rounded-xl
-                    bg-white/5 border border-white/15
-                    text-white placeholder:text-white/35
-                    outline-none
-                    focus-visible:border-white/30
-                    transition
-                  "
-                />
-              </div>
-              <div className="mt-2 text-xs text-white/45 px-1">
-                Tip: “password”, “post”, “rules”, “bug” гэж хайгаарай.
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* Categories */}
         <section className="mt-8">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((cat) => (
@@ -160,39 +118,6 @@ export default function HelpCenter() {
               Олдсонгүй 😅 өөр keyword-р хайгаад үз.
             </div>
           )}
-        </section>
-
-        {/* Popular */}
-        <section className="mt-10">
-          <div className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-[0_20px_60px_rgba(99,102,241,0.10)] p-6">
-            <div className="flex items-center justify-between gap-4">
-              <h2 className="text-white font-semibold text-lg">
-                Popular articles
-              </h2>
-              <span className="text-white/45 text-sm">Quick access</span>
-            </div>
-
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {popular.map((p) => (
-                <Link
-                  key={p.title}
-                  href={p.href}
-                  className="
-                    rounded-xl bg-white/5 border border-white/10
-                    px-4 py-3 text-sm text-white/75
-                    hover:bg-white/8 hover:border-white/15 hover:text-white
-                    transition
-                  "
-                >
-                  • {p.title}
-                </Link>
-              ))}
-            </div>
-
-            <div className="mt-5 text-xs text-white/45">
-              (UI only) Дараа нь API-гаар popular list-ийг динамик болгоно.
-            </div>
-          </div>
         </section>
       </div>
     </main>
