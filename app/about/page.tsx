@@ -40,8 +40,6 @@ export default function About() {
             шударгаар үнэлүүлэх итгэлтэй, найдвартай орчныг бүрдүүлэх явдал юм.
           </p>
         </div>
-
-        {/* Call to action */}
       </div>
     </section>
   );
