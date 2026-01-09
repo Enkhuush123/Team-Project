@@ -13,6 +13,7 @@ datasource db {
 }
 
 model User {
+<<<<<<< HEAD
   id        String    @id @default(cuid())
   clerkId   String    @unique
   email     String    @unique
@@ -26,11 +27,54 @@ model User {
   pointTransaction PointTransaction[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())
+=======
+  id      String  @id @default(cuid())
+  clerkId String  @unique
+  email   String  @unique
+  name    String?
+  role    Role    @default(USER)
+
+  points Int @default(0)
+
+  sentTransactions     PointTransaction[] @relation("Sent")
+  recievedTransactions PointTransaction[] @relation("Recieved")
+
+  websites Website[]
+  reviews  Review[]
+  comments Comment[]
+  blogs    Blog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+>>>>>>> 2251872 (point backend)
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+model PointTransaction {
+  id String @id @default(cuid())
+
+  fromUserId String?
+  toUserId   String?
+
+  fromUser User? @relation("Sent", fields: [fromUserId], references: [clerkId])
+  toUser   User? @relation("Recieved", fields: [toUserId], references: [clerkId])
+
+  amount      Int
+  type        TransactionType
+  description String
+
+  createdAt DateTime @default(now())
+}
+
+enum TransactionType {
+  TRANSFER
+  EARN
+  SPEND
+  ADJUSTMENT
 }
 
 model Website {
