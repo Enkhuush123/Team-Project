@@ -1,51 +1,37 @@
 "use client";
 
-import { useMemo } from "react";
-import { Newspaper, RefreshCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Newspaper, RefreshCcw, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type NewsItem = {
   title: string;
   time: string;
   tag: string;
+  url: string;
 };
 
 export default function ItNewsCard() {
-  const news = useMemo<NewsItem[]>(
-    () => [
-      {
-        title: "OpenAI releases new model updates for dev tools",
-        time: "2h ago",
-        tag: "AI",
-      },
-      {
-        title: "Next.js App Router best practices for 2026",
-        time: "5h ago",
-        tag: "Next.js",
-      },
-      {
-        title: "Prisma: faster migrations & DX improvements",
-        time: "9h ago",
-        tag: "DB",
-      },
-      {
-        title: "TypeScript 5.x tips to reduce runtime bugs",
-        time: "12h ago",
-        tag: "TS",
-      },
-      {
-        title: "Tailwind UI patterns: glass, gradients, cards",
-        time: "1d ago",
-        tag: "UI",
-      },
-      {
-        title: "Security: common auth mistakes in web apps",
-        time: "2d ago",
-        tag: "Sec",
-      },
-    ],
-    []
-  );
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchNews = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/news?limit=8", { cache: "no-store" });
+      const data = await res.json();
+      setNews(data.items || []);
+    } catch (e) {
+      console.error(e);
+      setNews([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNews();
+  }, []);
 
   return (
     <div className="h-full rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl overflow-hidden shadow-[0_20px_60px_rgba(99,102,241,0.10)]">
@@ -58,16 +44,21 @@ export default function ItNewsCard() {
             <div className="text-white font-semibold text-lg">
               Latest IT News
             </div>
-            <div className="text-white/55 text-sm">Daily feed (UI only)</div>
+            <div className="text-white/55 text-sm">
+              {loading ? "Updating..." : "Live feed"}
+            </div>
           </div>
         </div>
 
         <Button
           variant="secondary"
           className="h-9 bg-white/10 text-white border border-white/15 hover:bg-white/15"
-          onClick={() => console.log("refresh news")}
+          onClick={fetchNews}
+          disabled={loading}
         >
-          <RefreshCcw className="h-4 w-4 mr-2" />
+          <RefreshCcw
+            className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+          />
           Refresh
         </Button>
       </div>
@@ -78,9 +69,12 @@ export default function ItNewsCard() {
 
           <div className="mt-3 space-y-3">
             {news.map((n, idx) => (
-              <div
+              <a
                 key={idx}
-                className="rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
+                href={n.url}
+                target="_blank"
+                rel="noreferrer"
+                className="block rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="text-white/90 text-sm font-medium leading-snug line-clamp-2">
@@ -90,14 +84,26 @@ export default function ItNewsCard() {
                     {n.tag}
                   </span>
                 </div>
-                <div className="mt-2 text-xs text-white/50">{n.time}</div>
-              </div>
+
+                <div className="mt-2 flex items-center justify-between text-xs text-white/50">
+                  <span>{n.time}</span>
+                  <span className="inline-flex items-center gap-1 text-white/60">
+                    Open <ArrowUpRight className="h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </a>
             ))}
+
+            {!loading && news.length === 0 && (
+              <div className="text-center text-white/55 text-sm py-10">
+                No news yet
+              </div>
+            )}
           </div>
         </div>
 
         <div className="mt-4 text-xs text-white/45">
-          Tip: API холбох үед эндээс fetch хийнэ.
+          Source: Hacker News (no API key)
         </div>
       </div>
     </div>
