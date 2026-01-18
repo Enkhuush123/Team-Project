@@ -44,24 +44,58 @@ const rules = [
 
 export default function CommunityRules() {
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
-      <h1 className="text-2xl font-bold text-white mb-2">Олон нийтийн дүрэм</h1>
-      <p className="text-gray-400 mb-8">
-        Манай нийгэмлэгийг аюулгүй, найрсаг, бүтээлч байлгахын тулд дараах
-        дүрмийг мөрдөнө үү.
-      </p>
+    <div className="relative min-h-screen bg-black">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 -left-40 h-[420px] w-[420px] rounded-full bg-violet-500/20 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {rules.map((rule, index) => (
-          <div
-            key={index}
-            className="bg-neutral-900 border border-neutral-800 rounded-xl p-5 hover:border-red-500 transition"
-          >
-            <div className="text-red-500 text-xl mb-3">{rule.icon}</div>
-            <h3 className="text-white font-semibold mb-1">{rule.title}</h3>
-            <p className="text-gray-400 text-sm">{rule.desc}</p>
-          </div>
-        ))}
+      <div className="relative max-w-6xl mx-auto px-6 py-14">
+        <div className="mb-10 max-w-2xl">
+          <h1 className="text-3xl font-extrabold text-white mb-3">
+            Олон нийтийн дүрэм
+          </h1>
+          <p className="text-white/65 leading-relaxed">
+            Манай community-г аюулгүй, найрсаг, бүтээлч байлгахын тулд дараах
+            дүрмүүдийг мөрдөнө үү.
+          </p>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {rules.map((rule, index) => (
+            <div
+              key={index}
+              className="
+                group relative rounded-2xl p-6
+                bg-white/5 border border-white/10 backdrop-blur-xl
+                shadow-[0_20px_60px_rgba(99,102,241,0.12)]
+                hover:border-violet-500/60 hover:shadow-[0_25px_80px_rgba(139,92,246,0.35)]
+                transition
+              "
+            >
+              {/* icon */}
+              <div
+                className="
+                  mb-4 h-12 w-12 rounded-xl
+                  flex items-center justify-center
+                  bg-gradient-to-br from-violet-500/20 to-cyan-400/20
+                  text-violet-300 text-xl
+                  group-hover:scale-110 transition
+                "
+              >
+                {rule.icon}
+              </div>
+
+              <h3 className="text-white font-semibold text-lg mb-2">
+                {rule.title}
+              </h3>
+
+              <p className="text-white/65 text-sm leading-relaxed">
+                {rule.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
