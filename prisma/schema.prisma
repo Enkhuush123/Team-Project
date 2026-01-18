@@ -45,7 +45,11 @@ model Website {
   description String
   link        String
   userId      String
+  imageUrl   String?
+
   user        User     @relation(fields: [userId], references: [id])
+
+  reviews     Review[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
 }
@@ -53,12 +57,23 @@ model Website {
 model Review {
   id               String   @id @unique @default(cuid())
   description      String
-  screenshotUrl    String
-  userId           String
-  user             User     @relation(fields: [userId], references: [id])
-  geminiConfidence Int
+  screenshotUrl    String?
+
+
+  geminiConfidence Int @default(0)
+  status          ReviewStatus @default(PENDING)
+  websiteId    String
+  website Website @relation(fields: [websiteId], references: [id])
+  reviewerId   String?
+  reviewer     User?    @relation(fields: [reviewerId], references: [id])
   createdAt        DateTime @default(now())
   updatedAt        DateTime @default(now())
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model Blog {
