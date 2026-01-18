@@ -30,7 +30,6 @@ export default function Blogs() {
       const arr: Blog[] = Array.isArray(data) ? data : [];
       setBlogs(arr);
 
-      // init votes UI only
       const initVotes: Record<string, number> = {};
       const initMy: Record<string, 1 | -1 | 0> = {};
       arr.forEach((b) => {
@@ -44,18 +43,14 @@ export default function Blogs() {
   }, []);
 
   const handleVote = (id: string, dir: 1 | -1) => {
-    // UI only: toggle reddit style
     setVotes((prev) => {
       const current = prev[id] ?? 0;
       const mine = myVote[id] ?? 0;
 
-      // if clicking same vote -> remove
       if (mine === dir) return { ...prev, [id]: current - dir };
 
-      // if switching vote -> +2 / -2
       if (mine === -dir) return { ...prev, [id]: current + dir * 2 };
 
-      // new vote
       return { ...prev, [id]: current + dir };
     });
 
@@ -68,10 +63,9 @@ export default function Blogs() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* glow background */}
       <div className="pointer-events-none fixed inset-0">
-        <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
-        <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
+        <div className="absolute -top-40 -left-40 h-130 w-130 rounded-full bg-indigo-500/25 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-105 w-105 rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
 
       <div className="relative mx-auto w-full max-w-3xl px-4 sm:px-6 py-8 space-y-6">
@@ -86,15 +80,13 @@ export default function Blogs() {
           const mine = myVote[item.id] ?? 0;
 
           return (
-            <article
+            <div
               key={item.id}
               className="w-full overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl
                          shadow-[0_20px_60px_rgba(99,102,241,0.12)] hover:border-white/20 transition"
             >
-              {/* header */}
               <div className="px-5 sm:px-6 py-4 border-b border-white/10 flex items-center justify-between">
                 <div className="min-w-0">
-                  {/* ✅ TITLE TOM */}
                   <h2 className="text-white font-extrabold text-lg sm:text-xl leading-snug truncate">
                     {item.title}
                   </h2>
@@ -108,9 +100,8 @@ export default function Blogs() {
                 </span>
               </div>
 
-              {/* image */}
               {item.imageUrl ? (
-                <div className="relative w-full aspect-[16/9] bg-black">
+                <div className="relative w-full aspect-video bg-black">
                   <Image
                     src={item.imageUrl}
                     alt={item.title}
@@ -122,14 +113,11 @@ export default function Blogs() {
                 <div className="w-full h-56 bg-white/5 border-b border-white/10" />
               )}
 
-              {/* body */}
               <div className="px-5 sm:px-6 py-5">
-                {/* ✅ DESCRIPTION TITLE-аасаа ЖИЖИГ */}
                 <p className="text-white/75 text-[13px] sm:text-[14px] leading-relaxed whitespace-pre-wrap">
                   {item.description}
                 </p>
 
-                {/* ✅ Reddit like/dislike bar */}
                 <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div
@@ -150,7 +138,7 @@ export default function Blogs() {
                         <ArrowBigUp className="h-5 w-5" />
                       </button>
 
-                      <span className="min-w-[28px] text-center text-sm font-semibold text-white/80 tabular-nums">
+                      <span className="min-w-7 text-center text-sm font-semibold text-white/80 tabular-nums">
                         {score}
                       </span>
 
@@ -208,7 +196,7 @@ export default function Blogs() {
                   </div>
                 )}
               </div>
-            </article>
+            </div>
           );
         })}
       </div>
