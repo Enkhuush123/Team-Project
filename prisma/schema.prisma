@@ -40,34 +40,33 @@ enum Role {
 }
 
 model Website {
-  id          String   @id @unique @default(cuid())
+  id          String  @id @unique @default(cuid())
   title       String
   description String
   link        String
   userId      String
-  imageUrl   String?
+  imageUrl    String?
 
-  user        User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
-  reviews     Review[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  reviews   Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Review {
-  id               String   @id @unique @default(cuid())
-  description      String
-  screenshotUrl    String?
+  id            String  @id @unique @default(cuid())
+  description   String
+  screenshotUrl String?
 
-
-  geminiConfidence Int @default(0)
-  status          ReviewStatus @default(PENDING)
-  websiteId    String
-  website Website @relation(fields: [websiteId], references: [id])
-  reviewerId   String?
-  reviewer     User?    @relation(fields: [reviewerId], references: [id])
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @default(now())
+  geminiConfidence Int          @default(0)
+  status           ReviewStatus @default(PENDING)
+  websiteId        String
+  website          Website      @relation(fields: [websiteId], references: [id])
+  reviewerId       String?
+  reviewer         User?        @relation(fields: [reviewerId], references: [id])
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @default(now())
 }
 
 enum ReviewStatus {
@@ -122,6 +121,9 @@ model PointTransfer {
 
   fromUser User? @relation("Sent", fields: [fromUserId], references: [clerkId])
   toUser   User? @relation("Recieved", fields: [toUserId], references: [clerkId])
+
+  fromUserEmail String?
+  toUserEmail   String?
 
   amount Int
 
