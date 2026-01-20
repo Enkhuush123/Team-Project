@@ -44,6 +44,7 @@ export default function UserPoints({ points }: { points: number }) {
           onClick={() => {
             router.push("/transfer-history");
           }}
+          className="bg-gray-800 cursor-pointer"
         >
           See transfer history
         </Button>
@@ -54,7 +55,7 @@ export default function UserPoints({ points }: { points: number }) {
 
 const TransferPointsDialog = () => {
   const [email, setEmail] = useState("");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState<number | null>(null);
   const [description, setDescription] = useState("");
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -78,8 +79,8 @@ const TransferPointsDialog = () => {
   };
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger>
-        <Button className="hover:brightness-110 transition ">
+      <DialogTrigger asChild>
+        <Button className="hover:brightness-110 transition bg-gray-800 cursor-pointer">
           Transfer points
         </Button>
       </DialogTrigger>
@@ -98,14 +99,17 @@ const TransferPointsDialog = () => {
         />
         <input
           type="number"
-          min={1}
-          value={amount}
+          min={0}
+          step={1}
+          value={amount ?? ""}
           onChange={(e) => {
-            setAmount(Number(e.target.value));
+            const v = e.target.valueAsNumber;
+            setAmount(Number.isNaN(v) ? null : v);
           }}
           placeholder="Points to transfer"
-          className="border border-white rounded-sm px-2 "
+          className="border border-white rounded-sm px-2"
         />
+
         <input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
