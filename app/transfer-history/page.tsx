@@ -50,15 +50,16 @@ const TransferHistory = () => {
         <TableCaption>A list of your recent transfers.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-25">Invoice</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Method</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
+            <TableHead className="w-25 text-white">Amount</TableHead>
+            <TableHead className="text-white">Description</TableHead>
+            <TableHead className="text-white">Recipent</TableHead>
+            <TableHead className="text-white">Time</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {transactions.map((item: Transactions) => (
-            <TableRow className="text-white">
+            <TableRow className="text-white"
+            key={item.id}>
               <TableCell
                 key={item.id}
                 className="text-white flex justify-between px-5"
