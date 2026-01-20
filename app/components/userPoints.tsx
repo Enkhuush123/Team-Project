@@ -78,7 +78,7 @@ const TransferPointsDialog = () => {
   };
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button className="hover:brightness-110 transition ">
           Transfer points
         </Button>
