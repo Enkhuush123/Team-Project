@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Spinner } from "@/components/ui/spinner";
 
 type Transactions = {
   id: string;
@@ -24,6 +25,8 @@ const TransferHistory = () => {
   const [transactions, setTransactions] = useState([]);
   const [userId, setUserId] = useState({});
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const getUserData = async () => {
       const res = await fetch("/api/user", { method: "GET" });
@@ -32,7 +35,10 @@ const TransferHistory = () => {
     };
 
     getUserData();
+
     const getHistory = async () => {
+      setLoading(true);
+
       const res = await fetch("api/points/history", {
         method: "GET",
       });
@@ -40,6 +46,8 @@ const TransferHistory = () => {
       const data = await res.json();
       console.log(data);
       setTransactions(data);
+
+      setLoading(false);
     };
     getHistory();
   }, []);
@@ -47,7 +55,11 @@ const TransferHistory = () => {
   return (
     <div className="mx-auto mt-5 w-[80%] h-fit py-10 border border-gray-700 rounded-xl">
       <Table>
-        <TableCaption>A list of your recent transfers.</TableCaption>
+        {loading && (
+          <TableCaption>
+            <Spinner />A list of your recent transfers.
+          </TableCaption>
+        )}
         <TableHeader>
           <TableRow>
             <TableHead className="w-25 text-white">Amount</TableHead>
@@ -58,8 +70,7 @@ const TransferHistory = () => {
         </TableHeader>
         <TableBody>
           {transactions.map((item: Transactions) => (
-            <TableRow className="text-white"
-            key={item.id}>
+            <TableRow className="text-white" key={item.id}>
               <TableCell
                 key={item.id}
                 className="text-white flex justify-between px-5"
