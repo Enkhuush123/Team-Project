@@ -14,14 +14,6 @@ export const ChatbotPage = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ auto-scroll target
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  // ✅ auto-scroll when messages / loading changes
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading, open]);
-
   const handleSend = async () => {
     if (!input.trim() || loading) return;
 
@@ -88,34 +80,9 @@ export const ChatbotPage = () => {
       </button>
 
       {open && (
-        <div
-          className={[
-            "mt-4 w-[360px] h-[520px] flex flex-col overflow-hidden rounded-2xl",
-            "bg-black/70 border border-white/10 backdrop-blur-xl",
-            "shadow-[0_20px_60px_rgba(99,102,241,0.18)]",
-          ].join(" ")}
-        >
-          {/* ✅ Header */}
-          <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                <Bot className="h-5 w-5 text-white/80" />
-              </div>
-              <div>
-                <div className="text-white font-semibold leading-tight">
-                  AI Chatbot
-                </div>
-                <div className="text-white/55 text-xs">UI • mock style</div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setOpen(false)}
-              className="h-9 w-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:bg-white/10 transition"
-              aria-label="Close chatbot"
-            >
-              <X className="h-4 w-4" />
-            </button>
+        <div className="mt-4 w-80 h-125 bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden">
+          <div className="bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 text-white px-4 py-3 font-semibold">
+            AI Chatbot
           </div>
 
           {/* ✅ Messages */}
@@ -163,13 +130,9 @@ export const ChatbotPage = () => {
                 </div>
               </div>
             )}
-
-            {/* ✅ auto-scroll anchor */}
-            <div ref={messagesEndRef} />
           </div>
 
-          {/* ✅ Input */}
-          <div className="p-3 border-t border-white/10 flex gap-2">
+          <div className="p-2 border-t flex gap-2">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
