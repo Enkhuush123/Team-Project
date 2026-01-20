@@ -143,7 +143,10 @@ export default function Post() {
             />
           </div>
 
+<<<<<<< Updated upstream
           {/* Upload */}
+=======
+>>>>>>> Stashed changes
           <div className="space-y-2">
             <label className="text-white/80 text-sm font-medium">
               Image (optional)
