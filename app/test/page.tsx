@@ -104,7 +104,6 @@ export default function TestPage() {
   const [onlyWithUrl, setOnlyWithUrl] = useState(false);
   const [onlyWithShot, setOnlyWithShot] = useState(false);
 
-  // ✅ Dialog оронд — Selected card
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
@@ -124,14 +123,12 @@ export default function TestPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* glow bg */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
 
       <div className="relative mx-auto w-full max-w-7xl px-6 md:px-10 py-10 space-y-6">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
@@ -148,7 +145,6 @@ export default function TestPage() {
             </p>
           </div>
 
-          {/* Filters */}
           <GlassCard className="p-3">
             <div className="flex items-center gap-2 text-white/70 text-sm px-1">
               <Filter className="h-4 w-4" />
@@ -174,13 +170,9 @@ export default function TestPage() {
           </GlassCard>
         </div>
 
-        {/* Recommended (existing style) */}
-
-        {/* ✅ Selected detail panel (Dialog биш) */}
         {selected && (
           <GlassCard className="p-5 md:p-6">
             <div className="flex flex-col lg:flex-row gap-6">
-              {/* Left: info */}
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
@@ -233,7 +225,6 @@ export default function TestPage() {
                   </button>
                 </div>
 
-                {/* actions (front-end only) */}
                 <div className="mt-5 flex flex-col sm:flex-row gap-2">
                   <Button
                     className="h-11 text-white font-semibold bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-[0_10px_28px_rgba(79,70,229,0.35)] hover:brightness-110"
@@ -254,7 +245,6 @@ export default function TestPage() {
                 </div>
               </div>
 
-              {/* Right: screenshot */}
               <div className="w-full lg:w-[420px]">
                 <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
                   {selected.screenshot ? (
@@ -274,7 +264,6 @@ export default function TestPage() {
           </GlassCard>
         )}
 
-        {/* Cards grid */}
         {filtered.length > 0 && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((p) => (
