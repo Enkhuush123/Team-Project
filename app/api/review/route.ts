@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
       update: { name: clerk.fullName ?? undefined },
       create: {
         clerkId,
-        email: clerk.emailAddresses?.[0]?.emailAddress ?? "unknown@temp.com",
+        email: clerk.emailAddresses?.[0]?.emailAddress,
         name: clerk.fullName ?? null,
       },
       select: { id: true, clerkId: true, points: true },
@@ -163,7 +163,6 @@ export async function POST(req: NextRequest) {
 
         reviewerPoints = updatedReviewer.points;
 
-        // ✅ clerkId-р log хийх (schema чинь clerkId reference)
         await tx.pointTransfer.create({
           data: {
             fromUserId: website.user!.clerkId,
