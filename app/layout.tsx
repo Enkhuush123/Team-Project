@@ -6,9 +6,10 @@ import { ClerkProvider } from "@clerk/nextjs";
 
 import Header from "./components/header";
 
-import { CreateUser } from "./components/createUser";
 import { ChatbotPage } from "./components/chatbot";
 import { PointsProvider } from "./providers/PointProvider";
+import { CreateUser } from "./components/createUser";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,6 +21,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+
+
 export const metadata: Metadata = {
   title: "Software Community",
   description: "Test your WebSite & developer communtiy",
@@ -29,7 +32,9 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>)
+
+ {
   return (
     <html lang="en">
       <body
