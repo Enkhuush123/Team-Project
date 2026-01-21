@@ -8,13 +8,14 @@ export async function POST(req: NextRequest) {
     if (!userId) {
       return NextResponse.json({ message: "not signed in" }, { status: 401 });
     }
+
     const user = await currentUser();
     if (!user) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return new NextResponse("User not found", { status: 404 });
     }
 
     const body = await req.json();
-    const { title, description, link, screenshot } = body;
+    const { title, description, link, image } = body;
 
     if (!title || !description) {
       return NextResponse.json(
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await prisma.user.upsert({
+    const dbUser = await prisma.user.upsert({
       where: { id: userId },
       update: {},
       create: {
@@ -39,14 +40,43 @@ export async function POST(req: NextRequest) {
         title,
         description,
         link: link || "",
-        userId: user.id,
-        screenshot,
+        userId: dbUser.id,
+        imageUrl: image || null,
       },
     });
 
     return NextResponse.json({ message: "success", website }, { status: 201 });
   } catch (err) {
     console.error("WEBSITE POST ERROR:", err);
+    return NextResponse.json({ message: "FAILED" }, { status: 500 });
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const websites = await prisma.website.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: { name: true, email: true },
+        },
+      },
+    });
+
+    const data = websites.map((w) => ({
+      id: w.id,
+      title: w.title,
+      description: w.description,
+      url: w.link || null,
+      imageUrl: w.imageUrl || null,
+      status: "OPEN",
+      user: w.user ? { name: w.user.name, email: w.user.email } : null,
+      createdAt: w.createdAt,
+    }));
+
+    return NextResponse.json({ websites: data }, { status: 200 });
+  } catch (err) {
+    console.error("WEBSITE GET ERROR:", err);
     return NextResponse.json({ message: "FAILED" }, { status: 500 });
   }
 }

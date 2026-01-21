@@ -14,10 +14,8 @@ export const ChatbotPage = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ auto-scroll target
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // ✅ auto-scroll when messages / loading changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading, open]);
@@ -69,7 +67,6 @@ export const ChatbotPage = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      {/* ✅ Floating Button (your design) */}
       <button
         onClick={() => setOpen((p) => !p)}
         className={[
@@ -95,7 +92,6 @@ export const ChatbotPage = () => {
             "shadow-[0_20px_60px_rgba(99,102,241,0.18)]",
           ].join(" ")}
         >
-          {/* ✅ Header */}
           <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-9 w-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
@@ -118,7 +114,6 @@ export const ChatbotPage = () => {
             </button>
           </div>
 
-          {/* ✅ Messages */}
           <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm">
             {messages.length === 0 && !loading && (
               <div className="text-center text-white/45 mt-10">
@@ -164,11 +159,9 @@ export const ChatbotPage = () => {
               </div>
             )}
 
-            {/* ✅ auto-scroll anchor */}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* ✅ Input */}
           <div className="p-3 border-t border-white/10 flex gap-2">
             <input
               value={input}

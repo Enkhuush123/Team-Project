@@ -17,6 +17,10 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { points } = usePoints();
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin")
+  console.log("PATNAME:", isAdmin)
+  
+
 
   const nav = [
     { label: "Home", href: "/" },
@@ -31,7 +35,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl">
+    <header className={`${isAdmin === true ? "hidden" : "sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl "}`}>
       <div className="mx-auto w-full max-w-8xl px-4 md:px-8">
         <div className="h-14 md:h-16 grid grid-cols-[1fr_auto_1fr] items-center">
           <div className="flex items-center justify-start min-w-0">
