@@ -72,7 +72,7 @@ export default function SubmitPage() {
     const file = event.target.files[0];
     try {
       const url = await uploadToCloudinary(file);
-      setFormData({ ...formData, screenshot: url });
+      setFormData({ ...formData, screenshot: url ?? "" });
     } catch (err) {
       console.log(err);
     }
@@ -91,7 +91,7 @@ export default function SubmitPage() {
         title: formData.title,
         description: formData.description,
         link: formData.link,
-        screenshot: formData.screenshot,
+        image: formData.screenshot,
       }),
     });
     const data = await res.json();
@@ -246,7 +246,7 @@ export default function SubmitPage() {
                     <label className="block text-sm font-medium text-white/80 mb-2">
                       Screenshot
                     </label>
-                    <div className="relative">
+                    <div className="relative flex items-center">
                       <ImgIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                       <input
                         type="file"
@@ -255,7 +255,7 @@ export default function SubmitPage() {
                         placeholder="https://example.com/screenshot.png"
                         className="h-11 pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40
                                  focus-visible:ring-0 focus-visible:border-white/30
-                                 transition hover:border-white/25 w-full"
+                                 transition hover:border-white/25 w-full "
                       />
                     </div>
                   </div>
