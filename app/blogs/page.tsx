@@ -9,6 +9,9 @@ import {
   ArrowBigUp,
   ArrowBigDown,
 } from "lucide-react";
+import { NextResponse } from "next/server";
+import { set } from "zod";
+import { Comme } from "next/font/google";
 
 type Blog = {
   id: string;
@@ -18,10 +21,134 @@ type Blog = {
   link?: string | null;
 };
 
+type CommentItem = {
+  id: string;
+  content: string;
+  createdAt: string;
+  user: {
+    name?: string | null;
+    email?: string | null;
+    imageUrl: string | null;
+  };
+};
+function CommentSection({ blogId }: { blogId: string }) {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [content, setContent] = useState("");
+  const [comments, setComments] = useState<CommentItem[]>([]);
+  const load = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/comment?blogId=${blogId}`);
+      const data = await res.json();
+      setComments(data.comments ?? []);
+
+      setLoading(false);
+    } catch (err) {
+      return NextResponse.json(
+        { message: "Failed to fetch comments" },
+        { status: 500 }
+      );
+    }
+  };
+  const onToggle = async () => {
+    const next = !open;
+    setOpen(next);
+    if (next) await load();
+  };
+  const submit = async () => {
+    if (!content.trim()) return;
+    setSending(true);
+    try {
+      const res = await fetch("/api/comment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId, content }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "failed");
+        return;
+      }
+      setComments((prev) => [data.comment, ...prev]);
+      setContent("");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="text-white/70 hover:text-white transition text-sm"
+      >
+        {open ? "Hide Comments" : "Show Comments"}
+      </button>
+      {open && (
+        <div>
+          <div>
+            <input
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Write a comment"
+              className="flex h-10 rounded-xl bg-black/30 border border-white/10 px-3  text-white outline-0"
+            />
+            <button
+              type="button"
+              onClick={submit}
+              disabled={sending}
+              className="h-10 px-4 rounded-xl bg-white/10 border border-white/10 text-white hover:bg-white/15 transition"
+            >
+              {sending ? "..." : "Post"}
+            </button>
+          </div>
+          {loading ? (
+            <div>Loading...</div>
+          ) : comments.length === 0 ? (
+            <div>No comments yet</div>
+          ) : (
+            <div className="flex flex-col gap-5">
+              {comments.map((c) => (
+                <div
+                  key={c.id}
+                  className="flex gap-3 items-center  rounded-xl bg-white/5 border border-white/10 p-3 w-full"
+                >
+                  <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40 ">
+                    {c.user.imageUrl ? (
+                      <Image
+                        src={c.user.imageUrl}
+                        alt="avatar"
+                        fill
+                        className="object-cover"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="w-full">
+                    <div className="font-bold">
+                      {c.user.name || c.user.email || "Anonymous"}
+                    </div>
+                    <div className="flex  justify-between ">
+                      <div>{c.content}</div>
+                      <div>{new Date(c.createdAt).toLocaleString()}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Blogs() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [votes, setVotes] = useState<Record<string, number>>({});
   const [myVote, setMyVote] = useState<Record<string, 1 | -1 | 0>>({});
+  const [openCommentsFor, setOpenCommentsFor] = useState<string | null>(null);
 
   useEffect(() => {
     const getBlogs = async () => {
@@ -159,6 +286,11 @@ export default function Blogs() {
                     <button
                       className="flex items-center gap-2 text-white/60 hover:text-white transition"
                       type="button"
+                      onClick={() =>
+                        setOpenCommentsFor((prev) =>
+                          prev === item.id ? null : item.id
+                        )
+                      }
                     >
                       <MessageCircle className="h-4 w-4" />
                       <span className="text-sm">Comment</span>
@@ -181,6 +313,10 @@ export default function Blogs() {
                     <span className="text-sm">Save</span>
                   </button>
                 </div>
+
+                {openCommentsFor === item.id && (
+                  <CommentSection blogId={item.id} />
+                )}
 
                 {item.link && (
                   <div className="mt-4">
