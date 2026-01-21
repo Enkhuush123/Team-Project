@@ -26,7 +26,7 @@ export default function Header() {
     { label: "Home", href: "/" },
     { label: "User Test", href: "/test" },
     { label: "Blog", href: "/blogs" },
-    { label: "IT News", href: "/news" },
+    { label: "IT News", href: "/itnews" },
   ];
 
   const isActive = (href: string) => {
