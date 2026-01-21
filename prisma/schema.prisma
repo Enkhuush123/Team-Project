@@ -18,6 +18,7 @@ model User {
   email   String  @unique
   name    String?
   role    Role    @default(USER)
+  imageUrl String?
 
   points           Int                @default(0)
   pointTransaction PointTransaction[]
