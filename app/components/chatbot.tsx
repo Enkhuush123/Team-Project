@@ -101,7 +101,7 @@ export const ChatbotPage = () => {
                 <div className="text-white font-semibold leading-tight">
                   AI Chatbot
                 </div>
-                <div className="text-white/55 text-xs">UI • mock style</div>
+                <div className="text-white/55 text-xs"></div>
               </div>
             </div>
 
@@ -115,10 +115,8 @@ export const ChatbotPage = () => {
           </div>
 
           <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm">
-            {messages.length === 0 && !loading && (
-              <div className="text-center text-white/45 mt-10">
-                Message бичээд эхлээрэй 👋
-              </div>
+            {messages.length === 0 && (
+              <div className="text-center text-gray-400 mt-6"></div>
             )}
 
             {messages.map((m, i) => (
@@ -167,7 +165,7 @@ export const ChatbotPage = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Message бич..."
+              placeholder="ask a quistion..."
               disabled={loading}
               className={[
                 "flex-1 h-10 rounded-xl px-3 text-sm outline-none",
