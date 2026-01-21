@@ -17,6 +17,10 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { points } = usePoints();
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin")
+  console.log("PATNAME:", isAdmin)
+  
+
 
   const nav = [
     { label: "Home", href: "/" },
@@ -31,7 +35,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl">
+    <header className={`${isAdmin === true ? "hidden" : "sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl "}`}>
       <div className="mx-auto w-full max-w-8xl px-4 md:px-8">
         <div className="h-14 md:h-16 grid grid-cols-[1fr_auto_1fr] items-center">
           <div className="flex items-center justify-start min-w-0">
@@ -41,7 +45,7 @@ export default function Header() {
               type="button"
             >
               <span className="font-extrabold tracking-tight">
-                <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(99,102,241,0.35)] text-xl md:text-2xl">
+                <span className="bg-linear-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(99,102,241,0.35)] text-xl md:text-2xl">
                   Software
                 </span>{" "}
                 <span className="text-white/90 text-lg md:text-xl">
@@ -66,7 +70,7 @@ export default function Header() {
                 >
                   {item.label}
                   {active && (
-                    <span className="absolute -bottom-1 left-0 right-0 h-[3px] rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500" />
+                    <span className="absolute -bottom-1 left-0 right-0 h-0.75 rounded-full bg-linear-to-r from-cyan-400 via-blue-500 to-violet-500" />
                   )}
                 </button>
               );
@@ -88,7 +92,7 @@ export default function Header() {
 
             <SignedOut>
               <SignInButton>
-                <Button className="h-9 md:h-10 px-4 md:px-5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-[0_10px_26px_rgba(79,70,229,0.30)] hover:brightness-110">
+                <Button className="h-9 md:h-10 px-4 md:px-5 rounded-xl text-sm font-semibold text-white bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-[0_10px_26px_rgba(79,70,229,0.30)] hover:brightness-110">
                   Login
                 </Button>
               </SignInButton>
@@ -111,7 +115,7 @@ export default function Header() {
                     group h-9 md:h-10 px-3 md:px-4 rounded-xl
                     flex items-center gap-2
                     border border-yellow-400/30
-                    bg-gradient-to-r from-yellow-400/10 via-amber-400/10 to-orange-400/10
+                    bg-linear-to-r from-yellow-400/10 via-amber-400/10 to-orange-400/10
                     hover:border-yellow-300/60
                     hover:bg-yellow-400/15
                     transition
