@@ -59,8 +59,8 @@ export default function Report() {
   return (
     <main className="relative min-h-[calc(100vh-56px)] w-full bg-black">
       <div className="pointer-events-none fixed inset-0">
-        <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
-        <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
+        <div className="absolute -top-40 -left-40 h-130 w-130 rounded-full bg-indigo-500/25 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-105 w-105 rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
 
       <div className="relative mx-auto w-full max-w-4xl px-6 md:px-10 py-10">
@@ -72,12 +72,12 @@ export default function Report() {
             </div>
 
             <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">
-              <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(99,102,241,0.45)]">
+              <span className="bg-linear-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(99,102,241,0.45)]">
                 Report an Issue
               </span>
             </h1>
 
-            <div className="mt-3 h-[2px] w-28 bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 rounded-full opacity-80" />
+            <div className="mt-3 h-0.2 w-28 bg-linear-to-r from-cyan-400 via-blue-500 to-violet-500 rounded-full opacity-80" />
 
             <p className="mt-4 text-white/70">
               Found a bug, user issue, or content problem? Submit a report here.
@@ -126,7 +126,7 @@ export default function Report() {
                     Description *
                   </label>
                   <textarea
-                    className="w-full min-h-[140px] rounded-xl px-4 py-3 resize-none
+                    className="w-full min-h-35 rounded-xl px-4 py-3 resize-none
                                bg-white/5 border border-white/15 text-white
                                placeholder:text-white/35 outline-none
                                focus-visible:border-white/30 transition hover:border-white/25"
@@ -157,7 +157,7 @@ export default function Report() {
                   <button
                     onClick={handleSubmit}
                     className="h-11 px-6 rounded-xl font-semibold text-white
-                               bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600
+                               bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600
                                shadow-[0_10px_28px_rgba(79,70,229,0.35)]
                                hover:brightness-110 active:scale-[0.98] transition
                                inline-flex items-center justify-center"

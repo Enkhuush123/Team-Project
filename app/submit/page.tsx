@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  CheckCircle2,
   Circle,
   Globe,
   Image as ImgIcon,
@@ -13,7 +12,7 @@ import {
   ArrowRight,
   X,
 } from "lucide-react";
-import { title } from "node:process";
+
 import Image from "next/image";
 
 const UPLOAD_PRESET = "softwarecom";
