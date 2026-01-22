@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 type User = {
   points: number;
@@ -59,8 +60,10 @@ const TransferPointsDialog = () => {
   const [description, setDescription] = useState("");
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [loadingTransfer, setLoadingTransfer] = useState(false);
 
   const handlePointTransfer = async () => {
+    setLoadingTransfer(true);
     const res = await fetch("/api/points/transfer", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -74,6 +77,11 @@ const TransferPointsDialog = () => {
     const data = await res.json();
 
     console.log(data);
+    setLoadingTransfer(false);
+
+    setEmail("");
+    setAmount(0);
+    setDescription("");
 
     setDialogOpen(false);
   };
@@ -116,11 +124,14 @@ const TransferPointsDialog = () => {
           placeholder="Write a description"
           className="border border-white rounded-sm px-2 placeholder:text-gray-500"
         />
-        <div
-          onClick={handlePointTransfer}
-          className="w-full border text-center border-gray-500 p-1 rounded-sm"
-        >
-          Send Points
+        <div className="flex items-center gap-2">
+          <div
+            onClick={handlePointTransfer}
+            className="w-full border text-center border-gray-500 p-1 rounded-sm cursor-pointer"
+          >
+            Send Points
+          </div>
+          {loadingTransfer && <Spinner />}
         </div>
       </DialogContent>
     </Dialog>
