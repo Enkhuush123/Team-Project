@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  format,
+  formatDistance,
+  formatDistanceToNow,
+  formatRelative,
+  subDays,
+} from "date-fns";
+
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
@@ -48,7 +56,7 @@ function CommentSection({ blogId }: { blogId: string }) {
     } catch (err) {
       return NextResponse.json(
         { message: "Failed to fetch comments" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   };
@@ -77,6 +85,7 @@ function CommentSection({ blogId }: { blogId: string }) {
       setLoading(false);
     }
   };
+
   return (
     <div>
       <button
@@ -131,7 +140,11 @@ function CommentSection({ blogId }: { blogId: string }) {
                     </div>
                     <div className="flex  justify-between ">
                       <div>{c.content}</div>
-                      <div>{new Date(c.createdAt).toLocaleString()}</div>
+                      <div>
+                        {formatDistanceToNow(new Date(c.createdAt), {
+                          addSuffix: true,
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -288,7 +301,7 @@ export default function Blogs() {
                       type="button"
                       onClick={() =>
                         setOpenCommentsFor((prev) =>
-                          prev === item.id ? null : item.id
+                          prev === item.id ? null : item.id,
                         )
                       }
                     >
