@@ -43,7 +43,7 @@ export default function TestPage() {
 
     const res = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-      { method: "POST", body: formDataCloudinary }
+      { method: "POST", body: formDataCloudinary },
     );
 
     const data = await res.json();
@@ -51,7 +51,7 @@ export default function TestPage() {
   };
 
   const handleBugImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -68,14 +68,17 @@ export default function TestPage() {
     }
   };
 
-  const submitBug = async (e: React.FormEvent, websiteId: string) => {
+  const submitBug = async (
+    e: React.FormEvent<HTMLFormElement>,
+    websiteId: string,
+  ) => {
     e.preventDefault();
 
     const res = await fetch("/api/review", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        websiteId: activeWebsiteId,
+        websiteId: websiteId,
         description: bug.description,
         screenshotUrl: bug.screenshot || null,
       }),
@@ -102,12 +105,12 @@ export default function TestPage() {
   }, []);
 
   return (
-    <div className="bg-black min-h-screen p-10">
+    <div className="bg-black min-h-screen p-10 w-full">
       <h1 className="text-white text-2xl font-bold mb-6">Lets Test</h1>
 
       {project.length === 0 && <p className="text-white/60">No</p>}
 
-      <div className="space-y-10">
+      <div className="space-y-10 w-130  grid-row-3 grid">
         {project.map((p) => (
           <div
             key={p.id}
@@ -157,8 +160,8 @@ export default function TestPage() {
                   </Button>
                 </DialogTrigger>
 
-                <DialogContent className="sm:max-w-[520px] bg-[#0b0b0f] border border-white/10 text-white">
-                  <form onSubmit={submitBug}>
+                <DialogContent className="sm:max-w-130 bg-[#0b0b0f] border border-white/10 text-white">
+                  <form onSubmit={(e) => submitBug(e, p.id)}>
                     <DialogHeader>
                       <DialogTitle>Submit Bug</DialogTitle>
                     </DialogHeader>
