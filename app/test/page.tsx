@@ -68,14 +68,17 @@ export default function TestPage() {
     }
   };
 
-  const submitBug = async (e: React.FormEvent, websiteId: string) => {
+  const submitBug = async (
+    e: React.FormEvent<HTMLFormElement>,
+    websiteId: string,
+  ) => {
     e.preventDefault();
 
     const res = await fetch("/api/review", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        websiteId: activeWebsiteId,
+        websiteId: websiteId,
         description: bug.description,
         screenshotUrl: bug.screenshot || null,
       }),
@@ -157,8 +160,13 @@ export default function TestPage() {
                   </Button>
                 </DialogTrigger>
 
-                <DialogContent className="sm:max-w-[520px] bg-[#0b0b0f] border border-white/10 text-white">
-                  <form onSubmit={submitBug}>
+                <DialogContent className="sm:max-w-130 bg-[#0b0b0f] border border-white/10 text-white">
+                  <form
+                    onSubmit={(e) => {
+                      if (!activeWebsiteId) return;
+                      void submitBug(e, activeWebsiteId);
+                    }}
+                  >
                     <DialogHeader>
                       <DialogTitle>Submit Bug</DialogTitle>
                     </DialogHeader>
@@ -175,7 +183,6 @@ export default function TestPage() {
                             }))
                           }
                           className="w-full h-28 rounded-xl bg-white/5 border border-white/15 outline-0 p-3 text-white"
-                          placeholder="Юу буруу байна? Аль page дээр? Яаж reproduce хийх вэ?"
                           required
                         />
                       </div>
