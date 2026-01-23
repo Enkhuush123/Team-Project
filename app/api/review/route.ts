@@ -3,6 +3,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
+import { ReviewStatus } from "@prisma/client";
 
 export const runtime = "nodejs";
 
@@ -65,7 +66,8 @@ Screenshot: ${input.screenshotUrl ?? "none"}
     },
   });
 
-  const parsed = JSON.parse(res.text);
+  const rawText = res.text ?? "{}";
+  const parsed = JSON.parse(rawText);
   return BugVerdictSchema.parse(parsed);
 }
 
@@ -88,7 +90,7 @@ export async function POST(req: NextRequest) {
     if (!websiteId || !description?.trim()) {
       return NextResponse.json(
         { message: "Missing websiteId/description" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -109,14 +111,16 @@ export async function POST(req: NextRequest) {
         id: true,
         link: true,
         userId: true,
-        user: { select: { id: true, clerkId: true, points: true, email: true } },
+        user: {
+          select: { id: true, clerkId: true, points: true, email: true },
+        },
       },
     });
 
     if (!website)
       return NextResponse.json(
         { message: "Website not found" },
-        { status: 404 }
+        { status: 404 },
       );
 
     const verdict = await geminiValidateBug({
@@ -131,7 +135,7 @@ export async function POST(req: NextRequest) {
     if (reward > 0 && (website.user?.points ?? 0) < reward) {
       return NextResponse.json(
         { message: "Website owner does not have enough points to reward" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -141,7 +145,7 @@ export async function POST(req: NextRequest) {
           description,
           screenshotUrl: screenshotUrl ?? null,
           geminiConfidence: Math.round(verdict.confidence),
-          status: status as any,
+          status: status as ReviewStatus,
           websiteId: website.id,
           reviewerId: reviewer.id,
         },
@@ -186,7 +190,7 @@ export async function POST(req: NextRequest) {
         reviewerPoints: result.reviewerPoints,
         ai: result.verdict,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err) {
     console.error("REVIEW POST ERROR:", err);
