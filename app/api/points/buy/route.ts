@@ -40,7 +40,20 @@ export async function POST(req: NextRequest) {
         },
         select: { points: true },
       });
+
+
     });
+
+    await prisma.pointTransfer.create({
+      data: {
+        fromUserEmail: "softwarecom1234@gmail.com",
+        toUserId: userId,
+        toUserEmail: user.emailAddresses[0].emailAddress,
+        amount: total,
+        description: "Purchase confirmed"
+      }
+    })
+
     return NextResponse.json({ message: "ok", points: updated.points });
   } catch (err) {
     return NextResponse.json({ message: "Error" }, { status: 400 });
