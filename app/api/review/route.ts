@@ -3,6 +3,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
+import { ReviewStatus } from "@prisma/client";
 
 export const runtime = "nodejs";
 
@@ -65,7 +66,8 @@ Screenshot: ${input.screenshotUrl ?? "none"}
     },
   });
 
-  const parsed = JSON.parse(res.text);
+  const rawText = res.text ?? "{}";
+  const parsed = JSON.parse(rawText);
   return BugVerdictSchema.parse(parsed);
 }
 
@@ -100,7 +102,7 @@ export async function POST(req: NextRequest) {
         email: clerk.emailAddresses?.[0]?.emailAddress,
         name: clerk.fullName ?? null,
       },
-      select: { id: true, clerkId: true, points: true },
+      select: { id: true, clerkId: true, points: true, email: true },
     });
 
     const website = await prisma.website.findUnique({
@@ -109,7 +111,9 @@ export async function POST(req: NextRequest) {
         id: true,
         link: true,
         userId: true,
-        user: { select: { id: true, clerkId: true, points: true } },
+        user: {
+          select: { id: true, clerkId: true, points: true, email: true },
+        },
       },
     });
 
@@ -141,7 +145,7 @@ export async function POST(req: NextRequest) {
           description,
           screenshotUrl: screenshotUrl ?? null,
           geminiConfidence: Math.round(verdict.confidence),
-          status: status as any,
+          status: status as ReviewStatus,
           websiteId: website.id,
           reviewerId: reviewer.id,
         },
@@ -166,7 +170,9 @@ export async function POST(req: NextRequest) {
         await tx.pointTransfer.create({
           data: {
             fromUserId: website.user!.clerkId,
+            fromUserEmail: website.user.email,
             toUserId: reviewer.clerkId,
+            toUserEmail: reviewer.email,
             amount: reward,
             description: `Bug reward (${verdict.severity})`,
           },
