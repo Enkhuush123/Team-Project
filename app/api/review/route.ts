@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
         email: clerk.emailAddresses?.[0]?.emailAddress,
         name: clerk.fullName ?? null,
       },
-      select: { id: true, clerkId: true, points: true },
+      select: { id: true, clerkId: true, points: true, email: true },
     });
 
     const website = await prisma.website.findUnique({
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
         id: true,
         link: true,
         userId: true,
-        user: { select: { id: true, clerkId: true, points: true } },
+        user: { select: { id: true, clerkId: true, points: true, email: true } },
       },
     });
 
@@ -166,7 +166,9 @@ export async function POST(req: NextRequest) {
         await tx.pointTransfer.create({
           data: {
             fromUserId: website.user!.clerkId,
+            fromUserEmail: website.user.email,
             toUserId: reviewer.clerkId,
+            toUserEmail: reviewer.email,
             amount: reward,
             description: `Bug reward (${verdict.severity})`,
           },
