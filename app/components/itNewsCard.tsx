@@ -3,39 +3,35 @@
 import { useEffect, useMemo, useState } from "react";
 import { Newspaper, RefreshCcw, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 
-type News = {
-  id: string;
+type NewsItem = {
   title: string;
-  summary: string;
-  image: string;
-  source: string;
+  time: string;
+  tag: string;
+  url: string;
 };
 
 export default function ItNewsCard() {
-  const [news, setNews] = useState<News[]>([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+
+  const fetchNews = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/news?limit=8", { cache: "no-store" });
+      const data = await res.json();
+      setNews(data.items || []);
+    } catch (e) {
+      console.error(e);
+      setNews([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const res = await fetch("/api/ItNews");
-        if (!res.ok) throw new Error("Failed to fetch news");
-
-        const data: News[] = await res.json();
-        setNews(data);
-      } catch (err) {
-        console.error("NEWS FETCH ERROR:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchNews();
   }, []);
-  console.log("NEWS DATA:", news);
 
   return (
     <div className="h-full rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl overflow-hidden shadow-[0_20px_60px_rgba(99,102,241,0.10)]">
@@ -57,6 +53,7 @@ export default function ItNewsCard() {
         <Button
           variant="secondary"
           className="h-9 bg-white/10 text-white border border-white/15 hover:bg-white/15"
+          onClick={fetchNews}
           disabled={loading}
         >
           <RefreshCcw
@@ -70,41 +67,31 @@ export default function ItNewsCard() {
         <div className="rounded-xl bg-linear-to-br from-white/6 to-white/3 border border-white/10 p-4">
           <div className="text-white/80 font-medium">Today</div>
 
-          <div className="mt-3 space-y-3 ">
+          <div className="mt-3 space-y-3">
             {news.map((n, idx) => (
-              <button
+              <a
                 key={idx}
-                onClick={() => router.push(`/readmore/${n.id}`)}
+                href={n.url}
+                target="_blank"
                 rel="noreferrer"
-                className="block rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition w-full"
+                className="block rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex flex-col gap-5">
-                    <div className="text-white/90 text-sm font-medium leading-snug line-clamp-2 ">
-                      {n.title}
-                    </div>
-                    <div className="w-full">
-                      <img
-                        src={n.image}
-                        alt={n.title}
-                        className="h-48 w-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/no-image.png";
-                        }}
-                      />
-                    </div>
+                  <div className="text-white/90 text-sm font-medium leading-snug line-clamp-2">
+                    {n.title}
                   </div>
                   <span className="shrink-0 text-[11px] text-white/60 rounded-full bg-white/5 border border-white/10 px-2 py-1">
-                    {n.source}
+                    {n.tag}
                   </span>
                 </div>
 
                 <div className="mt-2 flex items-center justify-between text-xs text-white/50">
+                  <span>{n.time}</span>
                   <span className="inline-flex items-center gap-1 text-white/60">
                     Open <ArrowUpRight className="h-3.5 w-3.5" />
                   </span>
                 </div>
-              </button>
+              </a>
             ))}
 
             {!loading && news.length === 0 && (
