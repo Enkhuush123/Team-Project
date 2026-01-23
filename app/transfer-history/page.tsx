@@ -16,7 +16,9 @@ type Transactions = {
   id: string;
   amount: number;
   fromUserId: string;
+  fromUserEmail: string;
   description: string;
+  toUserId: string;
   toUserEmail: string;
   createdAt: string;
 };
@@ -32,6 +34,7 @@ const TransferHistory = () => {
       const res = await fetch("/api/user", { method: "GET" });
       const data = await res.json();
       setUserId(data.id);
+      console.log(data);
     };
 
     getUserData();
@@ -64,7 +67,7 @@ const TransferHistory = () => {
           <TableRow>
             <TableHead className="w-25 text-white">Amount</TableHead>
             <TableHead className="text-white">Description</TableHead>
-            <TableHead className="text-white">Recipent</TableHead>
+            <TableHead className="text-white">Recipent/Sender</TableHead>
             <TableHead className="text-white">Time</TableHead>
           </TableRow>
         </TableHeader>
@@ -88,7 +91,11 @@ const TransferHistory = () => {
                 <p>{item.description}</p>
               </TableCell>
               <TableCell>
-                <p>{item.toUserEmail}</p>
+                <p>
+                  {item.toUserId === userId
+                    ? item.fromUserEmail
+                    : item.toUserEmail}
+                </p>
               </TableCell>
               <TableCell>
                 <p>{new Date(item.createdAt).toLocaleString()}</p>
