@@ -140,7 +140,7 @@ function CommentSection({ blogId }: { blogId: string }) {
                     </div>
                     <div className="flex  justify-between ">
                       <div>{c.content}</div>
-                      <div>
+                      <div className="text-sm text-gray-500">
                         {formatDistanceToNow(new Date(c.createdAt), {
                           addSuffix: true,
                         })}
