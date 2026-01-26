@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  format,
-  formatDistance,
-  formatDistanceToNow,
-  formatRelative,
-  subDays,
-} from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -18,8 +12,7 @@ import {
   ArrowBigDown,
 } from "lucide-react";
 import { NextResponse } from "next/server";
-import { set } from "zod";
-import { Comme } from "next/font/google";
+import next from "next";
 
 type Blog = {
   id: string;
@@ -27,6 +20,13 @@ type Blog = {
   title: string;
   description: string;
   link?: string | null;
+  user: {
+    name?: string | null;
+    email?: string | null;
+    imageUrl: string | null;
+  };
+  score: number;
+  myVote: 1 | -1 | 0;
 };
 
 type CommentItem = {
@@ -135,9 +135,7 @@ function CommentSection({ blogId }: { blogId: string }) {
                     ) : null}
                   </div>
                   <div className="w-full">
-                    <div className="font-bold">
-                      {c.user.name || c.user.email || "Anonymous"}
-                    </div>
+                    <div className="font-bold">{c.user.email}</div>
                     <div className="flex  justify-between ">
                       <div>{c.content}</div>
                       <div>
@@ -182,24 +180,31 @@ export default function Blogs() {
     getBlogs();
   }, []);
 
-  const handleVote = (id: string, dir: 1 | -1) => {
-    setVotes((prev) => {
-      const current = prev[id] ?? 0;
-      const mine = myVote[id] ?? 0;
+  const handleVote = async (blogId: string, dir: 1 | -1) => {
+    const current = blogs.find((b) => b.id === blogId);
+    if (!current) return;
 
-      if (mine === dir) return { ...prev, [id]: current - dir };
-
-      if (mine === -dir) return { ...prev, [id]: current + dir * 2 };
-
-      return { ...prev, [id]: current + dir };
+    const nextValue: 1 | -1 | 0 = current.myVote === dir ? 0 : dir;
+    setBlogs((prev) =>
+      prev.map((b) => {
+        if (b.id !== blogId) return b;
+        const newScore = b.score - b.myVote + nextValue;
+        return { ...b, score: newScore, myVote: nextValue };
+      }),
+    );
+    const res = await fetch("/api/blogVote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ blogId, value: nextValue }),
     });
-
-    setMyVote((prev) => {
-      const mine = prev[id] ?? 0;
-      if (mine === dir) return { ...prev, [id]: 0 };
-      return { ...prev, [id]: dir };
-    });
+    const data = await res.json();
+    setBlogs((prev) =>
+      prev.map((b) =>
+        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b,
+      ),
+    );
   };
+  console.log(blogs, "blogs");
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -225,6 +230,21 @@ export default function Blogs() {
               className="w-full overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl
                          shadow-[0_20px_60px_rgba(99,102,241,0.12)] hover:border-white/20 transition"
             >
+              <div className="flex items-center gap-5 p-2">
+                <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40 ">
+                  {item.user.imageUrl ? (
+                    <Image
+                      src={item.user.imageUrl}
+                      alt={item.user.name || "User"}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-white/10" />
+                  )}
+                </div>
+                <div>{item.user.email}</div>
+              </div>
               <div className="px-5 sm:px-6 py-4 border-b border-white/10 flex items-center justify-between">
                 <div className="min-w-0">
                   <h2 className="text-white font-extrabold text-lg sm:text-xl leading-snug truncate">
@@ -279,7 +299,7 @@ export default function Blogs() {
                       </button>
 
                       <span className="min-w-7 text-center text-sm font-semibold text-white/80 tabular-nums">
-                        {score}
+                        {item.score}
                       </span>
 
                       <button

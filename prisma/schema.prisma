@@ -19,6 +19,7 @@ model User {
   name    String?
   role    Role    @default(USER)
   imageUrl String?
+  votes   BlogVote[]
 
   points           Int                @default(0)
   pointTransaction PointTransaction[]
@@ -83,6 +84,7 @@ model Blog {
   link        String?
   imageUrl    String?
   comments    Comment[]
+  votes       BlogVote[]
   userId      String
   user        User      @relation(fields: [userId], references: [clerkId])
   createdAt   DateTime  @default(now())
@@ -149,4 +151,17 @@ enum TxType {
   PURCHASE
   BONUS
   ADJUSTMENT
+}
+
+model BlogVote {
+  id String @id @default(cuid())
+  blogId String
+  userId String
+  value Int 
+  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  uodatedAt DateTime @default(now())
+
+  @@unique([blogId, userId])
 }

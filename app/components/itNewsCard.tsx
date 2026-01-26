@@ -45,9 +45,7 @@ export default function ItNewsCard() {
             <Newspaper className="h-5 w-5 text-white/80" />
           </div>
           <div>
-            <div className="text-white font-semibold text-lg">
-              Latest IT News
-            </div>
+            <div className="text-white font-semibold text-lg">Latest News</div>
             <div className="text-white/55 text-sm">
               {loading ? "Updating..." : "Live feed"}
             </div>
