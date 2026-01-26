@@ -1,5 +1,4 @@
 "use client";
-
 import { formatDistanceToNow } from "date-fns";
 
 import Image from "next/image";
@@ -12,8 +11,6 @@ import {
   ArrowBigDown,
 } from "lucide-react";
 import { NextResponse } from "next/server";
-import next from "next";
-import { ca } from "zod/v4/locales";
 
 type Blog = {
   id: string;
@@ -156,20 +153,30 @@ function CommentSection({ blogId }: { blogId: string }) {
   );
 }
 
-export default function Blogs() {
+export default function SavedPosts() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
 
   const [openCommentsFor, setOpenCommentsFor] = useState<string | null>(null);
 
   useEffect(() => {
-    const getBlogs = async () => {
-      const res = await fetch("/api/blog");
+    const getSavedPosts = async () => {
+      const res = await fetch("/api/savedPosts", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
       const data = await res.json();
-      const arr: Blog[] = Array.isArray(data) ? data : [];
-      setBlogs(arr);
+      setBlogs(data.map((item: any) => item.blog));
+
+      console.log(data);
     };
-    getBlogs();
+
+    getSavedPosts();
   }, []);
+
+  useEffect(() => {
+    console.log(blogs, "blogsasdas");
+  }, [blogs]);
 
   const handleVote = async (blogId: string, dir: 1 | -1) => {
     const current = blogs.find((b) => b.id === blogId);
