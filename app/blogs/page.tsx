@@ -157,8 +157,7 @@ function CommentSection({ blogId }: { blogId: string }) {
 
 export default function Blogs() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [votes, setVotes] = useState<Record<string, number>>({});
-  const [myVote, setMyVote] = useState<Record<string, 1 | -1 | 0>>({});
+
   const [openCommentsFor, setOpenCommentsFor] = useState<string | null>(null);
 
   useEffect(() => {
@@ -167,15 +166,6 @@ export default function Blogs() {
       const data = await res.json();
       const arr: Blog[] = Array.isArray(data) ? data : [];
       setBlogs(arr);
-
-      const initVotes: Record<string, number> = {};
-      const initMy: Record<string, 1 | -1 | 0> = {};
-      arr.forEach((b) => {
-        initVotes[b.id] = initVotes[b.id] ?? 0;
-        initMy[b.id] = initMy[b.id] ?? 0;
-      });
-      setVotes(initVotes);
-      setMyVote(initMy);
     };
     getBlogs();
   }, []);
@@ -221,8 +211,8 @@ export default function Blogs() {
         )}
 
         {blogs.map((item) => {
-          const score = votes[item.id] ?? 0;
-          const mine = myVote[item.id] ?? 0;
+          const score = item.score;
+          const mine = item.myVote;
 
           return (
             <div
@@ -299,7 +289,7 @@ export default function Blogs() {
                       </button>
 
                       <span className="min-w-7 text-center text-sm font-semibold text-white/80 tabular-nums">
-                        {item.score}
+                        {score}
                       </span>
 
                       <button
