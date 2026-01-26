@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import CoinIcon from "../_icons/CoinIcon";
-import { FaRegCircleQuestion } from "react-icons/fa6";
+import { FaArrowDown, FaRegCircleQuestion } from "react-icons/fa6";
 import {
   SignInButton,
   SignUpButton,
@@ -12,6 +12,14 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { usePoints } from "../providers/PointProvider";
+import {
+  ArrowBigDown,
+  ArrowDown,
+  ArrowDown01,
+  ArrowDownNarrowWide,
+  ChevronDown,
+} from "lucide-react";
+import { FaRegArrowAltCircleDown } from "react-icons/fa";
 
 export default function Header() {
   const router = useRouter();
@@ -137,6 +145,13 @@ export default function Header() {
                 <div className="h-9 md:h-10 px-2 rounded-xl border border-white/10 bg-white/5 flex items-center">
                   <UserButton />
                 </div>
+
+                <button
+                  className="bg-white rounded-full"
+                  onClick={() => router.push("/savedPosts")}
+                >
+                  <ChevronDown />
+                </button>
               </div>
             </SignedIn>
           </div>
