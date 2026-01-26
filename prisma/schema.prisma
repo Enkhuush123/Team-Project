@@ -13,13 +13,13 @@ datasource db {
 }
 
 model User {
-  id      String  @id @default(cuid())
-  clerkId String  @unique
-  email   String  @unique
-  name    String?
-  role    Role    @default(USER)
+  id       String     @id @default(cuid())
+  clerkId  String     @unique
+  email    String     @unique
+  name     String?
+  role     Role       @default(USER)
   imageUrl String?
-  votes   BlogVote[]
+  votes    BlogVote[]
 
   points           Int                @default(0)
   pointTransaction PointTransaction[]
@@ -31,6 +31,8 @@ model User {
   reviews  Review[]
   comments Comment[]
   blogs    Blog[]
+
+  savedBlogs SavedBlog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -78,7 +80,7 @@ enum ReviewStatus {
 }
 
 model Blog {
-  id          String    @id @unique @default(cuid())
+  id          String      @id @unique @default(cuid())
   title       String
   description String
   link        String?
@@ -86,9 +88,21 @@ model Blog {
   comments    Comment[]
   votes       BlogVote[]
   userId      String
-  user        User      @relation(fields: [userId], references: [clerkId])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
+  user        User        @relation(fields: [userId], references: [clerkId])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())
+  savedBy     SavedBlog[]
+}
+
+model SavedBlog {
+  userId  String
+  blogId  String
+  savedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [clerkId])
+  blog Blog @relation(fields: [blogId], references: [id])
+
+  @@id([userId, blogId])
 }
 
 model Comment {
@@ -154,12 +168,12 @@ enum TxType {
 }
 
 model BlogVote {
-  id String @id @default(cuid())
-  blogId String
-  userId String
-  value Int 
-  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  blogId    String
+  userId    String
+  value     Int
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   uodatedAt DateTime @default(now())
 
