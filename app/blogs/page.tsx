@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { NextResponse } from "next/server";
 import next from "next";
+import { ca } from "zod/v4/locales";
 
 type Blog = {
   id: string;
@@ -196,6 +197,18 @@ export default function Blogs() {
   };
   console.log(blogs, "blogs");
 
+  const savePost = async (blogId: string) => {
+    try {
+      const res = await fetch("/api/savedPosts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="pointer-events-none fixed inset-0">
@@ -331,6 +344,7 @@ export default function Blogs() {
                   <button
                     className="flex items-center gap-2 text-white/60 hover:text-white transition"
                     type="button"
+                    onClick={() => savePost(item.id)}
                   >
                     <Bookmark className="h-4 w-4" />
                     <span className="text-sm">Save</span>
