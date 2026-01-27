@@ -216,6 +216,22 @@ export default function SavedPosts() {
     }
   };
 
+  const unsavePost = async (blogId: string) => {
+    try {
+      const res = await fetch("/api/savedPosts", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId }),
+      });
+
+      const data = await res.json();
+
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="pointer-events-none fixed inset-0">
@@ -349,18 +365,25 @@ export default function SavedPosts() {
                     </button>
                   </div>
 
-                  <button
-                    className={`flex items-center gap-2 transition ${
-                      mine === 1
-                        ? "text-white"
-                        : "text-white/60 hover:text-white"
-                    }`}
-                    type="button"
-                    onClick={() => savePost(item.id)}
-                  >
-                    <Bookmark className="h-4 w-4" />
-                    <span className="text-sm">Save</span>
-                  </button>
+                  {mine ? (
+                    <button
+                      className="flex items-center gap-2 transition cursor-pointer text-white hover:text-white"
+                      type="button"
+                      onClick={() => unsavePost(item.id)}
+                    >
+                      <Bookmark className="h-4 w-4" />
+                      <span className="text-sm">Unsave</span>
+                    </button>
+                  ) : (
+                    <button
+                      className="flex items-center gap-2 transition cursor-pointer text-white/60 hover:text-white"
+                      type="button"
+                      onClick={() => savePost(item.id)}
+                    >
+                      <Bookmark className="h-4 w-4" />
+                      <span className="text-sm">Save</span>
+                    </button>
+                  )}
                 </div>
 
                 {openCommentsFor === item.id && (
