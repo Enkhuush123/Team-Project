@@ -38,7 +38,11 @@ export default function Header() {
 
   return (
     <header
-      className={`${isAdmin === true ? "hidden" : "sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl "}`}
+      className={`${
+        isAdmin === true
+          ? "hidden"
+          : "sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl "
+      }`}
     >
       <div className="mx-auto w-full max-w-8xl px-4 md:px-8">
         <div className="h-14 md:h-16 grid grid-cols-[1fr_auto_1fr] items-center">
@@ -146,10 +150,18 @@ export default function Header() {
                   className="cursor-pointer"
                   onClick={() => setSettingsOpen(!settingsOpen)}
                 >
-                  <ChevronDown className="text-gray-500" />
+                  <ChevronDown
+                    className={`text-gray-500   ${
+                      settingsOpen
+                        ? "rotate-180 transition text-white"
+                        : "rotate-0 transition"
+                    }`}
+                  />
                 </button>
                 <div
-                  className={`border border-gray-500 text-white p-2 rounded-xl h-fit w-50 absolute top-16 right-5 ${settingsOpen ? "block" : "hidden"}`}
+                  className={`bg-black/70 opacity-90 border border-gray-500 text-white p-2 rounded-xl h-fit w-50 absolute top-16 right-5 ${
+                    settingsOpen ? "block" : "hidden"
+                  }`}
                 >
                   <button
                     className="cursor-pointer flex items-center w-full hover:brightness-200 transition text-sm border border-gray-500 rounded-md py-1 px-2 text-gray-300"
