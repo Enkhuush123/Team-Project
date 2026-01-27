@@ -4,7 +4,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (request: NextRequest) => {
   try {
-    const blogs = await prisma.blog.findMany();
+    const blogs = await prisma.blog.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        link: true,
+        imageUrl: true,
+        createdAt: true,
+      },
+    });
     return new NextResponse(JSON.stringify(blogs), { status: 200 });
   } catch (err) {
     console.log(err);
@@ -24,7 +34,7 @@ export const POST = async (request: NextRequest) => {
         title,
         description,
         link,
-        imageUrl : image,
+        imageUrl: image,
         userId,
       },
     });
