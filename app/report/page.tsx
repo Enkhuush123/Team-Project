@@ -66,11 +66,6 @@ export default function Report() {
       <div className="relative mx-auto w-full max-w-4xl px-6 md:px-10 py-10">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-white/80 text-sm backdrop-blur">
-              <AlertTriangle className="h-4 w-4" />
-              Мэдээлэх
-            </div>
-
             <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">
               <span className="bg-linear-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(99,102,241,0.45)]">
                 Алдаа мэдээлэх
@@ -106,7 +101,7 @@ export default function Report() {
               <div className="mt-6 space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    Гарчиг *
+                    Title *
                   </label>
                   <div className="relative">
                     <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
@@ -114,7 +109,7 @@ export default function Report() {
                       className="w-full h-11 pl-10 pr-3 rounded-xl bg-white/5 border border-white/15
                                  text-white placeholder:text-white/35 outline-none
                                  focus-visible:border-white/30 transition hover:border-white/25"
-                      placeholder=""
+                      placeholder="Write your title here..."
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                     />
@@ -123,14 +118,14 @@ export default function Report() {
 
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    Тайлбар *
+                    Description *
                   </label>
                   <textarea
                     className="w-full min-h-35 rounded-xl px-4 py-3 resize-none
                                bg-white/5 border border-white/15 text-white
                                placeholder:text-white/35 outline-none
                                focus-visible:border-white/30 transition hover:border-white/25"
-                    placeholder={``}
+                    placeholder="Describe the issue in detail..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
@@ -138,7 +133,7 @@ export default function Report() {
 
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    Имэйл (заавал биш)
+                    Email@
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />

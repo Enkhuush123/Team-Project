@@ -13,6 +13,7 @@ import {
 import { NextResponse } from "next/server";
 
 type Blog = {
+  [x: string]: string | number | Date;
   id: string;
   imageUrl?: string | null;
   title: string;
@@ -283,7 +284,9 @@ export default function SavedPosts() {
                 </div>
 
                 <span className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-                  NEW
+                  {formatDistanceToNow(new Date(item.createdAt), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
 
