@@ -168,15 +168,6 @@ export default function Blogs() {
       const data = await res.json();
       const arr: Blog[] = Array.isArray(data) ? data : [];
       setBlogs(arr);
-
-      const initVotes: Record<string, number> = {};
-      const initMy: Record<string, 1 | -1 | 0> = {};
-      arr.forEach((b) => {
-        initVotes[b.id] = initVotes[b.id] ?? 0;
-        initMy[b.id] = initMy[b.id] ?? 0;
-      });
-      setVotes(initVotes);
-      setMyVote(initMy);
     };
     getBlogs();
   }, []);
