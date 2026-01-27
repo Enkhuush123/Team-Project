@@ -12,7 +12,14 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { usePoints } from "../providers/PointProvider";
-import { ChevronDown } from "lucide-react";
+import {
+  ArrowBigDown,
+  ArrowDown,
+  ArrowDown01,
+  ArrowDownNarrowWide,
+  ChevronDown,
+} from "lucide-react";
+import { FaRegArrowAltCircleDown } from "react-icons/fa";
 
 export default function Header() {
   const router = useRouter();
@@ -20,6 +27,8 @@ export default function Header() {
   const { points } = usePoints();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin");
   console.log("PATNAME:", isAdmin);
+
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const nav = [
     { label: "Home", href: "/" },
@@ -140,11 +149,25 @@ export default function Header() {
                 </div>
 
                 <button
-                  className="bg-white rounded-full"
-                  onClick={() => router.push("/savedPosts")}
+                  className="cursor-pointer"
+                  onClick={() => setSettingsOpen(!settingsOpen)}
                 >
-                  <ChevronDown />
+                  <ChevronDown className="text-gray-500" />
                 </button>
+                <div
+                  className={`border border-gray-500 text-white p-2 rounded-xl h-fit w-50 absolute top-16 right-5 ${settingsOpen ? "block" : "hidden"}`}
+                >
+                  <button
+                    className="cursor-pointer flex items-center w-full hover:brightness-200 transition text-sm border border-gray-500 rounded-md py-1 px-2 text-gray-300"
+                    onClick={() => {
+                      router.push("/savedPosts");
+                      setSettingsOpen(false);
+                    }}
+                  >
+                    <BookmarkCheck />
+                    Saved Posts
+                  </button>
+                </div>
               </div>
             </SignedIn>
           </div>
