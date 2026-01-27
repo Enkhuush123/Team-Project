@@ -365,7 +365,7 @@ export default function SavedPosts() {
                     </button>
                   </div>
 
-                  {mine === 1 ? (
+                 
                     <button
                       className="flex items-center gap-2 transition cursor-pointer text-white hover:text-white"
                       type="button"
@@ -374,16 +374,7 @@ export default function SavedPosts() {
                       <Bookmark className="h-4 w-4" />
                       <span className="text-sm">Unsave</span>
                     </button>
-                  ) : (
-                    <button
-                      className="flex items-center gap-2 transition cursor-pointer text-white/60 hover:text-white"
-                      type="button"
-                      onClick={() => savePost(item.id)}
-                    >
-                      <Bookmark className="h-4 w-4" />
-                      <span className="text-sm">Save</span>
-                    </button>
-                  )}
+                    
                 </div>
 
                 {openCommentsFor === item.id && (
