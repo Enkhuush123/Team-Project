@@ -58,7 +58,7 @@ function CommentSection({ blogId }: { blogId: string }) {
     } catch (err) {
       return NextResponse.json(
         { message: "Failed to fetch comments" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   };
@@ -182,7 +182,7 @@ export default function Blogs() {
         if (b.id !== blogId) return b;
         const newScore = b.score - b.myVote + nextValue;
         return { ...b, score: newScore, myVote: nextValue };
-      })
+      }),
     );
     const res = await fetch("/api/blogVote", {
       method: "POST",
@@ -192,8 +192,8 @@ export default function Blogs() {
     const data = await res.json();
     setBlogs((prev) =>
       prev.map((b) =>
-        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b
-      )
+        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b,
+      ),
     );
   };
   console.log(blogs, "blogs");
@@ -234,7 +234,10 @@ export default function Blogs() {
               className="w-full overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl
                          shadow-[0_20px_60px_rgba(99,102,241,0.12)] hover:border-white/20 transition"
             >
-              <div className="flex items-center gap-5 p-2">
+              <div
+                className="flex items-center gap-3
+              font-bold p-2"
+              >
                 <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40 ">
                   {item.user.imageUrl ? (
                     <Image
@@ -327,7 +330,7 @@ export default function Blogs() {
                       type="button"
                       onClick={() =>
                         setOpenCommentsFor((prev) =>
-                          prev === item.id ? null : item.id
+                          prev === item.id ? null : item.id,
                         )
                       }
                     >
