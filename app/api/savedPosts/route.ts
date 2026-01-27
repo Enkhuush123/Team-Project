@@ -78,3 +78,28 @@ export const POST = async (req: NextRequest) => {
         return NextResponse.json(err, { status: 500 });
     }
 };
+
+export const DELETE = async (req: NextRequest) => {
+
+    const { userId } = await auth()
+    if (!userId) return new NextResponse("Unauthorized", { status: 401 })
+
+    const { blogId } = await req.json()
+
+    if (!blogId) return new NextResponse("Blog not found", { status: 400 })
+
+    try {
+        const deletedPost = await prisma.savedBlog.delete({
+            where: {
+                userId_blogId: {
+                    userId,
+                    blogId
+                }
+            }
+        })
+
+        return NextResponse.json(deletedPost, { status: 200 })
+    } catch (err) {
+        return NextResponse.json(err, { status: 500 })
+    }
+}
