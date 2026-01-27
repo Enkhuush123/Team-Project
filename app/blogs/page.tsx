@@ -348,7 +348,11 @@ export default function Blogs() {
                   </div>
 
                   <button
-                    className="flex items-center gap-2 text-white/60 hover:text-white transition"
+                    className={`flex items-center gap-2 transition ${
+                      mine === 1
+                        ? "text-white"
+                        : "text-white/60 hover:text-white"
+                    }`}
                     type="button"
                     onClick={() => savePost(item.id)}
                   >
