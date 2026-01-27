@@ -166,7 +166,7 @@ export default function SavedPosts() {
       });
 
       const data = await res.json();
-      setBlogs(data.map((item: any) => item.blog));
+      setBlogs(data);
 
       console.log(data);
     };
@@ -222,6 +222,7 @@ export default function SavedPosts() {
         <div className="absolute -top-40 -left-40 h-130 w-130 rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-105 w-105 rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
+      <p className="mt-6 ml-6 text-lg font-bold">Your Saved Posts</p>
 
       <div className="relative mx-auto w-full max-w-3xl px-4 sm:px-6 py-8 space-y-6">
         {blogs.length === 0 && (
