@@ -12,14 +12,8 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { usePoints } from "../providers/PointProvider";
-import {
-  ArrowBigDown,
-  ArrowDown,
-  ArrowDown01,
-  ArrowDownNarrowWide,
-  ChevronDown,
-} from "lucide-react";
-import { FaRegArrowAltCircleDown } from "react-icons/fa";
+import { BookmarkCheck, ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 export default function Header() {
   const router = useRouter();
