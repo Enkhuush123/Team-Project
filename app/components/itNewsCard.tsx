@@ -69,34 +69,33 @@ export default function ItNewsCard() {
         <div className="rounded-xl bg-linear-to-br from-white/6 to-white/3 border border-white/10 p-4">
           <div className="text-white/80 font-medium">Today</div>
 
-          <div className="mt-3 space-y-3 w-full ">
+          <div className="mt-3 space-y-3">
             {news.map((n, idx) => (
               <button
                 onClick={() => router.push(`/readmore/${n.id}`)}
                 key={idx}
                 rel="noreferrer"
-                className="block w-full rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
+                className="block  rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex flex-col gap-5 ">
-                    <div className="flex ">
-                      <div className="text-white/90 text-sm font-medium  line-clamp-1 flex justify-between ">
+                    <div className="flex justify-between ">
+                      <div className="text-white/90 text-sm font-medium  w-100 text-left flex justify-between ">
                         {n.title}
                       </div>
-                      <div className=" text-[11px] text-white/60 rounded-full bg-white/5 border border-white/10 p-2">
+                      <div className=" h-10 text-[11px] text-white/60 rounded-full bg-white/5 border border-white/10 p-2">
                         {n.source}
                       </div>
                     </div>
-                    <div className="w-70">
-                      <img
-                        src={n.image}
-                        alt={n.title}
-                        className="h-48 w-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/no-image.png";
-                        }}
-                      />
-                    </div>
+
+                    <img
+                      src={n.image}
+                      alt={n.title}
+                      className="h-70  w-150 object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/no-image.png";
+                      }}
+                    />
                   </div>
                 </div>
 

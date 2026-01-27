@@ -12,14 +12,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { usePoints } from "../providers/PointProvider";
-import {
-  ArrowBigDown,
-  ArrowDown,
-  ArrowDown01,
-  ArrowDownNarrowWide,
-  ChevronDown,
-} from "lucide-react";
-import { FaRegArrowAltCircleDown } from "react-icons/fa";
+import { ChevronDown } from "lucide-react";
 
 export default function Header() {
   const router = useRouter();
@@ -32,7 +25,7 @@ export default function Header() {
     { label: "Home", href: "/" },
     { label: "User Test", href: "/test" },
     { label: "Blog", href: "/blogs" },
-    { label: "IT News", href: "/itnews" },
+    { label: "News", href: "/itnews" },
   ];
 
   const isActive = (href: string) => {
