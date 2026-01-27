@@ -27,6 +27,7 @@ type Blog = {
   title: string;
   description: string;
   link?: string | null;
+  createdAt: string;
 };
 
 type CommentItem = {
@@ -56,7 +57,7 @@ function CommentSection({ blogId }: { blogId: string }) {
     } catch (err) {
       return NextResponse.json(
         { message: "Failed to fetch comments" },
-        { status: 500 },
+        { status: 500 }
       );
     }
   };
@@ -67,7 +68,7 @@ function CommentSection({ blogId }: { blogId: string }) {
   };
   const submit = async () => {
     if (!content.trim()) return;
-    setSending(true);
+    setSending(false);
     try {
       const res = await fetch("/api/comment", {
         method: "POST",
@@ -164,22 +165,60 @@ export default function Blogs() {
   const [openCommentsFor, setOpenCommentsFor] = useState<string | null>(null);
 
   useEffect(() => {
-    const getBlogs = async () => {
-      const res = await fetch("/api/blog");
-      const data = await res.json();
-      const arr: Blog[] = Array.isArray(data) ? data : [];
-      setBlogs(arr);
+    let mounted = true;
 
-      const initVotes: Record<string, number> = {};
-      const initMy: Record<string, 1 | -1 | 0> = {};
-      arr.forEach((b) => {
-        initVotes[b.id] = initVotes[b.id] ?? 0;
-        initMy[b.id] = initMy[b.id] ?? 0;
+    const mergeNewestFirst = (prev: Blog[], incoming: Blog[]) => {
+      const map = new Map<string, Blog>();
+
+      incoming.forEach((b) => map.set(b.id, b));
+      prev.forEach((b) => {
+        if (!map.has(b.id)) map.set(b.id, b);
       });
-      setVotes(initVotes);
-      setMyVote(initMy);
+
+      return Array.from(map.values()).sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
     };
-    getBlogs();
+
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch("/api/blog", { cache: "no-store" });
+        const data = await res.json();
+        const arr: Blog[] = Array.isArray(data) ? data : [];
+
+        if (!mounted) return;
+
+        setBlogs((prev) => mergeNewestFirst(prev, arr));
+
+        setVotes((prev) => {
+          const next = { ...prev };
+          arr.forEach((b) => {
+            if (next[b.id] === undefined) next[b.id] = 0;
+          });
+          return next;
+        });
+
+        setMyVote((prev) => {
+          const next = { ...prev };
+          arr.forEach((b) => {
+            if (next[b.id] === undefined) next[b.id] = 0;
+          });
+          return next;
+        });
+      } catch (err) {
+        console.error("BLOG FETCH ERROR:", err);
+      }
+    };
+
+    fetchBlogs();
+
+    const interval = setInterval(fetchBlogs, 6000);
+
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const handleVote = (id: string, dir: 1 | -1) => {
@@ -236,7 +275,9 @@ export default function Blogs() {
                 </div>
 
                 <span className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-                  NEW
+                  {formatDistanceToNow(new Date(item.createdAt), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
 
@@ -301,7 +342,7 @@ export default function Blogs() {
                       type="button"
                       onClick={() =>
                         setOpenCommentsFor((prev) =>
-                          prev === item.id ? null : item.id,
+                          prev === item.id ? null : item.id
                         )
                       }
                     >

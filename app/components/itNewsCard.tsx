@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Newspaper, RefreshCcw, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -18,24 +18,24 @@ export default function ItNewsCard() {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const fetchNews = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/ItNews", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch news");
+
+      const data: News[] = await res.json();
+      setNews(data);
+    } catch (err) {
+      console.error("NEWS FETCH ERROR:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const res = await fetch("/api/ItNews");
-        if (!res.ok) throw new Error("Failed to fetch news");
-
-        const data: News[] = await res.json();
-        setNews(data);
-      } catch (err) {
-        console.error("NEWS FETCH ERROR:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchNews();
-  }, []);
+  }, [fetchNews]);
 
   return (
     <div className="h-full rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl overflow-hidden shadow-[0_20px_60px_rgba(99,102,241,0.10)]">
@@ -58,6 +58,7 @@ export default function ItNewsCard() {
           variant="secondary"
           className="h-9 bg-white/10 text-white border border-white/15 hover:bg-white/15"
           disabled={loading}
+          onClick={fetchNews}
         >
           <RefreshCcw
             className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
@@ -80,10 +81,15 @@ export default function ItNewsCard() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex flex-col gap-5 ">
-                    <div className="text-white/90 text-sm font-medium leading-snug line-clamp-2">
-                      {n.title}
+                    <div className="flex ">
+                      <div className="text-white/90 text-sm font-medium  line-clamp-1 flex justify-between ">
+                        {n.title}
+                      </div>
+                      <div className=" text-[11px] text-white/60 rounded-full bg-white/5 border border-white/10 p-2">
+                        {n.source}
+                      </div>
                     </div>
-                    <div className="w-100">
+                    <div className="w-70">
                       <img
                         src={n.image}
                         alt={n.title}
@@ -93,11 +99,6 @@ export default function ItNewsCard() {
                         }}
                       />
                     </div>
-                  </div>
-                  <div>
-                    <span className="shrink-0 text-[11px] text-white/60 rounded-full bg-white/5 border border-white/10 px-2 py-1">
-                      {n.source}
-                    </span>
                   </div>
                 </div>
 
