@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -105,16 +104,16 @@ export default function TestPage() {
   }, []);
 
   return (
-    <div className="bg-black min-h-screen p-10">
+    <div className="bg-black min-h-screen p-10 ">
       <h1 className="text-white text-2xl font-bold mb-6">Lets Test</h1>
 
       {project.length === 0 && <p className="text-white/60">No</p>}
 
-      <div className="space-y-10">
+      <div className="space-y-10 w-full  flex justify-evenly">
         {project.map((p) => (
           <div
             key={p.id}
-            className="flex gap-5 flex-col border border-white/10 rounded-2xl p-6 bg-white/5"
+            className="flex gap-10 w-150  h-150 flex-col border border-white/10 rounded-2xl p-6 bg-white/5"
           >
             <h2 className="text-white text-xl font-semibold">{p.title}</h2>
 
