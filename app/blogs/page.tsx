@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
@@ -12,8 +13,6 @@ import {
   ArrowBigDown,
 } from "lucide-react";
 import { NextResponse } from "next/server";
-import next from "next";
-import { ca } from "zod/v4/locales";
 
 type Blog = {
   id: string;
