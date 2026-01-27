@@ -23,11 +23,12 @@ export const GET = async (request: NextRequest) => {
     const shaped = blogs.map((blog) => {
       const score = (blog.votes ?? []).reduce(
         (sum, v) => sum + (v.value ?? 0),
-        0
+        0,
       );
       const myVote = userMe
-        ? (blog.votes ?? []).find((v) => v.userId === userMe.id)?.value ?? 0
+        ? ((blog.votes ?? []).find((v) => v.userId === userMe.id)?.value ?? 0)
         : 0;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { votes, ...rest } = blog as any;
       return { ...rest, score, myVote };
     });
