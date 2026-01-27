@@ -1,5 +1,4 @@
 "use client";
-
 import { formatDistanceToNow } from "date-fns";
 
 import Image from "next/image";
@@ -12,8 +11,6 @@ import {
   ArrowBigDown,
 } from "lucide-react";
 import { NextResponse } from "next/server";
-import next from "next";
-import { ca } from "zod/v4/locales";
 
 type Blog = {
   id: string;
@@ -21,7 +18,6 @@ type Blog = {
   title: string;
   description: string;
   link?: string | null;
-  createdAt: string;
   user: {
     name?: string | null;
     email?: string | null;
@@ -58,7 +54,7 @@ function CommentSection({ blogId }: { blogId: string }) {
     } catch (err) {
       return NextResponse.json(
         { message: "Failed to fetch comments" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   };
@@ -69,7 +65,7 @@ function CommentSection({ blogId }: { blogId: string }) {
   };
   const submit = async () => {
     if (!content.trim()) return;
-    setSending(false);
+    setSending(true);
     try {
       const res = await fetch("/api/comment", {
         method: "POST",
@@ -157,29 +153,30 @@ function CommentSection({ blogId }: { blogId: string }) {
   );
 }
 
-export default function Blogs() {
+export default function SavedPosts() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
 
   const [openCommentsFor, setOpenCommentsFor] = useState<string | null>(null);
 
   useEffect(() => {
-    const getBlogs = async () => {
-      const res = await fetch("/api/blog");
-      const data = await res.json();
-      const arr: Blog[] = Array.isArray(data) ? data : [];
-      setBlogs(arr);
-
-      const initVotes: Record<string, number> = {};
-      const initMy: Record<string, 1 | -1 | 0> = {};
-      arr.forEach((b) => {
-        initVotes[b.id] = initVotes[b.id] ?? 0;
-        initMy[b.id] = initMy[b.id] ?? 0;
+    const getSavedPosts = async () => {
+      const res = await fetch("/api/savedPosts", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       });
-      setVotes(initVotes);
-      setMyVote(initMy);
+
+      const data = await res.json();
+      setBlogs(data.map((item: any) => item.blog));
+
+      console.log(data);
     };
-    getBlogs();
+
+    getSavedPosts();
   }, []);
+
+  useEffect(() => {
+    console.log(blogs, "blogsasdas");
+  }, [blogs]);
 
   const handleVote = async (blogId: string, dir: 1 | -1) => {
     const current = blogs.find((b) => b.id === blogId);
@@ -191,7 +188,7 @@ export default function Blogs() {
         if (b.id !== blogId) return b;
         const newScore = b.score - b.myVote + nextValue;
         return { ...b, score: newScore, myVote: nextValue };
-      })
+      }),
     );
     const res = await fetch("/api/blogVote", {
       method: "POST",
@@ -201,8 +198,8 @@ export default function Blogs() {
     const data = await res.json();
     setBlogs((prev) =>
       prev.map((b) =>
-        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b
-      )
+        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b,
+      ),
     );
   };
   console.log(blogs, "blogs");
@@ -269,9 +266,7 @@ export default function Blogs() {
                 </div>
 
                 <span className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-                  {formatDistanceToNow(new Date(item.createdAt), {
-                    addSuffix: true,
-                  })}
+                  NEW
                 </span>
               </div>
 
@@ -336,7 +331,7 @@ export default function Blogs() {
                       type="button"
                       onClick={() =>
                         setOpenCommentsFor((prev) =>
-                          prev === item.id ? null : item.id
+                          prev === item.id ? null : item.id,
                         )
                       }
                     >
