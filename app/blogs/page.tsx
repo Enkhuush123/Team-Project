@@ -21,6 +21,7 @@ type Blog = {
   title: string;
   description: string;
   link?: string | null;
+  createdAt: string;
   user: {
     name?: string | null;
     email?: string | null;
@@ -57,7 +58,7 @@ function CommentSection({ blogId }: { blogId: string }) {
     } catch (err) {
       return NextResponse.json(
         { message: "Failed to fetch comments" },
-        { status: 500 },
+        { status: 500 }
       );
     }
   };
@@ -68,7 +69,7 @@ function CommentSection({ blogId }: { blogId: string }) {
   };
   const submit = async () => {
     if (!content.trim()) return;
-    setSending(true);
+    setSending(false);
     try {
       const res = await fetch("/api/comment", {
         method: "POST",
@@ -181,7 +182,7 @@ export default function Blogs() {
         if (b.id !== blogId) return b;
         const newScore = b.score - b.myVote + nextValue;
         return { ...b, score: newScore, myVote: nextValue };
-      }),
+      })
     );
     const res = await fetch("/api/blogVote", {
       method: "POST",
@@ -191,8 +192,8 @@ export default function Blogs() {
     const data = await res.json();
     setBlogs((prev) =>
       prev.map((b) =>
-        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b,
-      ),
+        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b
+      )
     );
   };
   console.log(blogs, "blogs");
@@ -259,7 +260,9 @@ export default function Blogs() {
                 </div>
 
                 <span className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-                  NEW
+                  {formatDistanceToNow(new Date(item.createdAt), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
 
@@ -324,7 +327,7 @@ export default function Blogs() {
                       type="button"
                       onClick={() =>
                         setOpenCommentsFor((prev) =>
-                          prev === item.id ? null : item.id,
+                          prev === item.id ? null : item.id
                         )
                       }
                     >
