@@ -114,10 +114,6 @@ export default function ItNewsCard() {
             )}
           </div>
         </div>
-
-        <div className="mt-4 text-xs text-white/45">
-          Source: Hacker News (no API key)
-        </div>
       </div>
     </div>
   );
