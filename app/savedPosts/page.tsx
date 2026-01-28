@@ -247,7 +247,7 @@ export default function SavedPosts() {
           </div>
         )}
 
-        {blogs.map((item) => {
+        {blogs?.map((item) => {
           const score = item.score;
           const mine = item.myVote;
 

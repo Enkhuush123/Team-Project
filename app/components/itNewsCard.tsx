@@ -75,23 +75,25 @@ export default function ItNewsCard() {
                 onClick={() => router.push(`/readmore/${n.id}`)}
                 key={idx}
                 rel="noreferrer"
-                className="block  rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
+                className="block w-full rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-3 w-full">
                   <div className="flex flex-col gap-5 ">
                     <div className="flex justify-between ">
-                      <div className="text-white/90 text-sm font-medium  w-100 text-left flex justify-between ">
-                        {n.title}
+                      <div className="w-full text-left flex h-fit justify-between">
+                        <span className="text-white/90 text-sm font-medium line-clamp-2">
+                          {n.title}
+                        </span>
                       </div>
-                      <div className=" h-10 text-[11px] text-white/60 rounded-full bg-white/5 border border-white/10 p-2">
-                        {n.source}
+                      <div className="text-xs w-20 overflow-hidden h-fit text-white/60 rounded-full bg-white/5 border border-white/10 p-2">
+                        <span className="overflow-hidden">{n.source}</span>
                       </div>
                     </div>
 
                     <img
                       src={n.image}
                       alt={n.title}
-                      className="h-70  w-150 object-cover"
+                      className="w-full rounded-xl object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = "/no-image.png";
                       }}
