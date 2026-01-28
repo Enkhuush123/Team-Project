@@ -13,15 +13,15 @@ datasource db {
 }
 
 model User {
-  id       String     @id @default(cuid())
-  clerkId  String     @unique
-  email    String     @unique
-  name     String?
-  role     Role       @default(USER)
-  imageUrl String?
-  votes    BlogVote[]
-  banned  Boolean @default(false)
-report Report[]
+  id               String             @id @default(cuid())
+  clerkId          String             @unique
+  email            String             @unique
+  name             String?
+  role             Role               @default(USER)
+  imageUrl         String?
+  votes            BlogVote[]
+  banned           Boolean            @default(false)
+  report           Report[]
   points           Int                @default(0)
   pointTransaction PointTransaction[]
 
@@ -176,23 +176,23 @@ model BlogVote {
   blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-  upatedAt DateTime @default(now())
+  upatedAt  DateTime @default(now())
 
   @@unique([blogId, userId])
 }
 
-model Report{
-  id          String      @id @default(cuid())
+model Report {
+  id          String       @id @default(cuid())
   title       String
   description String
   email       String?
   userId      String
   status      ReportStatus @default(PENDING)
   reporterId  String
-  reporter    User     @relation(fields: [reporterId], references: [id])
-  createdAt   DateTime @default(now())
-
+  reporter    User         @relation(fields: [reporterId], references: [id])
+  createdAt   DateTime     @default(now())
 }
+
 enum ReportStatus {
   PENDING
   RESOLVED
