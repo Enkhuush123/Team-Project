@@ -1,34 +1,65 @@
-import StatCard from "../components/admin/ StatCard";
+"use client";
+
+import { useEffect, useState } from "react";
 import AdminCard from "../components/admin/AdminCard";
 
+type UserApiResponse = {
+  user: any;
+  usersCount: number;
+};
 
+type ReportApiResponse = {
+  reports: any[];
+  reportsCount: number;
+};
 export default function AdminDashboard() {
-  const stats = [
-    { title: "Total Users", value: 1284, hint: "Mock data" },
-    { title: "Pending Posts", value: 14, hint: "Need approval" },
-    { title: "Open Reports", value: 6, hint: "Need review" },
-    { title: "Submitted Tests", value: 31, hint: "This week" },
-  ];
+  const [userData, setUserData] = useState<UserApiResponse | null>(null);
+  const [reportData, setReportData] = useState<ReportApiResponse | null>(null);
+
+  const getUsers = async () => {
+    const res = await fetch("/api/user");
+    if (!res.ok) return;
+    const result = await res.json();
+    setUserData(result);
+  };
+
+  const getReports = async () => {
+    const res = await fetch("/api/reports");
+    if (!res.ok) return;
+    const result = await res.json();
+    setReportData(result);
+  };
+
+  useEffect(() => {
+    getUsers();
+    getReports();
+  }, []);
 
   return (
     <div className="space-y-8">
-      {/* STATS */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((s) => (
-          <StatCard
-            key={s.title}
-            title={s.title}
-            value={s.value}
-            hint={s.hint}
-          />
-        ))}
+        {/* USERS */}
+        <div className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-5">
+          <div className="text-white/60 text-sm">Total Users</div>
+          <div className="mt-2 text-3xl font-bold text-white">
+            {userData?.usersCount ?? 0}
+          </div>
+          <div className="mt-1 text-xs text-white/40">All users</div>
+        </div>
+
+        {/* REPORTS */}
+        <div className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-5">
+          <div className="text-white/60 text-sm">Open Reports</div>
+          <div className="mt-2 text-3xl font-bold text-white">
+            {reportData?.reportsCount ?? 0}
+          </div>
+          <div className="mt-1 text-xs text-white/40">Need review</div>
+        </div>
       </div>
 
       {/* QUICK ACTIONS */}
       <AdminCard>
-        <div className="text-white font-semibold text-lg">
-          Quick actions
-        </div>
+        <div className="text-white font-semibold text-lg">Quick actions</div>
         <p className="mt-2 text-white/55 text-sm">
           Use sidebar to manage posts / reports / tests.
         </p>
