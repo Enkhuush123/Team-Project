@@ -28,6 +28,7 @@ export const GET = async (request: NextRequest) => {
       const myVote = userMe
         ? ((blog.votes ?? []).find((v) => v.userId === userMe.id)?.value ?? 0)
         : 0;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
       const { votes, ...rest } = blog as any;
       return { ...rest, score, myVote };
     });

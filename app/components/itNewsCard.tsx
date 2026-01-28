@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Newspaper, RefreshCcw, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -18,24 +18,24 @@ export default function ItNewsCard() {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const fetchNews = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/ItNews", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch news");
+
+      const data: News[] = await res.json();
+      setNews(data);
+    } catch (err) {
+      console.error("NEWS FETCH ERROR:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const res = await fetch("/api/ItNews");
-        if (!res.ok) throw new Error("Failed to fetch news");
-
-        const data: News[] = await res.json();
-        setNews(data);
-      } catch (err) {
-        console.error("NEWS FETCH ERROR:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchNews();
-  }, []);
+  }, [fetchNews]);
 
   return (
     <div className="h-full rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl overflow-hidden shadow-[0_20px_60px_rgba(99,102,241,0.10)]">
@@ -56,6 +56,7 @@ export default function ItNewsCard() {
           variant="secondary"
           className="h-9 bg-white/10 text-white border border-white/15 hover:bg-white/15"
           disabled={loading}
+          onClick={fetchNews}
         >
           <RefreshCcw
             className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
@@ -68,34 +69,33 @@ export default function ItNewsCard() {
         <div className="rounded-xl bg-linear-to-br from-white/6 to-white/3 border border-white/10 p-4">
           <div className="text-white/80 font-medium">Today</div>
 
-          <div className="mt-3 space-y-3 w-full ">
+          <div className="mt-3 space-y-3">
             {news.map((n, idx) => (
               <button
                 onClick={() => router.push(`/readmore/${n.id}`)}
                 key={idx}
                 rel="noreferrer"
-                className="block w-full rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
+                className="block  rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex flex-col gap-5 ">
-                    <div className="text-white/90 text-sm font-medium leading-snug line-clamp-2">
-                      {n.title}
+                    <div className="flex justify-between ">
+                      <div className="text-white/90 text-sm font-medium  w-100 text-left flex justify-between ">
+                        {n.title}
+                      </div>
+                      <div className=" h-10 text-[11px] text-white/60 rounded-full bg-white/5 border border-white/10 p-2">
+                        {n.source}
+                      </div>
                     </div>
-                    <div className="w-100">
-                      <img
-                        src={n.image}
-                        alt={n.title}
-                        className="h-48 w-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/no-image.png";
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <span className="shrink-0 text-[11px] text-white/60 rounded-full bg-white/5 border border-white/10 px-2 py-1">
-                      {n.source}
-                    </span>
+
+                    <img
+                      src={n.image}
+                      alt={n.title}
+                      className="h-70  w-150 object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/no-image.png";
+                      }}
+                    />
                   </div>
                 </div>
 
@@ -113,10 +113,6 @@ export default function ItNewsCard() {
               </div>
             )}
           </div>
-        </div>
-
-        <div className="mt-4 text-xs text-white/45">
-          Source: Hacker News (no API key)
         </div>
       </div>
     </div>
