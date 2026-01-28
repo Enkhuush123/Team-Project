@@ -9,7 +9,16 @@ export async function GET(req: NextRequest) {
   const userData = await prisma.user.findUnique({
     where: { clerkId: user?.id },
   });
-  return NextResponse.json(userData, { status: 200 });
+
+  const usersCount = await prisma.user.count();
+
+  return NextResponse.json(
+    {
+      userData,
+      usersCount,
+    },
+    { status: 200 },
+  );
 
   console.log(userData);
 }

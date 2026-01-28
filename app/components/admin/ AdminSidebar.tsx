@@ -29,7 +29,7 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-[260px] shrink-0 p-4 border-r border-white/10 bg-white/5 backdrop-blur-xl">
+    <aside className="w-65 shrink-0 p-4 border-r border-white/10 bg-white/5 backdrop-blur-xl">
       <h2 className="text-lg font-semibold mb-6 text-white">Admin Panel</h2>
 
       <div className="space-y-1">
@@ -45,7 +45,7 @@ export default function AdminSidebar() {
               className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition
                 ${
                   active
-                    ? "bg-gradient-to-r from-blue-600 to-violet-600 text-white"
+                    ? "bg-linear-to-r from-blue-600 to-violet-600 text-white"
                     : "text-white/70 hover:bg-white/10 hover:text-white"
                 }`}
             >
