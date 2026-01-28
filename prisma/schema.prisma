@@ -176,7 +176,7 @@ model BlogVote {
   blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-  upatedAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([blogId, userId])
 }

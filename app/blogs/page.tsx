@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
@@ -12,8 +13,6 @@ import {
   ArrowBigDown,
 } from "lucide-react";
 import { NextResponse } from "next/server";
-import next from "next";
-import { ca } from "zod/v4/locales";
 
 type Blog = {
   id: string;
@@ -21,6 +20,7 @@ type Blog = {
   title: string;
   description: string;
   link?: string | null;
+  createdAt: string;
   user: {
     name?: string | null;
     email?: string | null;
@@ -68,7 +68,7 @@ function CommentSection({ blogId }: { blogId: string }) {
   };
   const submit = async () => {
     if (!content.trim()) return;
-    setSending(true);
+    setSending(false);
     try {
       const res = await fetch("/api/comment", {
         method: "POST",
@@ -233,7 +233,10 @@ export default function Blogs() {
               className="w-full overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl
                          shadow-[0_20px_60px_rgba(99,102,241,0.12)] hover:border-white/20 transition"
             >
-              <div className="flex items-center gap-5 p-2">
+              <div
+                className="flex items-center gap-3
+              font-bold p-2"
+              >
                 <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40 ">
                   {item.user.imageUrl ? (
                     <Image
@@ -259,7 +262,9 @@ export default function Blogs() {
                 </div>
 
                 <span className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-                  NEW
+                  {formatDistanceToNow(new Date(item.createdAt), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
 
@@ -342,7 +347,11 @@ export default function Blogs() {
                   </div>
 
                   <button
-                    className="flex items-center gap-2 text-white/60 hover:text-white transition"
+                    className={`flex items-center gap-2 transition ${
+                      mine === 1
+                        ? "text-white"
+                        : "text-white/60 hover:text-white"
+                    }`}
                     type="button"
                     onClick={() => savePost(item.id)}
                   >

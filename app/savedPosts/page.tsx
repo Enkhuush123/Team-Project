@@ -13,6 +13,7 @@ import {
 import { NextResponse } from "next/server";
 
 type Blog = {
+  [x: string]: string | number | Date;
   id: string;
   imageUrl?: string | null;
   title: string;
@@ -166,7 +167,7 @@ export default function SavedPosts() {
       });
 
       const data = await res.json();
-      setBlogs(data.map((item: any) => item.blog));
+      setBlogs(data);
 
       console.log(data);
     };
@@ -216,12 +217,29 @@ export default function SavedPosts() {
     }
   };
 
+  const unsavePost = async (blogId: string) => {
+    try {
+      const res = await fetch("/api/savedPosts", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId }),
+      });
+
+      const data = await res.json();
+
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-40 -left-40 h-130 w-130 rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-105 w-105 rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
+      <p className="mt-6 ml-6 text-lg font-bold">Your Saved Posts</p>
 
       <div className="relative mx-auto w-full max-w-3xl px-4 sm:px-6 py-8 space-y-6">
         {blogs.length === 0 && (
@@ -266,7 +284,9 @@ export default function SavedPosts() {
                 </div>
 
                 <span className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-                  NEW
+                  {formatDistanceToNow(new Date(item.createdAt), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
 
@@ -348,14 +368,25 @@ export default function SavedPosts() {
                     </button>
                   </div>
 
-                  <button
-                    className="flex items-center gap-2 text-white/60 hover:text-white transition"
-                    type="button"
-                    onClick={() => savePost(item.id)}
-                  >
-                    <Bookmark className="h-4 w-4" />
-                    <span className="text-sm">Save</span>
-                  </button>
+                  {mine ? (
+                    <button
+                      className="flex items-center gap-2 transition cursor-pointer text-white hover:text-white"
+                      type="button"
+                      onClick={() => unsavePost(item.id)}
+                    >
+                      <Bookmark className="h-4 w-4" />
+                      <span className="text-sm">Unsave</span>
+                    </button>
+                  ) : (
+                    <button
+                      className="flex items-center gap-2 transition cursor-pointer text-white/60 hover:text-white"
+                      type="button"
+                      onClick={() => savePost(item.id)}
+                    >
+                      <Bookmark className="h-4 w-4" />
+                      <span className="text-sm">Save</span>
+                    </button>
+                  )}
                 </div>
 
                 {openCommentsFor === item.id && (
