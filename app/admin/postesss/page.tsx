@@ -1,9 +1,13 @@
 import AdminCard from "@/app/components/admin/AdminCard";
 
-
 const MOCK_POSTS = [
   { id: "p1", title: "New UI update", author: "Alpha", status: "PENDING" },
-  { id: "p2", title: "Bug report: navbar", author: "Manlai", status: "APPROVED" },
+  {
+    id: "p2",
+    title: "Bug report: navbar",
+    author: "Manlai",
+    status: "APPROVED",
+  },
   { id: "p3", title: "Off-topic spam", author: "Hunter", status: "PENDING" },
 ];
 
@@ -12,7 +16,11 @@ function StatusPill({ s }: { s: string }) {
     s === "APPROVED"
       ? "bg-emerald-500/10 border-emerald-400/20 text-emerald-200"
       : "bg-amber-500/10 border-amber-400/20 text-amber-200";
-  return <span className={`px-2.5 py-1 rounded-full text-xs border ${cls}`}>{s}</span>;
+  return (
+    <span className={`px-2.5 py-1 rounded-full text-xs border ${cls}`}>
+      {s}
+    </span>
+  );
 }
 
 export default function AdminPostsPage() {
@@ -20,11 +28,15 @@ export default function AdminPostsPage() {
     <div className="space-y-6">
       <div>
         <div className="text-white font-semibold text-xl">Posts</div>
-        <div className="text-white/55 text-sm mt-1">Approve / delete posts (UI only)</div>
+        <div className="text-white/55 text-sm mt-1">
+          Approve / delete posts (UI only)
+        </div>
       </div>
 
       <AdminCard className="p-0 overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/10 text-white/80 text-sm">Moderation queue</div>
+        <div className="px-5 py-4 border-b border-white/10 text-white/80 text-sm">
+          Moderation queue
+        </div>
 
         <div className="w-full overflow-x-auto">
           <table className="w-full text-left">
@@ -39,7 +51,10 @@ export default function AdminPostsPage() {
 
             <tbody className="text-white/80 text-sm">
               {MOCK_POSTS.map((p) => (
-                <tr key={p.id} className="border-b border-white/10 hover:bg-white/[0.03] transition">
+                <tr
+                  key={p.id}
+                  className="border-b border-white/10 hover:bg-white/3 transition"
+                >
                   <td className="px-5 py-4">{p.title}</td>
                   <td className="px-5 py-4 text-white/60">{p.author}</td>
                   <td className="px-5 py-4">
