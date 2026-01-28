@@ -57,7 +57,7 @@ function CommentSection({ blogId }: { blogId: string }) {
     } catch (err) {
       return NextResponse.json(
         { message: "Failed to fetch comments" },
-        { status: 500 },
+        { status: 500 }
       );
     }
   };
@@ -176,12 +176,16 @@ export default function Blogs() {
     if (!current) return;
 
     const nextValue: 1 | -1 | 0 = current.myVote === dir ? 0 : dir;
+    const prevScore = current.score;
+    const prevMyVote = current.myVote;
+
+    const optimisticScore = prevScore - prevMyVote + nextValue;
     setBlogs((prev) =>
-      prev.map((b) => {
-        if (b.id !== blogId) return b;
-        const newScore = b.score - b.myVote + nextValue;
-        return { ...b, score: newScore, myVote: nextValue };
-      }),
+      prev.map((b) =>
+        b.id === blogId
+          ? { ...b, score: optimisticScore, myVote: nextValue }
+          : b
+      )
     );
     const res = await fetch("/api/blogVote", {
       method: "POST",
@@ -191,8 +195,8 @@ export default function Blogs() {
     const data = await res.json();
     setBlogs((prev) =>
       prev.map((b) =>
-        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b,
-      ),
+        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b
+      )
     );
   };
   console.log(blogs, "blogs");
@@ -329,7 +333,7 @@ export default function Blogs() {
                       type="button"
                       onClick={() =>
                         setOpenCommentsFor((prev) =>
-                          prev === item.id ? null : item.id,
+                          prev === item.id ? null : item.id
                         )
                       }
                     >
