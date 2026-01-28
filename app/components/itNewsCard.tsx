@@ -15,7 +15,40 @@ type News = {
 };
 
 export default function ItNewsCard() {
-  const [news, setNews] = useState<News[]>([]);
+  const [news, setNews] = useState<News[]>([
+    // {
+    //   id: "news-001",
+    //   title: "AI Models Now Write Production Code Faster Than Humans",
+    //   summary:
+    //     "A new benchmark study shows modern AI systems generating reliable production-ready code in a fraction of the time it takes experienced engineers.",
+    //   image: "https://images.unsplash.com/photo-1677442136019-21780ecad995",
+    //   source: "Tech Chronicle",
+    // },
+    // {
+    //   id: "news-002",
+    //   title: "Global Markets Rally After Interest Rate Pause",
+    //   summary:
+    //     "Stocks surged worldwide after central banks signaled a pause in rate hikes, easing investor concerns about an economic slowdown.",
+    //   image: "https://images.unsplash.com/photo-1559526324-593bc073d938",
+    //   source: "Financial Daily",
+    // },
+    // {
+    //   id: "news-003",
+    //   title: "Researchers Discover Breakthrough in Battery Technology",
+    //   summary:
+    //     "Scientists unveiled a new battery design capable of charging in under five minutes while significantly extending lifespan.",
+    //   image: "https://images.unsplash.com/photo-1581092919534-3c3c2c8d5e84",
+    //   source: "Science Today",
+    // },
+    // {
+    //   id: "news-004",
+    //   title: "Major Update Announced for Next-Gen Gaming Consoles",
+    //   summary:
+    //     "The update introduces ray-tracing enhancements, lower latency multiplayer, and expanded backward compatibility.",
+    //   image: "https://images.unsplash.com/photo-1598550483028-2aef1b58f16f",
+    //   source: "GameWire",
+    // },
+  ]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const fetchNews = useCallback(async () => {
@@ -25,6 +58,7 @@ export default function ItNewsCard() {
       if (!res.ok) throw new Error("Failed to fetch news");
 
       const data: News[] = await res.json();
+      console.log(data);
       setNews(data);
     } catch (err) {
       console.error("NEWS FETCH ERROR:", err);
@@ -85,8 +119,10 @@ export default function ItNewsCard() {
                           {n.title}
                         </span>
                       </div>
-                      <div className="text-xs w-20 overflow-hidden h-fit text-white/60 rounded-full bg-white/5 border border-white/10 p-2">
-                        <span className="overflow-hidden">{n.source}</span>
+                      <div className="text-xs w-20 overflow-hidden h-fit text-white/60 rounded-full bg-white/5 border border-white/10 px-2">
+                        <span className="overflow-hidden line-clamp-1">
+                          {n.source}
+                        </span>
                       </div>
                     </div>
 
