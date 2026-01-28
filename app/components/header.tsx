@@ -21,6 +21,7 @@ export default function Header() {
   const { points } = usePoints();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin");
   console.log("PATNAME:", isAdmin);
+  console.log(points, "jj");
 
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -38,7 +39,11 @@ export default function Header() {
 
   return (
     <header
-      className={`${isAdmin === true ? "hidden" : "sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl "}`}
+      className={`${
+        isAdmin === true
+          ? "hidden"
+          : "sticky top-0 z-50 w-full border-b border-white/10 bg-black/70 backdrop-blur-xl "
+      }`}
     >
       <div className="mx-auto w-full max-w-8xl px-4 md:px-8">
         <div className="h-14 md:h-16 grid grid-cols-[1fr_auto_1fr] items-center">
@@ -149,7 +154,9 @@ export default function Header() {
                   <ChevronDown className="text-gray-500" />
                 </button>
                 <div
-                  className={`border border-gray-500 text-white p-2 rounded-xl h-fit w-50 absolute top-16 right-5 ${settingsOpen ? "block" : "hidden"}`}
+                  className={`border border-gray-500 text-white p-2 rounded-xl h-fit w-50 absolute top-16 right-5 ${
+                    settingsOpen ? "block" : "hidden"
+                  }`}
                 >
                   <button
                     className="cursor-pointer flex items-center w-full hover:brightness-200 transition text-sm border border-gray-500 rounded-md py-1 px-2 text-gray-300"
