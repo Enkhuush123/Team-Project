@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -34,7 +35,7 @@ export const POST = async (req: NextRequest) => {
     if (fromUser.points < amount)
       return new NextResponse("Insufficient funds", { status: 400 });
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       await tx.user.update({
         where: { id: fromUser.id },
         data: {

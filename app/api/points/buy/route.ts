@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import prisma from "@/lib/prisma";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
     const bonus = Math.floor((pack.points * pack.bonusPct) / 100);
     const total = pack.points + bonus;
 
-    const updated = await prisma.$transaction(async (tx) => {
+    const updated = await prisma.$transaction(async (tx: any) => {
       const dbUser = await tx.user.upsert({
         where: { clerkId: userId },
         update: {},
@@ -40,8 +41,6 @@ export async function POST(req: NextRequest) {
         },
         select: { points: true },
       });
-
-
     });
 
     await prisma.pointTransfer.create({
@@ -50,9 +49,9 @@ export async function POST(req: NextRequest) {
         toUserId: userId,
         toUserEmail: user.emailAddresses[0].emailAddress,
         amount: total,
-        description: "Purchase confirmed"
-      }
-    })
+        description: "Purchase confirmed",
+      },
+    });
 
     return NextResponse.json({ message: "ok", points: updated.points });
   } catch (err) {

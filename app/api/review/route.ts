@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import prisma from "@/lib/prisma";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
-import { ReviewStatus } from "@prisma/client";
 
 export const runtime = "nodejs";
 
@@ -149,13 +149,18 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+<<<<<<< HEAD
     const result = await prisma.$transaction(async (tx) => {
+=======
+
+    const result = await prisma.$transaction(async (tx: any) => {
+>>>>>>> c22d0668015e9860f69362cbf32bf9840df27c59
       const review = await tx.review.create({
         data: {
           description,
           screenshotUrl: screenshotUrl ?? null,
           geminiConfidence: Math.round(verdict.confidence),
-          status: status as ReviewStatus,
+          status: status as any,
           websiteId: website.id,
           reviewerId: reviewer.id,
         },
