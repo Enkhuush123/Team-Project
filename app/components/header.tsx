@@ -96,15 +96,17 @@ export default function Header() {
 
             <SignedOut>
               <SignInButton>
-                <Button className="h-9 md:h-10 px-4 md:px-5 rounded-xl text-sm font-semibold text-white bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-[0_10px_26px_rgba(79,70,229,0.30)] hover:brightness-110">
+                <Button
+                  variant="secondary"
+                  className="h-9 md:h-10 px-4 md:px-5 rounded-xl text-sm bg-white/10 text-white border border-white/15 hover:bg-white/15 cursor-pointer"
+                >
                   Login
                 </Button>
               </SignInButton>
-
               <SignUpButton>
                 <Button
                   variant="secondary"
-                  className="h-9 md:h-10 px-4 md:px-5 rounded-xl text-sm bg-white/10 text-white border border-white/15 hover:bg-white/15"
+                  className="h-9 md:h-10 px-4 md:px-5 rounded-xl text-sm bg-white/10 text-white border border-white/15 hover:bg-white/15 cursor-pointer"
                 >
                   Sign Up
                 </Button>

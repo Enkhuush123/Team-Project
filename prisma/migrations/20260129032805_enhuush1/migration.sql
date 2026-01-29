@@ -1,15 +1,5 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `uodatedAt` on the `BlogVote` table. All the data in the column will be lost.
-
-*/
 -- CreateEnum
 CREATE TYPE "ReportStatus" AS ENUM ('PENDING', 'RESOLVED', 'REJECTED');
-
--- AlterTable
-ALTER TABLE "BlogVote" DROP COLUMN "uodatedAt",
-ADD COLUMN     "upatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
 -- AlterTable
 ALTER TABLE "User" ADD COLUMN     "banned" BOOLEAN NOT NULL DEFAULT false;
