@@ -2,6 +2,14 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
+
+type BlogRow = Prisma.BlogGetPayload<{
+  include: {
+    user: { select: { name: true; email: true; imageUrl: true } };
+    votes: true;
+  };
+}>;
 
 export const GET = async (request: NextRequest) => {
   try {
@@ -20,11 +28,13 @@ export const GET = async (request: NextRequest) => {
         votes: true,
       },
     });
-    const shaped = blogs.map((blog) => {
+
+    const shaped = (blogs as BlogRow[]).map((blog) => {
       const score = (blog.votes ?? []).reduce(
         (sum, v) => sum + (v.value ?? 0),
         0,
       );
+
       const myVote = userMe
         ? ((blog.votes ?? []).find((v) => v.userId === userMe.id)?.value ?? 0)
         : 0;
