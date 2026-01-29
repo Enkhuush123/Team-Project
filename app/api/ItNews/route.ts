@@ -6,7 +6,7 @@ export async function GET() {
   if (!apiKey) {
     return NextResponse.json(
       { error: "GNEWS_API_KEY missing" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 
@@ -17,6 +17,7 @@ export async function GET() {
 
   if (!data.articles) return NextResponse.json([]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formatted = data.articles.map((a: any, i: number) => ({
     id: String(i),
     title: a.title,

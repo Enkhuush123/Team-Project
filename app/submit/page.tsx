@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -270,6 +271,40 @@ export default function SubmitPage() {
               </form>
             </GlassCard>
           </div>
+<<<<<<< HEAD
+
+          <div className="lg:col-span-4 space-y-6">
+            <GlassCard className="p-6 sticky top-20">
+              <div className="text-white font-semibold text-lg">
+                Ready checklist
+              </div>
+
+              <div className="mt-5 h-px bg-white/10" />
+
+              <div className="mt-5 rounded-2xl bg-linear-to-br from-white/6 to-white/3 border border-white/10 p-4">
+                <div className="text-white/60 text-xs mb-2">Preview</div>
+                <div className="text-white font-semibold line-clamp-1">
+                  {formData.title.trim() ? formData.title : "Project title…"}
+                </div>
+                <div className="mt-2 text-white/70 text-sm line-clamp-3">
+                  {formData.description.trim()
+                    ? formData.description
+                    : "Project description preview…"}
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-2 text-xs text-white/65">
+                  <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1">
+                    Submit
+                  </span>
+                  <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1">
+                    Community review
+                  </span>
+                </div>
+              </div>
+            </GlassCard>
+          </div>
+=======
+>>>>>>> c22d0668015e9860f69362cbf32bf9840df27c59
         </div>
       </div>
     </div>
