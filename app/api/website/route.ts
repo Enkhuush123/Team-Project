@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
@@ -60,7 +61,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const data = websites.map((w) => ({
+    const data = websites.map((w: any) => ({
       id: w.id,
       title: w.title,
       description: w.description,
