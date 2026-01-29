@@ -46,7 +46,7 @@ export default function Post() {
 
     const res = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-      { method: "POST", body: formData }
+      { method: "POST", body: formData },
     );
 
     const data = await res.json();
@@ -54,7 +54,7 @@ export default function Post() {
   };
 
   const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -81,11 +81,8 @@ export default function Post() {
         body: JSON.stringify({ title, description, image, link }),
       });
 
-      const data = await res.json(); // ✅ FIX (await)
+      const data = await res.json();
       console.log(data);
-
-      // хүсвэл UI reset:
-      // setTitle(""); setDescription(""); setImage(""); setLink("");
     } catch (e) {
       console.log(e);
     } finally {
@@ -95,7 +92,6 @@ export default function Post() {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* glow bg */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
@@ -109,13 +105,9 @@ export default function Post() {
             </span>
           </h1>
           <div className="mt-3 h-[2px] w-28 bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 rounded-full opacity-80" />
-          <p className="mt-4 text-white/70 text-sm">
-            Share text, link, and an image (Cloudinary upload).
-          </p>
         </div>
 
         <GlassCard className="p-6 md:p-7 space-y-5">
-          {/* Title */}
           <div className="space-y-2">
             <label className="text-white/80 text-sm font-medium">Title</label>
             <input
@@ -128,7 +120,6 @@ export default function Post() {
             />
           </div>
 
-          {/* Description */}
           <div className="space-y-2">
             <label className="text-white/80 text-sm font-medium">
               Description
@@ -143,7 +134,6 @@ export default function Post() {
             />
           </div>
 
-          {/* Upload */}
           <div className="space-y-2">
             <label className="text-white/80 text-sm font-medium">
               Image (optional)
@@ -201,7 +191,6 @@ export default function Post() {
             </div>
           </div>
 
-          {/* Link */}
           <div className="space-y-2">
             <label className="text-white/80 text-sm font-medium">
               URL (optional)
@@ -220,7 +209,6 @@ export default function Post() {
             </div>
           </div>
 
-          {/* Action */}
           <div className="pt-2 flex justify-end">
             <button
               onClick={handlePost}

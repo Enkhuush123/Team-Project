@@ -26,7 +26,7 @@ export function PointsProvider({ children }: { children: React.ReactNode }) {
     const res = await fetch("/api/user");
     if (!res.ok) return;
     const data = await res.json();
-    setPoints(data.points ?? 0);
+    setPoints(data.userData?.points ?? 0);
   };
 
   useEffect(() => {

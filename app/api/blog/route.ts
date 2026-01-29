@@ -2,6 +2,21 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+type VoteRow = { userId: string; value: number | null };
+
+type BlogRow = {
+  id: string;
+  createdAt: Date | string;
+
+  title: string;
+  description: string | null;
+  link: string | null;
+  imageUrl: string | null;
+  userId: string;
+
+  user: { name: string | null; email: string | null; imageUrl: string | null };
+  votes: VoteRow[];
+};
 
 export const GET = async (request: NextRequest) => {
   try {
@@ -13,23 +28,25 @@ export const GET = async (request: NextRequest) => {
         })
       : null;
 
-    const blogs = await prisma.blog.findMany({
+    const blogs = (await prisma.blog.findMany({
       orderBy: { createdAt: "desc" },
       include: {
         user: { select: { name: true, email: true, imageUrl: true } },
         votes: true,
       },
-    });
+    })) as BlogRow[];
+
     const shaped = blogs.map((blog) => {
       const score = (blog.votes ?? []).reduce(
         (sum, v) => sum + (v.value ?? 0),
         0,
       );
+
       const myVote = userMe
         ? ((blog.votes ?? []).find((v) => v.userId === userMe.id)?.value ?? 0)
         : 0;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-      const { votes, ...rest } = blog as any;
+
+      const { votes, ...rest } = blog;
       return { ...rest, score, myVote };
     });
 
@@ -47,7 +64,7 @@ export const POST = async (request: NextRequest) => {
   try {
     const { title, description, link, image } = await request.json();
 
-    const blogs = await prisma.blog.create({
+    const blog = await prisma.blog.create({
       data: {
         title,
         description,
@@ -57,7 +74,7 @@ export const POST = async (request: NextRequest) => {
       },
     });
 
-    return new NextResponse(JSON.stringify(blogs), { status: 201 });
+    return new NextResponse(JSON.stringify(blog), { status: 201 });
   } catch (err) {
     console.log(err);
     return new NextResponse("Server error", { status: 500 });
