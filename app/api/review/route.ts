@@ -4,7 +4,6 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
-import { ReviewStatus } from "@prisma/client";
 
 export const runtime = "nodejs";
 
@@ -146,7 +145,7 @@ export async function POST(req: NextRequest) {
           description,
           screenshotUrl: screenshotUrl ?? null,
           geminiConfidence: Math.round(verdict.confidence),
-          status: status as ReviewStatus,
+          status: status as any,
           websiteId: website.id,
           reviewerId: reviewer.id,
         },
