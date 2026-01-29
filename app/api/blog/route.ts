@@ -2,14 +2,12 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import type { Prisma } from "@prisma/client";
+import type { Blog, BlogVote } from "@prisma/client";
 
-type BlogRow = Prisma.BlogGetPayload<{
-  include: {
-    user: { select: { name: true; email: true; imageUrl: true } };
-    votes: true;
-  };
-}>;
+type BlogRow = Blog & {
+  user: { name: string | null; email: string | null; imageUrl: string | null };
+  votes: BlogVote[];
+};
 
 export const GET = async (request: NextRequest) => {
   try {
@@ -21,15 +19,15 @@ export const GET = async (request: NextRequest) => {
         })
       : null;
 
-    const blogs = await prisma.blog.findMany({
+    const blogs = (await prisma.blog.findMany({
       orderBy: { createdAt: "desc" },
       include: {
         user: { select: { name: true, email: true, imageUrl: true } },
         votes: true,
       },
-    });
+    })) as BlogRow[];
 
-    const shaped = (blogs as BlogRow[]).map((blog) => {
+    const shaped = blogs.map((blog) => {
       const score = (blog.votes ?? []).reduce(
         (sum, v) => sum + (v.value ?? 0),
         0,
@@ -57,7 +55,7 @@ export const POST = async (request: NextRequest) => {
   try {
     const { title, description, link, image } = await request.json();
 
-    const blogs = await prisma.blog.create({
+    const blog = await prisma.blog.create({
       data: {
         title,
         description,
@@ -67,7 +65,7 @@ export const POST = async (request: NextRequest) => {
       },
     });
 
-    return new NextResponse(JSON.stringify(blogs), { status: 201 });
+    return new NextResponse(JSON.stringify(blog), { status: 201 });
   } catch (err) {
     console.log(err);
     return new NextResponse("Server error", { status: 500 });
