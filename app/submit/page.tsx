@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -292,34 +293,8 @@ export default function SubmitPage() {
               <div className="text-white font-semibold text-lg">
                 Ready checklist
               </div>
-              <p className="mt-2 text-white/60 text-sm">
-                (UI only) Checklist нь статик.
-              </p>
-
-              <div className="mt-5 space-y-3">
-                {[
-                  { title: "1) Гарчиг", desc: "Товч, ойлгомжтой" },
-                  { title: "2) Тайлбар", desc: "“Юуг шалгах вэ?” + flow бич" },
-                  { title: "3) URL format", desc: "Оруулсан бол зөв байх" },
-                  { title: "4) Screenshot URL", desc: "Сонголттой" },
-                ].map((s) => (
-                  <div
-                    key={s.title}
-                    className="rounded-xl bg-white/5 border border-white/10 p-3 flex items-start gap-3"
-                  >
-                    <Circle className="h-5 w-5 text-white/35 mt-0.5" />
-                    <div>
-                      <div className="text-white/90 font-medium">{s.title}</div>
-                      <div className="text-white/55 text-sm">{s.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
 
               <div className="mt-5 h-px bg-white/10" />
-              <div className="mt-4 text-sm text-white/70">
-                Status: <span className="text-white/55">UI ONLY</span>
-              </div>
 
               <div className="mt-5 rounded-2xl bg-linear-to-br from-white/6 to-white/3 border border-white/10 p-4">
                 <div className="text-white/60 text-xs mb-2">Preview</div>
