@@ -2,11 +2,20 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import type { Blog, BlogVote } from "@prisma/client";
+type VoteRow = { userId: string; value: number | null };
 
-type BlogRow = Blog & {
+type BlogRow = {
+  id: string;
+  createdAt: Date | string;
+
+  title: string;
+  description: string | null;
+  link: string | null;
+  imageUrl: string | null;
+  userId: string;
+
   user: { name: string | null; email: string | null; imageUrl: string | null };
-  votes: BlogVote[];
+  votes: VoteRow[];
 };
 
 export const GET = async (request: NextRequest) => {
