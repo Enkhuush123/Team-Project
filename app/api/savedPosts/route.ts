@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
@@ -30,11 +31,11 @@ export const GET = async () => {
     const shaped = savedPosts.map((saved) => {
       const score = (saved.blog.votes ?? []).reduce(
         (sum, v) => sum + (v.value ?? 0),
-        0,
+        0
       );
       const myVote = userMe
-        ? ((saved.blog.votes ?? []).find((v) => v.userId === userMe.id)
-            ?.value ?? 0)
+        ? (saved.blog.votes ?? []).find((v) => v.userId === userMe.id)?.value ??
+          0
         : 0;
       const { votes, ...rest } = saved.blog as any;
       return { ...rest, score, myVote };

@@ -17,7 +17,11 @@ type Project = {
   title: string;
   description: string;
   url: string | null;
-  user?: { name?: string | null; email?: string | null } | null;
+  user: {
+    name?: string | null;
+    email?: string | null;
+    imageUrl: string | null;
+  };
   imageUrl?: string | null;
 };
 
@@ -27,6 +31,8 @@ const CLOUD_NAME = "dv38igwqg";
 export default function TestPage() {
   const [project, setProject] = useState<Project[]>([]);
   const [activeWebsiteId, setActiveWebsiteId] = useState<string | null>(null);
+
+  console.log(project);
 
   const [bug, setBug] = useState({
     description: "",
@@ -42,7 +48,7 @@ export default function TestPage() {
 
     const res = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-      { method: "POST", body: formDataCloudinary },
+      { method: "POST", body: formDataCloudinary }
     );
 
     const data = await res.json();
@@ -50,7 +56,7 @@ export default function TestPage() {
   };
 
   const handleBugImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -69,7 +75,7 @@ export default function TestPage() {
 
   const submitBug = async (
     e: React.FormEvent<HTMLFormElement>,
-    websiteId: string,
+    websiteId: string
   ) => {
     e.preventDefault();
 
@@ -129,9 +135,19 @@ export default function TestPage() {
             )}
 
             <p className="text-white/80">{p.description}</p>
-            <p className="text-white/60 text-sm">
-              {p.user?.name || p.user?.email || "Unknown"}
-            </p>
+            <div className="relative w-9 h-9">
+              {p.user.imageUrl ? (
+                <Image
+                  src={p.user.imageUrl}
+                  alt="avatar"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <p className="text-white">gg</p>
+              )}
+            </div>
+            <p className="text-white/60 text-sm">{p.user.email}</p>
 
             <div className="flex gap-3">
               {p.url && (
@@ -187,9 +203,7 @@ export default function TestPage() {
                       </div>
 
                       <div>
-                        <p className="text-white/80 mb-2">
-                          Screenshot (optional)
-                        </p>
+                        <p className="text-white/80 mb-2">Screenshot</p>
 
                         {bug.screenshot ? (
                           <div className="space-y-3">

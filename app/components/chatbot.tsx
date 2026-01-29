@@ -48,6 +48,7 @@ export const ChatbotPage = () => {
           { role: "assistant", content: data.text },
         ]);
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setMessages((prev) => [
         ...prev,
@@ -71,7 +72,7 @@ export const ChatbotPage = () => {
         onClick={() => setOpen((p) => !p)}
         className={[
           "relative h-14 w-14 rounded-full flex items-center justify-center",
-          "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600",
+          "bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600",
           "text-white",
           "shadow-[0_18px_55px_rgba(99,102,241,0.45)]",
           "border border-white/15",
@@ -87,7 +88,7 @@ export const ChatbotPage = () => {
       {open && (
         <div
           className={[
-            "mt-4 w-[360px] h-[520px] flex flex-col overflow-hidden rounded-2xl",
+            "mt-4 w-90 h-130 flex flex-col overflow-hidden rounded-2xl",
             "bg-black/70 border border-white/10 backdrop-blur-xl",
             "shadow-[0_20px_60px_rgba(99,102,241,0.18)]",
           ].join(" ")}
@@ -130,7 +131,7 @@ export const ChatbotPage = () => {
                   className={[
                     "max-w-[82%] rounded-2xl px-3 py-2 whitespace-pre-wrap",
                     m.role === "user"
-                      ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 text-white shadow-[0_10px_26px_rgba(79,70,229,0.25)]"
+                      ? "bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600 text-white shadow-[0_10px_26px_rgba(79,70,229,0.25)]"
                       : "bg-white/8 border border-white/10 text-white/85",
                   ].join(" ")}
                 >
@@ -179,7 +180,7 @@ export const ChatbotPage = () => {
               disabled={loading || !input.trim()}
               className={[
                 "h-10 px-4 rounded-xl text-sm font-semibold text-white",
-                "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600",
+                "bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600",
                 "shadow-[0_10px_26px_rgba(79,70,229,0.25)]",
                 "hover:brightness-110 active:scale-[0.98] transition",
                 "disabled:opacity-50 disabled:hover:brightness-100 disabled:active:scale-100",

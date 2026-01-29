@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     if (!websiteId || !description?.trim()) {
       return NextResponse.json(
         { message: "Missing websiteId/description" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
     if (!website)
       return NextResponse.json(
         { message: "Website not found" },
-        { status: 404 },
+        { status: 404 }
       );
 
     const verdict = await geminiValidateBug({
@@ -130,16 +130,31 @@ export async function POST(req: NextRequest) {
     });
 
     const status = verdict.isBug ? "APPROVED" : "REJECTED";
-    const reward = verdict.isBug ? REWARD[verdict.severity] : 0;
-
+    let duplicate = null as { id: string } | null;
+    if (verdict.isBug) {
+      duplicate = await prisma.review.findFirst({
+        where: {
+          websiteId,
+          reviewerId: reviewer.id,
+          status: "APPROVED",
+          description: description.trim(),
+        },
+        select: { id: true },
+      });
+    }
+    const reward = verdict.isBug && !duplicate ? REWARD[verdict.severity] : 0;
     if (reward > 0 && (website.user?.points ?? 0) < reward) {
       return NextResponse.json(
         { message: "Website owner does not have enough points to reward" },
-        { status: 400 },
+        { status: 400 }
       );
     }
+<<<<<<< HEAD
+    const result = await prisma.$transaction(async (tx) => {
+=======
 
     const result = await prisma.$transaction(async (tx: any) => {
+>>>>>>> c22d0668015e9860f69362cbf32bf9840df27c59
       const review = await tx.review.create({
         data: {
           description,
@@ -190,7 +205,7 @@ export async function POST(req: NextRequest) {
         reviewerPoints: result.reviewerPoints,
         ai: result.verdict,
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (err) {
     console.error("REVIEW POST ERROR:", err);
