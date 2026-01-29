@@ -28,14 +28,15 @@ export const GET = async () => {
         },
       },
     });
-    const shaped = savedPosts.map((saved) => {
+    const shaped = savedPosts.map((saved: any) => {
       const score = (saved.blog.votes ?? []).reduce(
-        (sum, v) => sum + (v.value ?? 0),
+        (sum: any, v: { value: any }) => sum + (v.value ?? 0),
         0
       );
       const myVote = userMe
-        ? (saved.blog.votes ?? []).find((v) => v.userId === userMe.id)?.value ??
-          0
+        ? (saved.blog.votes ?? []).find(
+            (v: { userId: string }) => v.userId === userMe.id
+          )?.value ?? 0
         : 0;
       const { votes, ...rest } = saved.blog as any;
       return { ...rest, score, myVote };
