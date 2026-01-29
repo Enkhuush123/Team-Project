@@ -29,8 +29,7 @@ export default function Hero3D() {
             <div className="mt-4 h-0.5 w-40 bg-linear-to-r from-cyan-400 via-blue-500 to-violet-500 rounded-full opacity-80" />
 
             <p className="mt-5 text-white/80 text-lg md:text-xl leading-relaxed">
-              Веб / апп-аа community-р шалгуулж, bug олж
-              <span className="text-white font-semibold">оноо</span> цуглуул.
+              Веб / апп-аа community-р шалгуулж, bug олж оноо цуглуул.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
