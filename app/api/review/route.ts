@@ -149,12 +149,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-<<<<<<< HEAD
-    const result = await prisma.$transaction(async (tx) => {
-=======
 
     const result = await prisma.$transaction(async (tx: any) => {
->>>>>>> c22d0668015e9860f69362cbf32bf9840df27c59
       const review = await tx.review.create({
         data: {
           description,
