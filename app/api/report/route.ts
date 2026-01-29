@@ -20,6 +20,7 @@ export async function POST(req: Request) {
       email,
       description,
       reporterId: user.id,
+      userId: user.id,
     },
   });
 
