@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     if (!title || !description) {
       return NextResponse.json(
         { message: "Missing title/description" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
       include: {
         user: {
-          select: { name: true, email: true },
+          select: { name: true, email: true, imageUrl: true },
         },
       },
     });
@@ -68,7 +68,9 @@ export async function GET(req: NextRequest) {
       url: w.link || null,
       imageUrl: w.imageUrl || null,
       status: "OPEN",
-      user: w.user ? { name: w.user.name, email: w.user.email } : null,
+      user: w.user
+        ? { name: w.user.name, email: w.user.email, imageUrl: w.user.imageUrl }
+        : null,
       createdAt: w.createdAt,
     }));
 

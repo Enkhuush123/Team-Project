@@ -17,7 +17,10 @@ export default function PointPage() {
   return (
     <div className="max-w-6xl mx-auto mt-20 px-6">
       <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
-        <UserPoints points={points} />
+        <div>
+          {" "}
+          <UserPoints points={points} />
+        </div>
         <BuyPoints onBought={(newPoints) => setPoints(newPoints)} />
       </div>
     </div>
