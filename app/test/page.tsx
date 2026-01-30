@@ -26,6 +26,15 @@ type Project = {
   imageUrl?: string | null;
 };
 
+type GeminiResponseType = {
+  ai: {
+    reason: string;
+  };
+  review: {
+    status: string;
+  };
+};
+
 const UPLOAD_PRESET = "softwarecom";
 const CLOUD_NAME = "dv38igwqg";
 
@@ -33,7 +42,12 @@ export default function TestPage() {
   const [project, setProject] = useState<Project[]>([]);
   const [activeWebsiteId, setActiveWebsiteId] = useState<string | null>(null);
 
+  const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [geminiResponseLoading, setGeminiResponseLoading] = useState(false);
+
+  const [showGeminiResponse, setShowGeminiResponse] = useState(false);
+  const [geminiResponse, setGeminiResponse] =
+    useState<GeminiResponseType | null>(null);
 
   console.log(project);
 
@@ -94,8 +108,11 @@ export default function TestPage() {
     });
 
     setGeminiResponseLoading(false);
+    setShowSubmitDialog(false);
+    setShowGeminiResponse(true);
 
     const data = await res.json();
+    setGeminiResponse(data);
     console.log("REVIEW RESPONSE:", data);
 
     if (!res.ok) {
@@ -170,7 +187,10 @@ export default function TestPage() {
                 </a>
               )}
 
-              <Dialog>
+              <Dialog
+                open={showSubmitDialog}
+                onOpenChange={setShowSubmitDialog}
+              >
                 <DialogTrigger asChild>
                   <Button
                     type="button"
@@ -266,6 +286,26 @@ export default function TestPage() {
                       </Button>
                     </DialogFooter>
                   </form>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog
+                open={showGeminiResponse}
+                onOpenChange={setShowGeminiResponse}
+              >
+                <DialogContent className="sm:max-w-130 bg-[#0b0b0f] border border-white/10 text-white">
+                  <DialogHeader>
+                    <DialogTitle
+                      className={`${
+                        geminiResponse?.review.status === "REJECTED"
+                          ? "text-red-500"
+                          : "text-green-500"
+                      }`}
+                    >
+                      {geminiResponse?.review.status}
+                    </DialogTitle>
+                  </DialogHeader>
+                  {geminiResponse?.ai.reason}
                 </DialogContent>
               </Dialog>
             </div>
