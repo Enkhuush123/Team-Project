@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { usePoints } from "../providers/PointProvider";
 import CoinIcon from "../_icons/CoinIcon";
+import { Check, Loader } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Pack = {
   key: string;
@@ -20,6 +22,10 @@ export default function BuyPoints({
 }) {
   const { setPoints } = usePoints();
   const [packs, setPacks] = useState<Pack[]>([]);
+
+  const [loadingPack, setLoadingPack] = useState<string | null>(null);
+  const [successPack, setSuccessPack] = useState<string | null>(null);
+
   useEffect(() => {
     const load = async () => {
       const res = await fetch("/api/pack");
@@ -30,21 +36,28 @@ export default function BuyPoints({
   }, []);
 
   const buy = async (packKey: string) => {
+    setLoadingPack(packKey);
+
     const res = await fetch(`/api/points/buy`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ packKey }),
     });
-    const data = await res.json();
-    if (!res.ok) {
-      return;
-    }
 
+    const data = await res.json();
+    setLoadingPack(null);
+
+    if (!res.ok) return;
+
+    setSuccessPack(packKey);
     setPoints(data.points);
     onBought(data.points);
+
+    setTimeout(() => {
+      setSuccessPack(null);
+    }, 1500);
   };
+
   return (
     <div className="w-full border border-white/15 rounded-2xl bg-white/5 p-6 text-white ">
       <h2 className="text-lg font-semibold mb-4">Buy Points</h2>
@@ -66,14 +79,19 @@ export default function BuyPoints({
                 {p.bonusPct ? `(+${p.bonusPct}% bonus)` : ""}
               </div>
             </div>
-            <button
+            <Button
               onClick={() => buy(p.key)}
-              className="rounded-lg px-4 py-2 text-sm font-semibold
-              bg-linear-to-r from-indigo-500 to-violet-600
-              hover:brightness-110 transition"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold
+             bg-linear-to-r from-indigo-500 to-violet-600
+             hover:brightness-110 transition"
+              disabled={successPack === p.key || loadingPack === p.key}
             >
-              {p.price}₮
-            </button>
+              {loadingPack === p.key && (
+                <Loader className="animate-spin h-4 w-4" />
+              )}
+              {successPack === p.key && <Check className="h-4 w-4" />}
+              {loadingPack !== p.key && successPack !== p.key && `${p.price}₮`}
+            </Button>
           </div>
         ))}
       </div>
