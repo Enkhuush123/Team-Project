@@ -127,6 +127,22 @@ export default function TestPage() {
             key={p.id}
             className="flex gap-10 w-150  h-150 flex-col border border-white/10 rounded-2xl p-6 bg-white/5"
           >
+            <div className="flex items-center gap-3">
+              <div className="relative w-9 h-9 rounded-full overflow-hidden border border-white/10 bg-black/40">
+                {p.user.imageUrl ? (
+                  <Image
+                    src={p.user.imageUrl}
+                    alt={p.user.name || "User"}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-white/10" />
+                )}
+              </div>
+
+              <p className="text-white/60 text-sm">{p.user.email}</p>
+            </div>
             <h2 className="text-white text-xl font-semibold">{p.title}</h2>
 
             {p.imageUrl && (
@@ -141,19 +157,6 @@ export default function TestPage() {
             )}
 
             <p className="text-white/80">{p.description}</p>
-            <div className="relative w-9 h-9">
-              {p.user.imageUrl ? (
-                <Image
-                  src={p.user.imageUrl}
-                  alt="avatar"
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <p className="text-white">gg</p>
-              )}
-            </div>
-            <p className="text-white/60 text-sm">{p.user.email}</p>
 
             <div className="flex gap-3">
               {p.url && (
