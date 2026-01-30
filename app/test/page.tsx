@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Loader } from "lucide-react";
 
 type Project = {
   id: string;
@@ -32,7 +33,9 @@ export default function TestPage() {
   const [project, setProject] = useState<Project[]>([]);
   const [activeWebsiteId, setActiveWebsiteId] = useState<string | null>(null);
 
-  console.log(project, "gg");
+  const [geminiResponseLoading, setGeminiResponseLoading] = useState(false);
+
+  console.log(project);
 
   const [bug, setBug] = useState({
     description: "",
@@ -78,6 +81,7 @@ export default function TestPage() {
     websiteId: string,
   ) => {
     e.preventDefault();
+    setGeminiResponseLoading(true);
 
     const res = await fetch("/api/review", {
       method: "POST",
@@ -88,6 +92,8 @@ export default function TestPage() {
         screenshotUrl: bug.screenshot || null,
       }),
     });
+
+    setGeminiResponseLoading(false);
 
     const data = await res.json();
     console.log("REVIEW RESPONSE:", data);
@@ -249,9 +255,14 @@ export default function TestPage() {
                       </div>
                     </div>
 
-                    <DialogFooter className="mt-6">
-                      <Button type="submit" disabled={uploading}>
-                        {uploading ? "Uploading..." : "Submit a bug"}
+                    <DialogFooter className="mt-6 flex items-center">
+                      {geminiResponseLoading && (
+                        <Loader className="animate-spin h-5 w-5" />
+                      )}
+                      <Button type="submit" disabled={geminiResponseLoading}>
+                        {geminiResponseLoading
+                          ? "Uploading..."
+                          : "Submit a bug"}
                       </Button>
                     </DialogFooter>
                   </form>
