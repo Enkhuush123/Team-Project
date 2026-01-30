@@ -15,7 +15,40 @@ type News = {
 };
 
 export default function ItNewsCard() {
-  const [news, setNews] = useState<News[]>([]);
+  const [news, setNews] = useState<News[]>([
+    // {
+    //   id: "news-001",
+    //   title: "AI Models Now Write Production Code Faster Than Humans",
+    //   summary:
+    //     "A new benchmark study shows modern AI systems generating reliable production-ready code in a fraction of the time it takes experienced engineers.",
+    //   image: "https://images.unsplash.com/photo-1677442136019-21780ecad995",
+    //   source: "Tech Chronicle",
+    // },
+    // {
+    //   id: "news-002",
+    //   title: "Global Markets Rally After Interest Rate Pause",
+    //   summary:
+    //     "Stocks surged worldwide after central banks signaled a pause in rate hikes, easing investor concerns about an economic slowdown.",
+    //   image: "https://images.unsplash.com/photo-1559526324-593bc073d938",
+    //   source: "Financial Daily",
+    // },
+    // {
+    //   id: "news-003",
+    //   title: "Researchers Discover Breakthrough in Battery Technology",
+    //   summary:
+    //     "Scientists unveiled a new battery design capable of charging in under five minutes while significantly extending lifespan.",
+    //   image: "https://images.unsplash.com/photo-1581092919534-3c3c2c8d5e84",
+    //   source: "Science Today",
+    // },
+    // {
+    //   id: "news-004",
+    //   title: "Major Update Announced for Next-Gen Gaming Consoles",
+    //   summary:
+    //     "The update introduces ray-tracing enhancements, lower latency multiplayer, and expanded backward compatibility.",
+    //   image: "https://images.unsplash.com/photo-1598550483028-2aef1b58f16f",
+    //   source: "GameWire",
+    // },
+  ]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const fetchNews = useCallback(async () => {
@@ -25,6 +58,7 @@ export default function ItNewsCard() {
       if (!res.ok) throw new Error("Failed to fetch news");
 
       const data: News[] = await res.json();
+      console.log(data);
       setNews(data);
     } catch (err) {
       console.error("NEWS FETCH ERROR:", err);
@@ -75,23 +109,27 @@ export default function ItNewsCard() {
                 onClick={() => router.push(`/readmore/${n.id}`)}
                 key={idx}
                 rel="noreferrer"
-                className="block  rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
+                className="block w-full rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-3 w-full">
                   <div className="flex flex-col gap-5 ">
                     <div className="flex justify-between ">
-                      <div className="text-white/90 text-sm font-medium  w-100 text-left flex justify-between ">
-                        {n.title}
+                      <div className="w-full text-left flex h-fit justify-between">
+                        <span className="text-white/90 text-sm font-medium line-clamp-2">
+                          {n.title}
+                        </span>
                       </div>
-                      <div className=" h-10 text-[11px] text-white/60 rounded-full bg-white/5 border border-white/10 p-2">
-                        {n.source}
+                      <div className="text-xs w-20 overflow-hidden h-fit text-white/60 rounded-full bg-white/5 border border-white/10 px-2">
+                        <span className="overflow-hidden line-clamp-1">
+                          {n.source}
+                        </span>
                       </div>
                     </div>
 
                     <img
                       src={n.image}
                       alt={n.title}
-                      className="h-70  w-150 object-cover"
+                      className="w-full rounded-xl object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = "/no-image.png";
                       }}

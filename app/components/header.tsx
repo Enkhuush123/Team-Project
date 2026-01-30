@@ -153,23 +153,27 @@ export default function Header() {
                   className="cursor-pointer"
                   onClick={() => setSettingsOpen(!settingsOpen)}
                 >
-                  <ChevronDown className="text-gray-500" />
+                  <ChevronDown
+                    className={`${settingsOpen ? "text-white rotate-180 transition" : "text-gray-500 rotate-0 transition"}`}
+                  />
                 </button>
                 <div
-                  className={`border border-gray-500 text-white p-2 rounded-xl h-fit w-50 absolute top-16 right-5 ${
+                  className={`border border-gray-500 text-white py-2 rounded-xl h-fit w-50 absolute top-16 right-5 ${
                     settingsOpen ? "block" : "hidden"
                   }`}
                 >
-                  <button
-                    className="cursor-pointer flex items-center w-full hover:brightness-200 transition text-sm border border-gray-500 rounded-md py-1 px-2 text-gray-300"
-                    onClick={() => {
-                      router.push("/savedPosts");
-                      setSettingsOpen(false);
-                    }}
-                  >
-                    <BookmarkCheck />
-                    Saved Posts
-                  </button>
+                  <div className="border mx-2 rounded-md border-gray-500">
+                    <button
+                      className="cursor-pointer flex items-center w-full hover:brightness-200 transition text-sm   p-2 text-gray-300"
+                      onClick={() => {
+                        router.push("/savedPosts");
+                        setSettingsOpen(false);
+                      }}
+                    >
+                      <BookmarkCheck />
+                      Saved Posts
+                    </button>
+                  </div>
                 </div>
               </div>
             </SignedIn>
