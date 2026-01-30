@@ -2,6 +2,7 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
+import { FiSend } from "react-icons/fi";
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -41,34 +42,38 @@ type CommentItem = {
   };
 };
 function CommentSection({ blogId }: { blogId: string }) {
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [content, setContent] = useState("");
   const [comments, setComments] = useState<CommentItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
   const load = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const res = await fetch(`/api/comment?blogId=${blogId}`);
+      const res = await fetch(`/api/comment?blogId=${blogId}`, {
+        cache: "no-store",
+      });
       const data = await res.json();
+      if (!res.ok) throw new Error(data?.message ?? "Failed to fetch comments");
       setComments(data.comments ?? []);
-
-      setLoading(false);
     } catch (err) {
-      return NextResponse.json(
-        { message: "Failed to fetch comments" },
-        { status: 500 }
-      );
+      setError(err instanceof Error ? err.message : "Failed to fetch comments");
+    } finally {
+      setLoading(false);
     }
   };
-  const onToggle = async () => {
-    const next = !open;
-    setOpen(next);
-    if (next) await load();
-  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blogId]);
+
   const submit = async () => {
     if (!content.trim()) return;
-    setSending(false);
+    setSending(true);
+    setError(null);
     try {
       const res = await fetch("/api/comment", {
         method: "POST",
@@ -76,80 +81,79 @@ function CommentSection({ blogId }: { blogId: string }) {
         body: JSON.stringify({ blogId, content }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        alert(data.message || "failed");
-        return;
-      }
+      if (!res.ok) throw new Error(data?.message ?? "Failed to post comment");
+
       setComments((prev) => [data.comment, ...prev]);
       setContent("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to post comment");
     } finally {
-      setLoading(false);
+      setSending(false);
     }
   };
 
   return (
-    <div>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="text-white/70 hover:text-white transition text-sm"
-      >
-        {open ? "Hide Comments" : "Show Comments"}
-      </button>
-      {open && (
-        <div>
-          <div>
-            <input
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Write a comment"
-              className="flex h-10 rounded-xl bg-black/30 border border-white/10 px-3  text-white outline-0"
-            />
-            <button
-              type="button"
-              onClick={submit}
-              disabled={sending}
-              className="h-10 px-4 rounded-xl bg-white/10 border border-white/10 text-white hover:bg-white/15 transition"
+    <div className="mt-3 space-y-3">
+      <div className="flex gap-2">
+        <input
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Write a comment"
+          className="flex-1 h-10 rounded-xl bg-black/30 border border-white/10 px-3 text-white outline-0"
+        />
+        <button
+          type="button"
+          onClick={submit}
+          disabled={sending}
+          className="h-10 px-4 rounded-xl bg-white/10 border border-white/10 text-white hover:bg-white/15 transition disabled:opacity-60"
+        >
+          {sending ? "..." : <FiSend />}
+        </button>
+      </div>
+
+      {error && (
+        <div className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="text-white/60 text-sm">Loading...</div>
+      ) : comments.length === 0 ? (
+        <div className="text-white/60 text-sm">No comments yet</div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {comments.map((c) => (
+            <div
+              key={c.id}
+              className="flex gap-3 items-start rounded-xl bg-white/5 border border-white/10 p-3 w-full"
             >
-              {sending ? "..." : "Post"}
-            </button>
-          </div>
-          {loading ? (
-            <div>Loading...</div>
-          ) : comments.length === 0 ? (
-            <div>No comments yet</div>
-          ) : (
-            <div className="flex flex-col gap-5">
-              {comments.map((c) => (
-                <div
-                  key={c.id}
-                  className="flex gap-3 items-center  rounded-xl bg-white/5 border border-white/10 p-3 w-full"
-                >
-                  <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40 ">
-                    {c.user.imageUrl ? (
-                      <Image
-                        src={c.user.imageUrl}
-                        alt="avatar"
-                        fill
-                        className="object-cover"
-                      />
-                    ) : null}
-                  </div>
-                  <div className="w-full">
-                    <div className="font-bold">{c.user.email}</div>
-                    <div className="flex  justify-between ">
-                      <div>{c.content}</div>
-                      <div className="text-sm text-gray-500">
-                        {formatDistanceToNow(new Date(c.createdAt), {
-                          addSuffix: true,
-                        })}
-                      </div>
-                    </div>
+              <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40">
+                {c.user.imageUrl ? (
+                  <Image
+                    src={c.user.imageUrl}
+                    alt="avatar"
+                    fill
+                    className="object-cover"
+                  />
+                ) : null}
+              </div>
+
+              <div className="w-full">
+                <div className="font-semibold text-sm">
+                  {c.user.email ?? c.user.name ?? "User"}
+                </div>
+                <div className="flex justify-between gap-3">
+                  <div className="text-white/80 text-sm">{c.content}</div>
+                  <div className="text-xs text-white/40 shrink-0">
+                    {formatDistanceToNow(new Date(c.createdAt), {
+                      addSuffix: true,
+                    })}
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
-          )}
+          ))}
         </div>
       )}
     </div>
@@ -184,8 +188,8 @@ export default function Blogs() {
       prev.map((b) =>
         b.id === blogId
           ? { ...b, score: optimisticScore, myVote: nextValue }
-          : b
-      )
+          : b,
+      ),
     );
     const res = await fetch("/api/blogVote", {
       method: "POST",
@@ -195,8 +199,8 @@ export default function Blogs() {
     const data = await res.json();
     setBlogs((prev) =>
       prev.map((b) =>
-        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b
-      )
+        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b,
+      ),
     );
   };
   console.log(blogs, "blogs");
@@ -333,7 +337,7 @@ export default function Blogs() {
                       type="button"
                       onClick={() =>
                         setOpenCommentsFor((prev) =>
-                          prev === item.id ? null : item.id
+                          prev === item.id ? null : item.id,
                         )
                       }
                     >
