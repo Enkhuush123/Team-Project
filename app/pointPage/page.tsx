@@ -10,7 +10,7 @@ export default function PointPage() {
     const load = async () => {
       const res = await fetch("/api/user");
       const data = await res.json();
-      setPoints(data.points ?? 0);
+      setPoints(data.userData.points ?? 0);
     };
     load();
   }, []);
