@@ -89,7 +89,9 @@ export default function BuyPoints({
               {loadingPack === p.key && (
                 <Loader className="animate-spin h-4 w-4" />
               )}
-              {successPack === p.key && <Check className="h-4 w-4" />}
+              {successPack === p.key && (
+                <Check className="h-4 w-4 text-green-500" />
+              )}
               {loadingPack !== p.key && successPack !== p.key && `${p.price}₮`}
             </Button>
           </div>
