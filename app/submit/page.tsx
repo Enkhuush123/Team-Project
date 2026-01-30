@@ -58,7 +58,7 @@ export default function SubmitPage() {
         {
           method: "POST",
           body: formDataCloudinary,
-        }
+        },
       );
 
       const data = await res.json();
@@ -119,27 +119,6 @@ export default function SubmitPage() {
               тайлбарласан төслүүд хурдан шалгагдана.
             </p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              className="h-10 bg-white/10 text-white border border-white/15 hover:bg-white/15"
-              type="button"
-              onClick={() => history.back()}
-            >
-              Цуцлах
-            </Button>
-
-            <Button
-              variant="secondary"
-              className="h-10 bg-white/10 text-white border border-white/15 hover:bg-white/15"
-              onClick={clearAll}
-              type="button"
-            >
-              <X className="h-4 w-4 mr-2" />
-              Цэвэрлэх
-            </Button>
-          </div>
         </div>
 
         <div className="mt-8 grid lg:grid-cols-12 gap-6">
@@ -147,16 +126,9 @@ export default function SubmitPage() {
             <GlassCard className="p-6 md:p-7">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-white/80 text-sm backdrop-blur">
-                    <Sparkles className="h-4 w-4" />
-                    Project Submit
-                  </div>
                   <h2 className="mt-4 text-white text-xl font-semibold">
                     Төслийн мэдээлэл
                   </h2>
-                  <p className="mt-1 text-white/60 text-sm">
-                    * Тайлбар дээр “юуг шалгах вэ?” гэдгийг тодорхой бич.
-                  </p>
                 </div>
               </div>
 
@@ -170,7 +142,7 @@ export default function SubmitPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
                     }
-                    placeholder="Жишээ: Landing page — Navbar + Hero"
+                    placeholder="Title..."
                     className="h-11 bg-white/5 border-white/15 text-white placeholder:text-white/40
                                focus-visible:ring-0 focus-visible:border-white/30
                                transition hover:border-white/25"
