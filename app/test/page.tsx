@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Loader } from "lucide-react";
 
 type Project = {
   id: string;
@@ -32,6 +33,8 @@ export default function TestPage() {
   const [project, setProject] = useState<Project[]>([]);
   const [activeWebsiteId, setActiveWebsiteId] = useState<string | null>(null);
 
+  const [geminiResponseLoading, setGeminiResponseLoading] = useState(false);
+
   console.log(project);
 
   const [bug, setBug] = useState({
@@ -48,7 +51,7 @@ export default function TestPage() {
 
     const res = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-      { method: "POST", body: formDataCloudinary }
+      { method: "POST", body: formDataCloudinary },
     );
 
     const data = await res.json();
@@ -56,7 +59,7 @@ export default function TestPage() {
   };
 
   const handleBugImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -75,9 +78,10 @@ export default function TestPage() {
 
   const submitBug = async (
     e: React.FormEvent<HTMLFormElement>,
-    websiteId: string
+    websiteId: string,
   ) => {
     e.preventDefault();
+    setGeminiResponseLoading(true);
 
     const res = await fetch("/api/review", {
       method: "POST",
@@ -88,6 +92,8 @@ export default function TestPage() {
         screenshotUrl: bug.screenshot || null,
       }),
     });
+
+    setGeminiResponseLoading(false);
 
     const data = await res.json();
     console.log("REVIEW RESPONSE:", data);
@@ -246,9 +252,14 @@ export default function TestPage() {
                       </div>
                     </div>
 
-                    <DialogFooter className="mt-6">
-                      <Button type="submit" disabled={uploading}>
-                        {uploading ? "Uploading..." : "Submit a bug"}
+                    <DialogFooter className="mt-6 flex items-center">
+                      {geminiResponseLoading && (
+                        <Loader className="animate-spin h-5 w-5" />
+                      )}
+                      <Button type="submit" disabled={geminiResponseLoading}>
+                        {geminiResponseLoading
+                          ? "Uploading..."
+                          : "Submit a bug"}
                       </Button>
                     </DialogFooter>
                   </form>
