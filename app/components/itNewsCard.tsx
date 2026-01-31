@@ -1,75 +1,103 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Newspaper, RefreshCcw, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 
-type News = {
-  id: string;
+type NewsItem = {
+  id: number;
   title: string;
-  summary: string;
-  image: string;
-  source: string;
+  time: string;
+  tag: string;
+  url: string;
+};
+
+type NewsApiResponse = {
+  items: NewsItem[];
+  nextStart: number | null;
+  hasMore: boolean;
 };
 
 export default function ItNewsCard() {
-  const [news, setNews] = useState<News[]>([
-    // {
-    //   id: "news-001",
-    //   title: "AI Models Now Write Production Code Faster Than Humans",
-    //   summary:
-    //     "A new benchmark study shows modern AI systems generating reliable production-ready code in a fraction of the time it takes experienced engineers.",
-    //   image: "https://images.unsplash.com/photo-1677442136019-21780ecad995",
-    //   source: "Tech Chronicle",
-    // },
-    // {
-    //   id: "news-002",
-    //   title: "Global Markets Rally After Interest Rate Pause",
-    //   summary:
-    //     "Stocks surged worldwide after central banks signaled a pause in rate hikes, easing investor concerns about an economic slowdown.",
-    //   image: "https://images.unsplash.com/photo-1559526324-593bc073d938",
-    //   source: "Financial Daily",
-    // },
-    // {
-    //   id: "news-003",
-    //   title: "Researchers Discover Breakthrough in Battery Technology",
-    //   summary:
-    //     "Scientists unveiled a new battery design capable of charging in under five minutes while significantly extending lifespan.",
-    //   image: "https://images.unsplash.com/photo-1581092919534-3c3c2c8d5e84",
-    //   source: "Science Today",
-    // },
-    // {
-    //   id: "news-004",
-    //   title: "Major Update Announced for Next-Gen Gaming Consoles",
-    //   summary:
-    //     "The update introduces ray-tracing enhancements, lower latency multiplayer, and expanded backward compatibility.",
-    //   image: "https://images.unsplash.com/photo-1598550483028-2aef1b58f16f",
-    //   source: "GameWire",
-    // },
-  ]);
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const fetchNews = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/ItNews", { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to fetch news");
 
-      const data: News[] = await res.json();
-      console.log(data);
-      setNews(data);
-    } catch (err) {
-      console.error("NEWS FETCH ERROR:", err);
+  const [nextStart, setNextStart] = useState<number | null>(0);
+  const [hasMore, setHasMore] = useState(true);
+
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  const cooldownRef = useRef(false);
+  const COOLDOWN_MS = 700;
+
+  const seenRef = useRef<Set<number>>(new Set());
+
+  const fetchNews = async (mode: "reset" | "more" = "reset") => {
+    if (loading) return;
+    if (mode === "more" && (!hasMore || nextStart === null)) return;
+    if (mode === "more" && cooldownRef.current) return;
+
+    try {
+      if (mode === "more") {
+        cooldownRef.current = true;
+        setTimeout(() => (cooldownRef.current = false), COOLDOWN_MS);
+      }
+
+      setLoading(true);
+
+      const start = mode === "reset" ? 0 : nextStart ?? 0;
+      const res = await fetch(`/api/news?limit=10&start=${start}`, {
+        cache: "no-store",
+      });
+
+      const data: NewsApiResponse = await res.json();
+      const incoming = data.items || [];
+
+      if (mode === "reset") {
+        seenRef.current = new Set(incoming.map((x) => x.id));
+        setNews(incoming);
+      } else {
+        const filtered = incoming.filter((x) => !seenRef.current.has(x.id));
+        filtered.forEach((x) => seenRef.current.add(x.id));
+        setNews((prev) => [...prev, ...filtered]);
+      }
+
+      setNextStart(data.nextStart ?? null);
+      setHasMore(Boolean(data.hasMore));
+    } catch (e) {
+      console.error(e);
+      if (mode === "reset") setNews([]);
+      setHasMore(false);
+      setNextStart(null);
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchNews("reset");
   }, []);
 
   useEffect(() => {
-    fetchNews();
-  }, [fetchNews]);
+    const rootEl = scrollRef.current;
+    const targetEl = sentinelRef.current;
+    if (!rootEl || !targetEl) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) fetchNews("more");
+      },
+      {
+        root: rootEl,
+        rootMargin: "350px",
+        threshold: 0,
+      }
+    );
+
+    io.observe(targetEl);
+    return () => io.disconnect();
+  }, [hasMore, nextStart, loading]);
 
   return (
     <div className="h-full rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl overflow-hidden shadow-[0_20px_60px_rgba(99,102,241,0.10)]">
@@ -79,7 +107,9 @@ export default function ItNewsCard() {
             <Newspaper className="h-5 w-5 text-white/80" />
           </div>
           <div>
-            <div className="text-white font-semibold text-lg">Latest News</div>
+            <div className="text-white font-semibold text-lg">
+              Latest IT News
+            </div>
             <div className="text-white/55 text-sm">
               {loading ? "Updating..." : "Live feed"}
             </div>
@@ -89,8 +119,8 @@ export default function ItNewsCard() {
         <Button
           variant="secondary"
           className="h-9 bg-white/10 text-white border border-white/15 hover:bg-white/15"
+          onClick={() => fetchNews("reset")}
           disabled={loading}
-          onClick={fetchNews}
         >
           <RefreshCcw
             className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
@@ -105,44 +135,29 @@ export default function ItNewsCard() {
 
           <div className="mt-3 space-y-3">
             {news.map((n, idx) => (
-              <button
-                onClick={() => router.push(`/readmore/${n.id}`)}
+              <a
                 key={idx}
+                href={n.url}
+                target="_blank"
                 rel="noreferrer"
-                className="block w-full rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
+                className="block rounded-xl bg-white/5 border border-white/10 px-3 py-3 hover:bg-white/7 transition"
               >
-                <div className="flex items-start justify-between gap-3 w-full">
-                  <div className="flex flex-col gap-5 ">
-                    <div className="flex justify-between ">
-                      <div className="w-full text-left flex h-fit justify-between">
-                        <span className="text-white/90 text-sm font-medium line-clamp-2">
-                          {n.title}
-                        </span>
-                      </div>
-                      <div className="text-xs w-20 overflow-hidden h-fit text-white/60 rounded-full bg-white/5 border border-white/10 px-2">
-                        <span className="overflow-hidden line-clamp-1">
-                          {n.source}
-                        </span>
-                      </div>
-                    </div>
-
-                    <img
-                      src={n.image}
-                      alt={n.title}
-                      className="w-full rounded-xl object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/no-image.png";
-                      }}
-                    />
+                <div className="flex items-start justify-between gap-3">
+                  <div className="text-white/90 text-sm font-medium leading-snug line-clamp-2">
+                    {n.title}
                   </div>
+                  <span className="shrink-0 text-[11px] text-white/60 rounded-full bg-white/5 border border-white/10 px-2 py-1">
+                    {n.tag}
+                  </span>
                 </div>
 
                 <div className="mt-2 flex items-center justify-between text-xs text-white/50">
+                  <span>{n.time}</span>
                   <span className="inline-flex items-center gap-1 text-white/60">
                     Open <ArrowUpRight className="h-3.5 w-3.5" />
                   </span>
                 </div>
-              </button>
+              </a>
             ))}
 
             {!loading && news.length === 0 && (
@@ -151,6 +166,10 @@ export default function ItNewsCard() {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="mt-4 text-xs text-white/45">
+          Source: Hacker News (no API key)
         </div>
       </div>
     </div>
