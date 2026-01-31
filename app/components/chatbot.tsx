@@ -14,12 +14,6 @@ export const ChatbotPage = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading, open]);
-
   const handleSend = async () => {
     if (!input.trim() || loading) return;
 
@@ -48,7 +42,6 @@ export const ChatbotPage = () => {
           { role: "assistant", content: data.text },
         ]);
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setMessages((prev) => [
         ...prev,
@@ -68,11 +61,12 @@ export const ChatbotPage = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
+      {/* ✅ Floating Button (your design) */}
       <button
         onClick={() => setOpen((p) => !p)}
         className={[
           "relative h-14 w-14 rounded-full flex items-center justify-center",
-          "bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600",
+          "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600",
           "text-white",
           "shadow-[0_18px_55px_rgba(99,102,241,0.45)]",
           "border border-white/15",
@@ -86,38 +80,17 @@ export const ChatbotPage = () => {
       </button>
 
       {open && (
-        <div
-          className={[
-            "mt-4 w-90 h-130 flex flex-col overflow-hidden rounded-2xl",
-            "bg-black/70 border border-white/10 backdrop-blur-xl",
-            "shadow-[0_20px_60px_rgba(99,102,241,0.18)]",
-          ].join(" ")}
-        >
-          <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                <Bot className="h-5 w-5 text-white/80" />
-              </div>
-              <div>
-                <div className="text-white font-semibold leading-tight">
-                  AI Chatbot
-                </div>
-                <div className="text-white/55 text-xs"></div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setOpen(false)}
-              className="h-9 w-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:bg-white/10 transition"
-              aria-label="Close chatbot"
-            >
-              <X className="h-4 w-4" />
-            </button>
+        <div className="mt-4 w-80 h-125 bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden">
+          <div className="bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 text-white px-4 py-3 font-semibold">
+            AI Chatbot
           </div>
 
+          {/* ✅ Messages */}
           <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm">
-            {messages.length === 0 && (
-              <div className="text-center text-gray-400 mt-6"></div>
+            {messages.length === 0 && !loading && (
+              <div className="text-center text-white/45 mt-10">
+                Message бичээд эхлээрэй 👋
+              </div>
             )}
 
             {messages.map((m, i) => (
@@ -131,7 +104,7 @@ export const ChatbotPage = () => {
                   className={[
                     "max-w-[82%] rounded-2xl px-3 py-2 whitespace-pre-wrap",
                     m.role === "user"
-                      ? "bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600 text-white shadow-[0_10px_26px_rgba(79,70,229,0.25)]"
+                      ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 text-white shadow-[0_10px_26px_rgba(79,70,229,0.25)]"
                       : "bg-white/8 border border-white/10 text-white/85",
                   ].join(" ")}
                 >
@@ -157,16 +130,14 @@ export const ChatbotPage = () => {
                 </div>
               </div>
             )}
-
-            <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-3 border-t border-white/10 flex gap-2">
+          <div className="p-2 border-t flex gap-2">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="ask a quistion..."
+              placeholder="Message бич..."
               disabled={loading}
               className={[
                 "flex-1 h-10 rounded-xl px-3 text-sm outline-none",
@@ -180,7 +151,7 @@ export const ChatbotPage = () => {
               disabled={loading || !input.trim()}
               className={[
                 "h-10 px-4 rounded-xl text-sm font-semibold text-white",
-                "bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600",
+                "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600",
                 "shadow-[0_10px_26px_rgba(79,70,229,0.25)]",
                 "hover:brightness-110 active:scale-[0.98] transition",
                 "disabled:opacity-50 disabled:hover:brightness-100 disabled:active:scale-100",

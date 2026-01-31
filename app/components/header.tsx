@@ -88,6 +88,18 @@ export default function Header() {
 
           <div className="flex items-center justify-end gap-2 md:gap-3">
             <button
+              onClick={() => router.push("/addPost")}
+              className="hidden sm:flex h-9 md:h-10 px-3 md:px-4 rounded-xl
+                         bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600
+                         hover:brightness-110
+                         text-white transition items-center gap-2 text-sm font-semibold
+                         shadow-[0_4px_15px_rgba(79,70,229,0.4)]"
+              type="button"
+            >
+              <span>+ Create Post</span>
+            </button>
+
+            <button
               onClick={() => router.push("/helpcenter")}
               className="hidden sm:flex h-9 md:h-10 px-3 md:px-4 rounded-xl
                          bg-white/5 border border-white/10
