@@ -3,13 +3,13 @@ export type Section = "hero" | "about" | "features" | "how-it-works";
 export const STATES = {
   hero: {
     desktop: {
-      scale: { x: 0.35, y: 0.35, z: 0.35 },
-      position: { x: 225, y: -100, z: 0 },
+      scale: { x: 0.28, y: 0.28, z: 0.28 },
+      position: { x: 280, y: -80, z: 0 },
       rotation: { x: 0, y: 0, z: 0 },
     },
     mobile: {
-      scale: { x: 0.40, y: 0.40, z: 0.40 },
-      position: { x: 0, y: -200, z: 0 },
+      scale: { x: 0.32, y: 0.32, z: 0.32 },
+      position: { x: 0, y: -180, z: 0 },
       rotation: { x: 0, y: 0, z: 0 },
     },
   },
