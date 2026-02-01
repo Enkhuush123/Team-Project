@@ -1,14 +1,12 @@
 export default function About() {
   return (
     <section className="relative min-h-screen bg-black">
-      {/* glow bg */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
 
       <div className="relative mx-auto w-full max-w-6xl px-6 py-16 md:py-20">
-        {/* header */}
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight">
             <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent drop-shadow-[0_0_22px_rgba(99,102,241,0.35)]">

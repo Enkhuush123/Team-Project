@@ -3,8 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
+import { ThemeProvider } from "next-themes";
 
 import Header from "./components/header";
+import Preloader from "./components/preloader";
 
 import { ChatbotPage } from "./components/chatbot";
 import { PointsProvider } from "./providers/PointProvider";
@@ -36,21 +38,25 @@ export default function RootLayout({
 
  {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClerkProvider>
-          <PointsProvider>
-            <CreateUser />
-            <Header />
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <Preloader>
+            <ClerkProvider>
+              <PointsProvider>
+                <CreateUser />
+                <Header />
 
-            <div className="flex w-full min-h-[calc(100vh-56px)] ">
-              <main className="flex-1 min-w-0 ">{children}</main>
-            </div>
-          </PointsProvider>
-        </ClerkProvider>
-        <ChatbotPage />
+                <div className="flex w-full min-h-[calc(100vh-56px)] ">
+                  <main className="flex-1 min-w-0 ">{children}</main>
+                </div>
+              </PointsProvider>
+            </ClerkProvider>
+            <ChatbotPage />
+          </Preloader>
+        </ThemeProvider>
       </body>
     </html>
   );
