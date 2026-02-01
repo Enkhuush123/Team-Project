@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { Sparkles, X, User, Globe, Image as ImgIcon } from "lucide-react";
+import { set } from "zod";
 
 type Project = {
   id: string;
@@ -24,6 +25,15 @@ type Project = {
   imageUrl?: string | null;
   screenshot?: string | null;
   status?: string;
+};
+
+type GeminiResponseType = {
+  ai: {
+    reason: string;
+  };
+  review: {
+    status: string;
+  };
 };
 
 const UPLOAD_PRESET = "softwarecom";
@@ -53,6 +63,15 @@ export default function TestPage() {
   const [project, setProject] = useState<Project[]>([]);
   const [activeWebsiteId, setActiveWebsiteId] = useState<string | null>(null);
 
+  const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+  const [geminiResponseLoading, setGeminiResponseLoading] = useState(false);
+
+  const [showGeminiResponse, setShowGeminiResponse] = useState(false);
+  const [geminiResponse, setGeminiResponse] =
+    useState<GeminiResponseType | null>(null);
+
+  console.log(project);
+
   const [bug, setBug] = useState({
     description: "",
     screenshot: "",
@@ -74,7 +93,7 @@ export default function TestPage() {
 
     const res = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-      { method: "POST", body: formDataCloudinary }
+      { method: "POST", body: formDataCloudinary },
     );
 
     const data = await res.json();
@@ -82,7 +101,7 @@ export default function TestPage() {
   };
 
   const handleBugImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -107,6 +126,8 @@ export default function TestPage() {
       return;
     }
 
+    setGeminiResponseLoading(true);
+
     const res = await fetch("/api/review", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -117,7 +138,12 @@ export default function TestPage() {
       }),
     });
 
+    setGeminiResponseLoading(false);
+    setShowSubmitDialog(false);
+    setShowGeminiResponse(true);
+
     const data = await res.json();
+    setGeminiResponse(data);
     console.log("REVIEW RESPONSE:", data);
 
     if (!res.ok) {
@@ -292,7 +318,10 @@ export default function TestPage() {
                   </a>
                 )}
 
-                <Dialog>
+                <Dialog
+                  open={showSubmitDialog}
+                  onOpenChange={setShowSubmitDialog}
+                >
                   <DialogTrigger asChild>
                     <Button
                       type="button"
@@ -389,11 +418,37 @@ export default function TestPage() {
                           </Button>
                         </DialogClose>
 
-                        <Button type="submit" disabled={uploading}>
-                          {uploading ? "Uploading..." : "Submit a bug"}
+                        <Button type="submit" disabled={geminiResponseLoading}>
+                          {geminiResponseLoading
+                            ? "Uploading..."
+                            : "Submit a bug"}
                         </Button>
                       </DialogFooter>
                     </form>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog
+                  open={showGeminiResponse}
+                  onOpenChange={setShowGeminiResponse}
+                >
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        <span
+                          className={`${
+                            geminiResponse?.review.status === "REJECTED"
+                              ? "text-red-500"
+                              : "text-green-500"
+                          }`}
+                        >
+                          {geminiResponse?.review.status}
+                        </span>
+                        <div className="mt-3 font-light">
+                          {geminiResponse?.ai.reason}
+                        </div>
+                      </DialogTitle>
+                    </DialogHeader>
                   </DialogContent>
                 </Dialog>
               </div>
