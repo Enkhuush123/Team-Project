@@ -73,7 +73,6 @@ export default function CommunityRules() {
                 transition
               "
             >
-              {/* icon */}
               <div
                 className="
                   mb-4 h-12 w-12 rounded-xl
