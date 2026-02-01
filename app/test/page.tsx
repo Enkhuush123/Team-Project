@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { Sparkles, X, User, Globe, Image as ImgIcon } from "lucide-react";
+import { set } from "zod";
 
 type Project = {
   id: string;
@@ -92,7 +93,7 @@ export default function TestPage() {
 
     const res = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-      { method: "POST", body: formDataCloudinary }
+      { method: "POST", body: formDataCloudinary },
     );
 
     const data = await res.json();
@@ -100,7 +101,7 @@ export default function TestPage() {
   };
 
   const handleBugImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -124,6 +125,8 @@ export default function TestPage() {
       alert("Website сонгоогүй байна");
       return;
     }
+
+    setGeminiResponseLoading(true);
 
     const res = await fetch("/api/review", {
       method: "POST",
@@ -315,7 +318,10 @@ export default function TestPage() {
                   </a>
                 )}
 
-                <Dialog>
+                <Dialog
+                  open={showSubmitDialog}
+                  onOpenChange={setShowSubmitDialog}
+                >
                   <DialogTrigger asChild>
                     <Button
                       type="button"
@@ -412,11 +418,37 @@ export default function TestPage() {
                           </Button>
                         </DialogClose>
 
-                        <Button type="submit" disabled={uploading}>
-                          {uploading ? "Uploading..." : "Submit a bug"}
+                        <Button type="submit" disabled={geminiResponseLoading}>
+                          {geminiResponseLoading
+                            ? "Uploading..."
+                            : "Submit a bug"}
                         </Button>
                       </DialogFooter>
                     </form>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog
+                  open={showGeminiResponse}
+                  onOpenChange={setShowGeminiResponse}
+                >
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        <span
+                          className={`${
+                            geminiResponse?.review.status === "REJECTED"
+                              ? "text-red-500"
+                              : "text-green-500"
+                          }`}
+                        >
+                          {geminiResponse?.review.status}
+                        </span>
+                        <div className="mt-3 font-light">
+                          {geminiResponse?.ai.reason}
+                        </div>
+                      </DialogTitle>
+                    </DialogHeader>
                   </DialogContent>
                 </Dialog>
               </div>
