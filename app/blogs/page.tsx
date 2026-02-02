@@ -165,6 +165,9 @@ export default function Blogs() {
 
   const [openCommentsFor, setOpenCommentsFor] = useState<string | null>(null);
 
+  const [savedPosts, setSavedPosts] = useState<string[]>([]);
+  const [showSaved, setShowSaved] = useState<string[]>([]);
+
   useEffect(() => {
     const getBlogs = async () => {
       const res = await fetch("/api/blog");
@@ -173,6 +176,15 @@ export default function Blogs() {
       setBlogs(arr);
     };
     getBlogs();
+
+    const getSaved = async () => {
+      const res = await fetch("/api/savedPosts");
+      const data = await res.json();
+      console.log(data);
+
+      setSavedPosts((prev) => [...prev, ...data.map((item) => item.id)]);
+    };
+    getSaved();
   }, []);
 
   const handleVote = async (blogId: string, dir: 1 | -1) => {
@@ -215,6 +227,8 @@ export default function Blogs() {
     } catch (err) {
       console.log(err);
     }
+
+    setShowSaved((prev) => [...prev, blogId]);
   };
 
   return (
@@ -234,6 +248,8 @@ export default function Blogs() {
         {blogs.map((item) => {
           const score = item.score;
           const mine = item.myVote;
+          const existsInCurrent = showSaved.includes(item.id);
+          const existsInDb = savedPosts.includes(item.id);
 
           return (
             <div
@@ -354,18 +370,24 @@ export default function Blogs() {
                     </button>
                   </div>
 
-                  <button
-                    className={`flex items-center gap-2 transition ${
-                      mine === 1
-                        ? "text-white"
-                        : "text-white/60 hover:text-white"
-                    }`}
-                    type="button"
-                    onClick={() => savePost(item.id)}
-                  >
-                    <Bookmark className="h-4 w-4" />
-                    <span className="text-sm">Save</span>
-                  </button>
+                  {!existsInDb && !existsInCurrent ? (
+                    <button
+                      className={`flex items-center gap-2  text-white/60 hover:text-white transition`}
+                      type="button"
+                      onClick={() => savePost(item.id)}
+                    >
+                      <Bookmark className="h-4 w-4" />
+                      <span className="text-sm">Save</span>
+                    </button>
+                  ) : (
+                    <button
+                      className={`flex items-center gap-2 transition text-white`}
+                      type="button"
+                    >
+                      <Bookmark className="h-4 w-4" />
+                      <span className="text-sm">Saved</span>
+                    </button>
+                  )}
                 </div>
 
                 {openCommentsFor === item.id && (
