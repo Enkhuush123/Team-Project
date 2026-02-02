@@ -301,25 +301,6 @@ export default function Header() {
               <span className="md:hidden">Post</span>
             </button>
 
-            {/* ======= HELP ======= */}
-            <button
-              onClick={() => router.push("/helpcenter")}
-              className="
-                hidden md:flex items-center gap-2 text-white/80 transition
-                h-9 lg:h-10 2xl:h-11 3xl:h-28
-                px-3 lg:px-4 2xl:px-5 3xl:px-14
-                rounded-xl
-                bg-white/5 border border-white/10
-                hover:bg-white/10 hover:border-white/15
-                text-sm 2xl:text-base 3xl:text-3xl
-              "
-              type="button"
-            >
-              <FaRegCircleQuestion className="text-white/70 text-base 3xl:text-3xl" />
-              <span className="hidden lg:inline">Help</span>
-              <span className="lg:hidden">Help</span>
-            </button>
-
             {/* ======= AUTH ======= */}
             <SignedOut>
               <SignInButton>
@@ -424,6 +405,36 @@ export default function Header() {
                       >
                         <BookmarkCheck className="w-4 h-4 3xl:w-8 3xl:h-8" />
                         Saved Posts
+                      </button>
+
+                      <button
+                        className="cursor-pointer flex items-center gap-2 w-full hover:bg-white/10 transition px-4 py-2.5 3xl:px-6 3xl:py-4 text-gray-300 text-sm 3xl:text-2xl"
+                        onClick={async () => {
+                          setSettingsOpen(false);
+                          await loadNotification();
+                          setNotifOpen(true);
+                        }}
+                        type="button"
+                      >
+                        <IoMdNotificationsOutline className="w-4 h-4 3xl:w-8 3xl:h-8" />
+                        Notifications
+                        {unreadCount > 0 && (
+                          <span className="ml-auto bg-red-500 text-white text-xs 3xl:text-lg px-2 py-0.5 rounded-full">
+                            {unreadCount > 99 ? "99+" : unreadCount}
+                          </span>
+                        )}
+                      </button>
+
+                      <button
+                        className="cursor-pointer flex items-center gap-2 w-full hover:bg-white/10 transition px-4 py-2.5 3xl:px-6 3xl:py-4 text-gray-300 text-sm 3xl:text-2xl"
+                        onClick={() => {
+                          router.push("/helpcenter");
+                          setSettingsOpen(false);
+                        }}
+                        type="button"
+                      >
+                        <FaRegCircleQuestion className="w-4 h-4 3xl:w-8 3xl:h-8" />
+                        Help Center
                       </button>
                     </div>
                   )}
