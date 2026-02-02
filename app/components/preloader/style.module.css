@@ -2,10 +2,8 @@
   height: 100dvh;
   width: 100dvw;
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  padding-inline: 60px;
-  padding-bottom: 30px;
+  align-items: center;
+  justify-content: center;
   position: fixed;
   z-index: 99;
   background-color: hsl(var(--background));
