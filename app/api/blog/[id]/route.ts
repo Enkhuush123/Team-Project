@@ -1,33 +1,29 @@
 import prisma from "@/lib/prisma";
-import { error } from "console";
-import { headers } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-    req: NextRequest,
-    { params }: { params: { id: string } }
+    req: Request,
+    { params }: { params: { id: string } }  // NOT a promise
 ) {
-    try {
-
-        if (!params?.id) {
-            return new Response(JSON.stringify({ error: "Missing blog ID" }), {
-                status: 400,
-                headers: { "Content-Type": "application/json" },
-            });
-        }
-        const blog = await prisma.blog.findUnique({
-            where: {
-                id: params.id,
-            },
+    if (!params?.id) {
+        return new Response(JSON.stringify({ error: "Missing blog ID" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
         });
-
-        if (!blog) {
-            return NextResponse.json({ error: "Not found" }, { status: 404 });
-        }
-
-        return NextResponse.json(blog);
-    } catch (err) {
-        console.error("PRISMA ERROR:", err);
-        return NextResponse.json({ error: "Server error" }, { status: 500 });
     }
+
+    const blog = await prisma.blog.findUnique({
+        where: { id: params.id },
+    });
+
+    if (!blog) {
+        return new Response(JSON.stringify({ error: "Blog not found" }), {
+            status: 404,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
+
+    return new Response(JSON.stringify(blog), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+    });
 }
