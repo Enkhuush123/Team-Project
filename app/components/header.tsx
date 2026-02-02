@@ -1,9 +1,12 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import CoinIcon from "../_icons/CoinIcon";
 import { FaRegCircleQuestion } from "react-icons/fa6";
+import { IoMdNotificationsOutline } from "react-icons/io";
+
 import {
   SignInButton,
   SignUpButton,
@@ -12,8 +15,27 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { usePoints } from "../providers/PointProvider";
-import { BookmarkCheck, ChevronDown, Menu, X, Plus, Home, TestTube, BookOpen, Newspaper } from "lucide-react";
+import {
+  BookmarkCheck,
+  ChevronDown,
+  Menu,
+  X,
+  Plus,
+  Home,
+  TestTube,
+  BookOpen,
+  Newspaper,
+} from "lucide-react";
 import { useState, useEffect } from "react";
+
+type NotificationItem = {
+  id: string;
+  title: string;
+  body: string;
+  link: string | null;
+  read: boolean;
+  createdAt: string;
+};
 
 export default function Header() {
   const router = useRouter();
@@ -23,8 +45,29 @@ export default function Header() {
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notification, setNotification] = useState<NotificationItem[]>([]);
+  const unreadCount = notification.filter((n) => !n.read).length;
 
-  // Close mobile menu when route changes
+  const loadNotification = async () => {
+    const res = await fetch(`/api/notification`, {
+      cache: "no-store",
+    });
+    const data = await res.json();
+    setNotification(Array.isArray(data.notification) ? data.notification : []);
+  };
+
+  const markRead = async (id: string) => {
+    setNotification((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+    );
+    await fetch(`/api/notification/read`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+  };
+
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
@@ -51,7 +94,6 @@ export default function Header() {
     >
       <div className="mx-auto w-full max-w-8xl px-4 sm:px-6 lg:px-8">
         <div className="h-14 sm:h-16 flex items-center justify-between">
-          {/* Logo */}
           <div className="flex items-center min-w-0">
             <button
               onClick={() => router.push("/")}
@@ -69,7 +111,6 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center justify-center gap-6 xl:gap-8">
             {nav.map((item) => {
               const active = isActive(item.href);
@@ -92,13 +133,83 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Right side actions */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Create Post - Hidden on mobile, shown on tablet+ */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={async () => {
+                  const next = !notifOpen;
+                  setNotifOpen(next);
+                  if (next) await loadNotification();
+                }}
+                className="relative p-2 rounded-xl hover:bg-white/10 transition text-white/80"
+                aria-label="Notifications"
+              >
+                <IoMdNotificationsOutline className="w-5 h-5" />
+
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {notifOpen && (
+                <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-white/10 bg-black/95 backdrop-blur-xl shadow-xl overflow-hidden">
+                  <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                    <div className="text-white font-semibold">
+                      Notifications
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setNotifOpen(false)}
+                      className="text-white/60 hover:text-white transition text-sm"
+                    >
+                      Close
+                    </button>
+                  </div>
+
+                  <div className="max-h-96 overflow-auto">
+                    {notification.length === 0 ? (
+                      <div className="p-4 text-white/60 text-sm">
+                        No notifications
+                      </div>
+                    ) : (
+                      notification.map((n) => (
+                        <button
+                          key={n.id}
+                          type="button"
+                          onClick={() => {
+                            if (!n.read) void markRead(n.id);
+                            setNotifOpen(false);
+                            if (n.link) router.push(n.link);
+                          }}
+                          className={[
+                            "w-full text-left px-4 py-3 border-b border-white/5 hover:bg-white/5 transition",
+                            n.read ? "opacity-80" : "bg-white/5",
+                          ].join(" ")}
+                        >
+                          <div className="text-white font-semibold text-sm">
+                            {n.title}
+                          </div>
+                          <div className="text-white/70 text-xs mt-1 line-clamp-2">
+                            {n.body}
+                          </div>
+                          <div className="text-white/40 text-[11px] mt-2">
+                            {new Date(n.createdAt).toLocaleString()}
+                          </div>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <button
               onClick={() => router.push("/addPost")}
               className="hidden sm:flex h-9 lg:h-10 px-3 lg:px-4 rounded-xl
-                         bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600
+                         bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600
                          hover:brightness-110
                          text-white transition items-center gap-2 text-sm font-semibold
                          shadow-[0_4px_15px_rgba(79,70,229,0.4)]"
@@ -108,7 +219,6 @@ export default function Header() {
               <span className="hidden md:inline">Create Post</span>
             </button>
 
-            {/* Help - Hidden on mobile */}
             <button
               onClick={() => router.push("/helpcenter")}
               className="hidden md:flex h-9 lg:h-10 px-3 lg:px-4 rounded-xl
@@ -142,7 +252,6 @@ export default function Header() {
 
             <SignedIn>
               <div className="flex items-center gap-2 sm:gap-3">
-                {/* Points */}
                 <button
                   onClick={() => router.push("/pointPage")}
                   className="
@@ -167,12 +276,10 @@ export default function Header() {
                   </span>
                 </button>
 
-                {/* User Button */}
                 <div className="h-9 lg:h-10 px-2 rounded-xl border border-white/10 bg-white/5 flex items-center">
                   <UserButton />
                 </div>
 
-                {/* Settings Dropdown */}
                 <div className="relative hidden sm:block">
                   <button
                     className="cursor-pointer p-1"
@@ -200,7 +307,6 @@ export default function Header() {
               </div>
             </SignedIn>
 
-            {/* Mobile Menu Button */}
             <button
               className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -216,11 +322,9 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-white/10 bg-black/95 backdrop-blur-xl">
           <div className="px-4 py-4 space-y-2">
-            {/* Navigation Links */}
             {nav.map((item) => {
               const active = isActive(item.href);
               const Icon = item.icon;
@@ -242,14 +346,12 @@ export default function Header() {
               );
             })}
 
-            {/* Divider */}
             <div className="h-px bg-white/10 my-3" />
 
-            {/* Mobile-only Actions */}
             <button
               onClick={() => router.push("/addPost")}
               className="sm:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                         bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600
+                         bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600
                          text-white font-semibold"
               type="button"
             >

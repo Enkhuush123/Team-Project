@@ -7,8 +7,9 @@ export async function POST(req: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ message: "not signed in" }, { status: 401 });
     }
+
     const user = await currentUser();
     if (!user) {
       return new NextResponse("User not found", { status: 404 });
@@ -25,11 +26,13 @@ export async function POST(req: NextRequest) {
     }
 
     const dbUser = await prisma.user.upsert({
-      where: { clerkId: userId },
+      where: { id: userId },
       update: {},
       create: {
-        clerkId: userId,
+        id: userId,
         email: user.emailAddresses[0].emailAddress,
+        name: user.firstName,
+        clerkId: user.id,
       },
     });
 
