@@ -10,14 +10,17 @@ export default function PointPage() {
     const load = async () => {
       const res = await fetch("/api/user");
       const data = await res.json();
-      setPoints(data.points ?? 0);
+      setPoints(data.userData.points ?? 0);
     };
     load();
   }, []);
   return (
     <div className="max-w-6xl mx-auto mt-20 px-6">
       <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
-        <UserPoints points={points} />
+        <div>
+          {" "}
+          <UserPoints points={points} />
+        </div>
         <BuyPoints onBought={(newPoints) => setPoints(newPoints)} />
       </div>
     </div>

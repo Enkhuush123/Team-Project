@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
     if (!title || !description) {
       return NextResponse.json(
         { message: "Missing title/description" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -58,19 +59,21 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
       include: {
         user: {
-          select: { name: true, email: true },
+          select: { name: true, email: true, imageUrl: true },
         },
       },
     });
 
-    const data = websites.map((w) => ({
+    const data = websites.map((w: any) => ({
       id: w.id,
       title: w.title,
       description: w.description,
       url: w.link || null,
       imageUrl: w.imageUrl || null,
       status: "OPEN",
-      user: w.user ? { name: w.user.name, email: w.user.email } : null,
+      user: w.user
+        ? { name: w.user.name, email: w.user.email, imageUrl: w.user.imageUrl }
+        : null,
       createdAt: w.createdAt,
     }));
 
