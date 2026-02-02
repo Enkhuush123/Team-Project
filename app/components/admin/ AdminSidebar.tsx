@@ -16,7 +16,7 @@ const NAV = [
   { label: "Posts", href: "/admin/postesss", icon: FileText },
   { label: "Reports", href: "/admin/reporteses", icon: Flag },
   { label: "Tests", href: "/admin/testesss", icon: Beaker },
-  { label: "Settings", href: "/admin/settings", icon: Settings },
+ 
 ];
 
 export default function AdminSidebar() {
