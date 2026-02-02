@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 
 import Header from "./components/header";
 import Preloader from "./components/preloader";
@@ -51,6 +52,18 @@ export default function RootLayout({
             </ClerkProvider>
             <ChatbotPage />
           </Preloader>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              style: {
+                background: "rgba(24, 24, 27, 0.95)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: "#fff",
+                backdropFilter: "blur(12px)",
+              },
+            }}
+            richColors
+          />
         </ThemeProvider>
       </body>
     </html>
