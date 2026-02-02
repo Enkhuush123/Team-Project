@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     if (!websiteId || !description?.trim()) {
       return NextResponse.json(
         { message: "Missing websiteId/description" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
     if (!website)
       return NextResponse.json(
         { message: "Website not found" },
-        { status: 404 }
+        { status: 404 },
       );
 
     const verdict = await geminiValidateBug({
@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
     if (reward > 0 && (website.user?.points ?? 0) < reward) {
       return NextResponse.json(
         { message: "Website owner does not have enough points to reward" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -159,6 +159,14 @@ export async function POST(req: NextRequest) {
           status: status as any,
           websiteId: website.id,
           reviewerId: reviewer.id,
+        },
+      });
+      await tx.notification.create({
+        data: {
+          userId: website.userId,
+          title: "New bug report submitted",
+          body: `${clerk.fullName ?? "a user "} submitted a bug report (${status})`,
+          link: `/websites/${website.id}`,
         },
       });
 
@@ -201,7 +209,7 @@ export async function POST(req: NextRequest) {
         reviewerPoints: result.reviewerPoints,
         ai: result.verdict,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err) {
     console.error("REVIEW POST ERROR:", err);

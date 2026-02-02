@@ -32,6 +32,7 @@ model User {
   reviews  Review[]
   comments Comment[]
   blogs    Blog[]
+  notif  Notification[]
 
   savedBlogs SavedBlog[]
 
@@ -198,3 +199,18 @@ enum ReportStatus {
   RESOLVED
   REJECTED
 }
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String   // DB user id (receiver)
+  title     String
+  body      String
+  link      String?  // e.g. /website/{id} or /dashboard
+  read      Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
