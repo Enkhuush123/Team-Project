@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -57,7 +58,7 @@ export default function SubmitPage() {
         {
           method: "POST",
           body: formDataCloudinary,
-        }
+        },
       );
 
       const data = await res.json();
@@ -118,27 +119,6 @@ export default function SubmitPage() {
               тайлбарласан төслүүд хурдан шалгагдана.
             </p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              className="h-10 bg-white/10 text-white border border-white/15 hover:bg-white/15"
-              type="button"
-              onClick={() => history.back()}
-            >
-              Цуцлах
-            </Button>
-
-            <Button
-              variant="secondary"
-              className="h-10 bg-white/10 text-white border border-white/15 hover:bg-white/15"
-              onClick={clearAll}
-              type="button"
-            >
-              <X className="h-4 w-4 mr-2" />
-              Цэвэрлэх
-            </Button>
-          </div>
         </div>
 
         <div className="mt-8 grid lg:grid-cols-12 gap-6">
@@ -146,16 +126,9 @@ export default function SubmitPage() {
             <GlassCard className="p-6 md:p-7">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-white/80 text-sm backdrop-blur">
-                    <Sparkles className="h-4 w-4" />
-                    Project Submit
-                  </div>
                   <h2 className="mt-4 text-white text-xl font-semibold">
                     Төслийн мэдээлэл
                   </h2>
-                  <p className="mt-1 text-white/60 text-sm">
-                    * Тайлбар дээр “юуг шалгах вэ?” гэдгийг тодорхой бич.
-                  </p>
                 </div>
               </div>
 
@@ -169,14 +142,11 @@ export default function SubmitPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
                     }
-                    placeholder="Жишээ: Landing page — Navbar + Hero"
+                    placeholder="Title..."
                     className="h-11 bg-white/5 border-white/15 text-white placeholder:text-white/40
                                focus-visible:ring-0 focus-visible:border-white/30
                                transition hover:border-white/25"
                   />
-                  <div className="mt-2 text-xs text-white/45">
-                    UI only (validation байхгүй)
-                  </div>
                 </div>
 
                 <div>
@@ -197,9 +167,6 @@ export default function SubmitPage() {
                                focus-visible:ring-0 focus-visible:border-white/30
                                transition hover:border-white/25"
                   />
-                  <div className="mt-2 text-xs text-white/45">
-                    UI only (validation байхгүй)
-                  </div>
                 </div>
 
                 <div>
@@ -284,63 +251,6 @@ export default function SubmitPage() {
                   </Button>
                 </div>
               </form>
-            </GlassCard>
-          </div>
-
-          <div className="lg:col-span-4 space-y-6">
-            <GlassCard className="p-6 sticky top-20">
-              <div className="text-white font-semibold text-lg">
-                Ready checklist
-              </div>
-              <p className="mt-2 text-white/60 text-sm">
-                (UI only) Checklist нь статик.
-              </p>
-
-              <div className="mt-5 space-y-3">
-                {[
-                  { title: "1) Гарчиг", desc: "Товч, ойлгомжтой" },
-                  { title: "2) Тайлбар", desc: "“Юуг шалгах вэ?” + flow бич" },
-                  { title: "3) URL format", desc: "Оруулсан бол зөв байх" },
-                  { title: "4) Screenshot URL", desc: "Сонголттой" },
-                ].map((s) => (
-                  <div
-                    key={s.title}
-                    className="rounded-xl bg-white/5 border border-white/10 p-3 flex items-start gap-3"
-                  >
-                    <Circle className="h-5 w-5 text-white/35 mt-0.5" />
-                    <div>
-                      <div className="text-white/90 font-medium">{s.title}</div>
-                      <div className="text-white/55 text-sm">{s.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-5 h-px bg-white/10" />
-              <div className="mt-4 text-sm text-white/70">
-                Status: <span className="text-white/55">UI ONLY</span>
-              </div>
-
-              <div className="mt-5 rounded-2xl bg-linear-to-br from-white/6 to-white/3 border border-white/10 p-4">
-                <div className="text-white/60 text-xs mb-2">Preview</div>
-                <div className="text-white font-semibold line-clamp-1">
-                  {formData.title.trim() ? formData.title : "Project title…"}
-                </div>
-                <div className="mt-2 text-white/70 text-sm line-clamp-3">
-                  {formData.description.trim()
-                    ? formData.description
-                    : "Project description preview…"}
-                </div>
-
-                <div className="mt-3 flex flex-wrap gap-2 text-xs text-white/65">
-                  <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1">
-                    Submit
-                  </span>
-                  <span className="rounded-full bg-white/5 border border-white/10 px-2 py-1">
-                    Community review
-                  </span>
-                </div>
-              </div>
             </GlassCard>
           </div>
         </div>

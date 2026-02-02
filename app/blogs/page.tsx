@@ -1,12 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import {
-  format,
-  formatDistance,
-  formatDistanceToNow,
-  formatRelative,
-  subDays,
-} from "date-fns";
+import { formatDistanceToNow } from "date-fns";
+import { FiSend } from "react-icons/fi";
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -18,8 +14,6 @@ import {
   ArrowBigDown,
 } from "lucide-react";
 import { NextResponse } from "next/server";
-import { set } from "zod";
-import { Comme } from "next/font/google";
 
 type Blog = {
   id: string;
@@ -27,6 +21,14 @@ type Blog = {
   title: string;
   description: string;
   link?: string | null;
+  createdAt: string;
+  user: {
+    name?: string | null;
+    email?: string | null;
+    imageUrl: string | null;
+  };
+  score: number;
+  myVote: 1 | -1 | 0;
 };
 
 type CommentItem = {
@@ -40,34 +42,38 @@ type CommentItem = {
   };
 };
 function CommentSection({ blogId }: { blogId: string }) {
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [content, setContent] = useState("");
   const [comments, setComments] = useState<CommentItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
   const load = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const res = await fetch(`/api/comment?blogId=${blogId}`);
+      const res = await fetch(`/api/comment?blogId=${blogId}`, {
+        cache: "no-store",
+      });
       const data = await res.json();
+      if (!res.ok) throw new Error(data?.message ?? "Failed to fetch comments");
       setComments(data.comments ?? []);
-
-      setLoading(false);
     } catch (err) {
-      return NextResponse.json(
-        { message: "Failed to fetch comments" },
-        { status: 500 },
-      );
+      setError(err instanceof Error ? err.message : "Failed to fetch comments");
+    } finally {
+      setLoading(false);
     }
   };
-  const onToggle = async () => {
-    const next = !open;
-    setOpen(next);
-    if (next) await load();
-  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blogId]);
+
   const submit = async () => {
     if (!content.trim()) return;
     setSending(true);
+    setError(null);
     try {
       const res = await fetch("/api/comment", {
         method: "POST",
@@ -75,82 +81,79 @@ function CommentSection({ blogId }: { blogId: string }) {
         body: JSON.stringify({ blogId, content }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        alert(data.message || "failed");
-        return;
-      }
+      if (!res.ok) throw new Error(data?.message ?? "Failed to post comment");
+
       setComments((prev) => [data.comment, ...prev]);
       setContent("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to post comment");
     } finally {
-      setLoading(false);
+      setSending(false);
     }
   };
 
   return (
-    <div>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="text-white/70 hover:text-white transition text-sm"
-      >
-        {open ? "Hide Comments" : "Show Comments"}
-      </button>
-      {open && (
-        <div>
-          <div>
-            <input
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Write a comment"
-              className="flex h-10 rounded-xl bg-black/30 border border-white/10 px-3  text-white outline-0"
-            />
-            <button
-              type="button"
-              onClick={submit}
-              disabled={sending}
-              className="h-10 px-4 rounded-xl bg-white/10 border border-white/10 text-white hover:bg-white/15 transition"
+    <div className="mt-3 space-y-3">
+      <div className="flex gap-2">
+        <input
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Write a comment"
+          className="flex-1 h-10 rounded-xl bg-black/30 border border-white/10 px-3 text-white outline-0"
+        />
+        <button
+          type="button"
+          onClick={submit}
+          disabled={sending}
+          className="h-10 px-4 rounded-xl bg-white/10 border border-white/10 text-white hover:bg-white/15 transition disabled:opacity-60"
+        >
+          {sending ? "..." : <FiSend />}
+        </button>
+      </div>
+
+      {error && (
+        <div className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="text-white/60 text-sm">Loading...</div>
+      ) : comments.length === 0 ? (
+        <div className="text-white/60 text-sm">No comments yet</div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {comments.map((c) => (
+            <div
+              key={c.id}
+              className="flex gap-3 items-start rounded-xl bg-white/5 border border-white/10 p-3 w-full"
             >
-              {sending ? "..." : "Post"}
-            </button>
-          </div>
-          {loading ? (
-            <div>Loading...</div>
-          ) : comments.length === 0 ? (
-            <div>No comments yet</div>
-          ) : (
-            <div className="flex flex-col gap-5">
-              {comments.map((c) => (
-                <div
-                  key={c.id}
-                  className="flex gap-3 items-center  rounded-xl bg-white/5 border border-white/10 p-3 w-full"
-                >
-                  <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40 ">
-                    {c.user.imageUrl ? (
-                      <Image
-                        src={c.user.imageUrl}
-                        alt="avatar"
-                        fill
-                        className="object-cover"
-                      />
-                    ) : null}
-                  </div>
-                  <div className="w-full">
-                    <div className="font-bold">
-                      {c.user.name || c.user.email || "Anonymous"}
-                    </div>
-                    <div className="flex  justify-between ">
-                      <div>{c.content}</div>
-                      <div>
-                        {formatDistanceToNow(new Date(c.createdAt), {
-                          addSuffix: true,
-                        })}
-                      </div>
-                    </div>
+              <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40">
+                {c.user.imageUrl ? (
+                  <Image
+                    src={c.user.imageUrl}
+                    alt="avatar"
+                    fill
+                    className="object-cover"
+                  />
+                ) : null}
+              </div>
+
+              <div className="w-full">
+                <div className="font-semibold text-sm">
+                  {c.user.email ?? c.user.name ?? "User"}
+                </div>
+                <div className="flex justify-between gap-3">
+                  <div className="text-white/80 text-sm">{c.content}</div>
+                  <div className="text-xs text-white/40 shrink-0">
+                    {formatDistanceToNow(new Date(c.createdAt), {
+                      addSuffix: true,
+                    })}
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
-          )}
+          ))}
         </div>
       )}
     </div>
@@ -159,8 +162,7 @@ function CommentSection({ blogId }: { blogId: string }) {
 
 export default function Blogs() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [votes, setVotes] = useState<Record<string, number>>({});
-  const [myVote, setMyVote] = useState<Record<string, 1 | -1 | 0>>({});
+
   const [openCommentsFor, setOpenCommentsFor] = useState<string | null>(null);
 
   useEffect(() => {
@@ -169,36 +171,50 @@ export default function Blogs() {
       const data = await res.json();
       const arr: Blog[] = Array.isArray(data) ? data : [];
       setBlogs(arr);
-
-      const initVotes: Record<string, number> = {};
-      const initMy: Record<string, 1 | -1 | 0> = {};
-      arr.forEach((b) => {
-        initVotes[b.id] = initVotes[b.id] ?? 0;
-        initMy[b.id] = initMy[b.id] ?? 0;
-      });
-      setVotes(initVotes);
-      setMyVote(initMy);
     };
     getBlogs();
   }, []);
 
-  const handleVote = (id: string, dir: 1 | -1) => {
-    setVotes((prev) => {
-      const current = prev[id] ?? 0;
-      const mine = myVote[id] ?? 0;
+  const handleVote = async (blogId: string, dir: 1 | -1) => {
+    const current = blogs.find((b) => b.id === blogId);
+    if (!current) return;
 
-      if (mine === dir) return { ...prev, [id]: current - dir };
+    const nextValue: 1 | -1 | 0 = current.myVote === dir ? 0 : dir;
+    const prevScore = current.score;
+    const prevMyVote = current.myVote;
 
-      if (mine === -dir) return { ...prev, [id]: current + dir * 2 };
-
-      return { ...prev, [id]: current + dir };
+    const optimisticScore = prevScore - prevMyVote + nextValue;
+    setBlogs((prev) =>
+      prev.map((b) =>
+        b.id === blogId
+          ? { ...b, score: optimisticScore, myVote: nextValue }
+          : b,
+      ),
+    );
+    const res = await fetch("/api/blogVote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ blogId, value: nextValue }),
     });
+    const data = await res.json();
+    setBlogs((prev) =>
+      prev.map((b) =>
+        b.id === blogId ? { ...b, score: data.score, myVote: data.myVote } : b,
+      ),
+    );
+  };
+  console.log(blogs, "blogs");
 
-    setMyVote((prev) => {
-      const mine = prev[id] ?? 0;
-      if (mine === dir) return { ...prev, [id]: 0 };
-      return { ...prev, [id]: dir };
-    });
+  const savePost = async (blogId: string) => {
+    try {
+      const res = await fetch("/api/savedPosts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -216,8 +232,8 @@ export default function Blogs() {
         )}
 
         {blogs.map((item) => {
-          const score = votes[item.id] ?? 0;
-          const mine = myVote[item.id] ?? 0;
+          const score = item.score;
+          const mine = item.myVote;
 
           return (
             <div
@@ -225,6 +241,24 @@ export default function Blogs() {
               className="w-full overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl
                          shadow-[0_20px_60px_rgba(99,102,241,0.12)] hover:border-white/20 transition"
             >
+              <div
+                className="flex items-center gap-3
+              font-bold p-2"
+              >
+                <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40 ">
+                  {item.user.imageUrl ? (
+                    <Image
+                      src={item.user.imageUrl}
+                      alt={item.user.name || "User"}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-white/10" />
+                  )}
+                </div>
+                <div>{item.user.email}</div>
+              </div>
               <div className="px-5 sm:px-6 py-4 border-b border-white/10 flex items-center justify-between">
                 <div className="min-w-0">
                   <h2 className="text-white font-extrabold text-lg sm:text-xl leading-snug truncate">
@@ -236,7 +270,9 @@ export default function Blogs() {
                 </div>
 
                 <span className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-                  NEW
+                  {formatDistanceToNow(new Date(item.createdAt), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
 
@@ -319,8 +355,13 @@ export default function Blogs() {
                   </div>
 
                   <button
-                    className="flex items-center gap-2 text-white/60 hover:text-white transition"
+                    className={`flex items-center gap-2 transition ${
+                      mine === 1
+                        ? "text-white"
+                        : "text-white/60 hover:text-white"
+                    }`}
                     type="button"
+                    onClick={() => savePost(item.id)}
                   >
                     <Bookmark className="h-4 w-4" />
                     <span className="text-sm">Save</span>
