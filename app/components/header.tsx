@@ -12,7 +12,17 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { usePoints } from "../providers/PointProvider";
-import { BookmarkCheck, ChevronDown, Menu, X, Plus, Home, TestTube, BookOpen, Newspaper } from "lucide-react";
+import {
+  BookmarkCheck,
+  ChevronDown,
+  Menu,
+  X,
+  Plus,
+  Home,
+  TestTube,
+  BookOpen,
+  Newspaper,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Header() {
@@ -24,7 +34,6 @@ export default function Header() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
@@ -44,7 +53,7 @@ export default function Header() {
   return (
     <header
       className={`${
-        isAdmin === true
+        isAdmin
           ? "hidden"
           : "sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl"
       }`}
@@ -55,7 +64,7 @@ export default function Header() {
           <div className="flex items-center min-w-0">
             <button
               onClick={() => router.push("/")}
-              className="select-none flex items-center gap-1.5"
+              className="select-none flex items-center gap-1.5 cursor-pointer"
               type="button"
             >
               <span className="font-extrabold tracking-tight">
@@ -78,7 +87,7 @@ export default function Header() {
                   key={item.href}
                   onClick={() => router.push(item.href)}
                   className={[
-                    "relative px-1 py-2 text-[15px] font-semibold transition",
+                    "relative px-1 py-2 text-[15px] font-semibold transition cursor-pointer",
                     active ? "text-white" : "text-white/60 hover:text-white",
                   ].join(" ")}
                   type="button"
@@ -94,27 +103,29 @@ export default function Header() {
 
           {/* Right side actions */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Create Post - Hidden on mobile, shown on tablet+ */}
+            {/* Create Post */}
             <button
               onClick={() => router.push("/addPost")}
               className="hidden sm:flex h-9 lg:h-10 px-3 lg:px-4 rounded-xl
                          bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600
                          hover:brightness-110
                          text-white transition items-center gap-2 text-sm font-semibold
-                         shadow-[0_4px_15px_rgba(79,70,229,0.4)]"
+                         shadow-[0_4px_15px_rgba(79,70,229,0.4)]
+                         cursor-pointer"
               type="button"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden md:inline">Create Post</span>
             </button>
 
-            {/* Help - Hidden on mobile */}
+            {/* Help */}
             <button
               onClick={() => router.push("/helpcenter")}
               className="hidden md:flex h-9 lg:h-10 px-3 lg:px-4 rounded-xl
                          bg-white/5 border border-white/10
                          hover:bg-white/10 hover:border-white/15
-                         text-white/80 transition items-center gap-2 text-sm"
+                         text-white/80 transition items-center gap-2 text-sm
+                         cursor-pointer"
               type="button"
             >
               <FaRegCircleQuestion className="text-white/70" />
@@ -155,6 +166,7 @@ export default function Header() {
                     transition
                     shadow-[0_0_0_rgba(0,0,0,0)]
                     hover:shadow-[0_0_22px_rgba(250,204,21,0.25)]
+                    cursor-pointer
                   "
                   type="button"
                   title="Points"
@@ -168,7 +180,7 @@ export default function Header() {
                 </button>
 
                 {/* User Button */}
-                <div className="h-9 lg:h-10 px-2 rounded-xl border border-white/10 bg-white/5 flex items-center">
+                <div className="h-9 lg:h-10 px-2 rounded-xl border border-white/10 bg-white/5 flex items-center cursor-pointer">
                   <UserButton />
                 </div>
 
@@ -177,9 +189,14 @@ export default function Header() {
                   <button
                     className="cursor-pointer p-1"
                     onClick={() => setSettingsOpen(!settingsOpen)}
+                    type="button"
                   >
                     <ChevronDown
-                      className={`w-5 h-5 ${settingsOpen ? "text-white rotate-180 transition" : "text-gray-500 rotate-0 transition"}`}
+                      className={`w-5 h-5 transition ${
+                        settingsOpen
+                          ? "text-white rotate-180"
+                          : "text-gray-500 rotate-0"
+                      }`}
                     />
                   </button>
                   {settingsOpen && (
@@ -190,6 +207,7 @@ export default function Header() {
                           router.push("/savedPosts");
                           setSettingsOpen(false);
                         }}
+                        type="button"
                       >
                         <BookmarkCheck className="w-4 h-4" />
                         Saved Posts
@@ -202,7 +220,7 @@ export default function Header() {
 
             {/* Mobile Menu Button */}
             <button
-              className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition"
+              className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition cursor-pointer"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
             >
@@ -220,7 +238,6 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-white/10 bg-black/95 backdrop-blur-xl">
           <div className="px-4 py-4 space-y-2">
-            {/* Navigation Links */}
             {nav.map((item) => {
               const active = isActive(item.href);
               const Icon = item.icon;
@@ -229,7 +246,7 @@ export default function Header() {
                   key={item.href}
                   onClick={() => router.push(item.href)}
                   className={[
-                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition",
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition cursor-pointer",
                     active
                       ? "bg-white/10 text-white"
                       : "text-white/70 hover:bg-white/5 hover:text-white",
@@ -242,15 +259,13 @@ export default function Header() {
               );
             })}
 
-            {/* Divider */}
             <div className="h-px bg-white/10 my-3" />
 
-            {/* Mobile-only Actions */}
             <button
               onClick={() => router.push("/addPost")}
               className="sm:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl
                          bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600
-                         text-white font-semibold"
+                         text-white font-semibold cursor-pointer"
               type="button"
             >
               <Plus className="w-5 h-5" />
@@ -260,7 +275,7 @@ export default function Header() {
             <button
               onClick={() => router.push("/helpcenter")}
               className="md:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                         bg-white/5 border border-white/10 text-white/80"
+                         bg-white/5 border border-white/10 text-white/80 cursor-pointer"
               type="button"
             >
               <FaRegCircleQuestion className="w-5 h-5" />
@@ -271,7 +286,7 @@ export default function Header() {
               <button
                 onClick={() => router.push("/savedPosts")}
                 className="sm:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                           bg-white/5 border border-white/10 text-white/80"
+                           bg-white/5 border border-white/10 text-white/80 cursor-pointer"
                 type="button"
               >
                 <BookmarkCheck className="w-5 h-5" />

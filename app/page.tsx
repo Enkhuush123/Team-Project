@@ -11,13 +11,10 @@ import HowItWorksSection from "./components/sections/how-it-works-section";
 export default function Home() {
   return (
     <SmoothScroll>
-      {/* Stars Background */}
       <StarsBackground />
 
-      {/* 3D Animated Background */}
       <AnimatedBackground />
 
-      {/* Content Sections */}
       <main className="relative bg-slate-100 dark:bg-transparent canvas-overlay-mode">
         <HeroSection />
         <AboutSection />
