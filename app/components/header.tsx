@@ -50,11 +50,20 @@ export default function Header() {
   const unreadCount = notification.filter((n) => !n.read).length;
 
   const loadNotification = async () => {
-    const res = await fetch(`/api/notification`, {
-      cache: "no-store",
-    });
-    const data = await res.json();
-    setNotification(Array.isArray(data.notification) ? data.notification : []);
+    try {
+      const res = await fetch("/api/notification", { cache: "no-store" });
+      const data = await res.json();
+
+      const list = Array.isArray(data.notifications)
+        ? data.notifications
+        : Array.isArray(data.notification)
+          ? data.notification
+          : [];
+
+      setNotification(list);
+    } catch (e) {
+      setNotification([]);
+    }
   };
 
   const markRead = async (id: string) => {
@@ -70,6 +79,7 @@ export default function Header() {
 
   useEffect(() => {
     setMobileMenuOpen(false);
+    loadNotification();
   }, [pathname]);
 
   const nav = [
