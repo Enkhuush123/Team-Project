@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { ArrowRight, Image as ImgIcon, Link2, X } from "lucide-react";
+import { error } from "console";
 
 const UPLOAD_PRESET = "softwareCom";
 const CLOUD_NAME = "dv38igwqg";
@@ -81,11 +82,14 @@ export default function Post() {
         body: JSON.stringify({ title, description, image, link }),
       });
 
-      const data = await res.json(); // ✅ FIX (await)
+      const data = await res.json();
       console.log(data);
-
-      // хүсвэл UI reset:
-      // setTitle(""); setDescription(""); setImage(""); setLink("");
+      if (!res.ok) throw new Error("Post failed");
+      setTitle("");
+      setDescription("");
+      setImage("");
+      setLink("");
+      if (fileRef.current) fileRef.current.value = "";
     } catch (e) {
       console.log(e);
     } finally {
@@ -95,7 +99,6 @@ export default function Post() {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* glow bg */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-indigo-500/25 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
@@ -229,7 +232,7 @@ export default function Post() {
                          bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600
                          shadow-[0_10px_28px_rgba(79,70,229,0.35)]
                          hover:brightness-110 active:scale-[0.98]
-                         transition disabled:opacity-50 disabled:cursor-not-allowed"
+                         transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {posting ? "Posting..." : "Post"}
               <ArrowRight className="ml-2 h-4 w-4 inline" />
