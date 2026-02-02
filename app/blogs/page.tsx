@@ -182,7 +182,7 @@ export default function Blogs() {
       const data = await res.json();
       console.log(data);
 
-      setSavedPosts((prev) => [...prev, ...data.map((item) => item.id)]);
+      setSavedPosts((prev) => [...prev, ...data.map((item: any) => item.id)]);
     };
     getSaved();
   }, []);
