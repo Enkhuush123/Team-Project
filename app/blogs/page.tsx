@@ -15,6 +15,7 @@ import {
   ArrowBigDown,
 } from "lucide-react";
 import { NextResponse } from "next/server";
+import { useRouter } from "next/navigation";
 
 type Blog = {
   id: string;
@@ -169,6 +170,8 @@ export default function Blogs() {
   const [savedPosts, setSavedPosts] = useState<string[]>([]);
   const [showSaved, setShowSaved] = useState<string[]>([]);
 
+  const router = useRouter();
+
   useEffect(() => {
     const getBlogs = async () => {
       const res = await fetch("/api/blog");
@@ -257,6 +260,7 @@ export default function Blogs() {
               key={item.id}
               className="w-full overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl
                          shadow-[0_20px_60px_rgba(99,102,241,0.12)] hover:border-white/20 transition"
+              onClick={() => router.push(`/blogs/${item.id}`)}
             >
               <div
                 className="flex items-center gap-3
