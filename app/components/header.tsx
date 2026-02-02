@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import CoinIcon from "../_icons/CoinIcon";
 import { FaRegCircleQuestion } from "react-icons/fa6";
 import { IoMdNotificationsOutline } from "react-icons/io";
-
 import {
   SignInButton,
   SignUpButton,
@@ -26,61 +25,16 @@ import {
   BookOpen,
   Newspaper,
 } from "lucide-react";
-import { useState, useEffect } from "react";
-
-type NotificationItem = {
-  id: string;
-  title: string;
-  body: string;
-  link: string | null;
-  read: boolean;
-  createdAt: string;
-};
+import { useEffect, useState } from "react";
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { points } = usePoints();
-  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin");
 
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const isAdmin = pathname.startsWith("/admin");
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-  const [notification, setNotification] = useState<NotificationItem[]>([]);
-  const unreadCount = notification.filter((n) => !n.read).length;
-
-  const loadNotification = async () => {
-    try {
-      const res = await fetch("/api/notification", { cache: "no-store" });
-      const data = await res.json();
-
-      const list = Array.isArray(data.notifications)
-        ? data.notifications
-        : Array.isArray(data.notification)
-          ? data.notification
-          : [];
-
-      setNotification(list);
-    } catch (e) {
-      setNotification([]);
-    }
-  };
-
-  const markRead = async (id: string) => {
-    setNotification((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
-    await fetch(`/api/notification/read`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-  };
-
-  useEffect(() => {
-    setMobileMenuOpen(false);
-    loadNotification();
-  }, [pathname]);
 
   const nav = [
     { label: "Home", href: "/", icon: Home },
@@ -89,39 +43,44 @@ export default function Header() {
     { label: "News", href: "/itnews", icon: Newspaper },
   ];
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname?.startsWith(href);
-  };
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  if (isAdmin) return null;
 
   return (
-    <header
-      className={`${
-        isAdmin === true
-          ? "hidden"
-          : "sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl"
-      }`}
-    >
-      <div className="mx-auto w-full max-w-8xl px-4 sm:px-6 lg:px-8">
-        <div className="h-14 sm:h-16 flex items-center justify-between">
-          <div className="flex items-center min-w-0">
-            <button
-              onClick={() => router.push("/")}
-              className="select-none flex items-center gap-1.5"
-              type="button"
-            >
-              <span className="font-extrabold tracking-tight">
-                <span className="bg-linear-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(99,102,241,0.35)] text-lg sm:text-xl lg:text-2xl">
-                  Software
-                </span>{" "}
-                <span className="text-white/90 text-lg lg:text-xl hidden lg:inline">
-                  Community
-                </span>
-              </span>
-            </button>
-          </div>
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl">
+      <div className="mx-auto w-full max-w-8xl 3xl:max-w-none px-4 sm:px-6 lg:px-8 3xl:px-28">
 
-          <nav className="hidden lg:flex items-center justify-center gap-6 xl:gap-8">
+        <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24 3xl:h-44">
+
+          <button
+            onClick={() => router.push("/")}
+            className="flex items-baseline gap-3 select-none"
+          >
+            <span
+              className="
+                bg-linear-to-r from-cyan-300 via-blue-400 to-violet-400
+                bg-clip-text text-transparent font-black tracking-tight
+                text-xl sm:text-2xl lg:text-4xl
+                2xl:text-5xl
+                3xl:text-8xl
+              "
+            >
+              Software
+            </span>
+            <span
+              className="
+                hidden lg:inline text-white/90 font-bold
+                text-2xl 2xl:text-3xl 3xl:text-7xl
+              "
+            >
+              Community
+            </span>
+          </button>
+
+
+          <nav className="hidden lg:flex items-center gap-8 2xl:gap-14 3xl:gap-32">
             {nav.map((item) => {
               const active = isActive(item.href);
               return (
@@ -129,270 +88,125 @@ export default function Header() {
                   key={item.href}
                   onClick={() => router.push(item.href)}
                   className={[
-                    "relative px-1 py-2 text-[15px] font-semibold transition",
-                    active ? "text-white" : "text-white/60 hover:text-white",
+                    "relative font-bold transition",
+                    "text-lg 2xl:text-xl 3xl:text-4xl",
+                    active
+                      ? "text-white"
+                      : "text-white/60 hover:text-white",
                   ].join(" ")}
-                  type="button"
                 >
                   {item.label}
                   {active && (
-                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full bg-linear-to-r from-cyan-400 via-blue-500 to-violet-500" />
+                    <span className="absolute -bottom-2 left-0 right-0 h-1 rounded-full bg-linear-to-r from-cyan-400 via-blue-500 to-violet-500" />
                   )}
                 </button>
               );
             })}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="relative">
-              <button
-                type="button"
-                onClick={async () => {
-                  const next = !notifOpen;
-                  setNotifOpen(next);
-                  if (next) await loadNotification();
-                }}
-                className="relative p-2 rounded-xl hover:bg-white/10 transition text-white/80"
-                aria-label="Notifications"
-              >
-                <IoMdNotificationsOutline className="w-5 h-5" />
 
-                {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center">
-                    {unreadCount > 99 ? "99+" : unreadCount}
-                  </span>
-                )}
-              </button>
+          <div className="flex items-center gap-2 sm:gap-3 3xl:gap-8">
 
-              {notifOpen && (
-                <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-white/10 bg-black/95 backdrop-blur-xl shadow-xl overflow-hidden">
-                  <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-                    <div className="text-white font-semibold">
-                      Notifications
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setNotifOpen(false)}
-                      className="text-white/60 hover:text-white transition text-sm"
-                    >
-                      Close
-                    </button>
-                  </div>
+            <button className="p-2 3xl:p-4 rounded-xl hover:bg-white/10 transition">
+              <IoMdNotificationsOutline className="w-6 h-6 3xl:w-12 3xl:h-12 text-white" />
+            </button>
 
-                  <div className="max-h-96 overflow-auto">
-                    {notification.length === 0 ? (
-                      <div className="p-4 text-white/60 text-sm">
-                        No notifications
-                      </div>
-                    ) : (
-                      notification.map((n) => (
-                        <button
-                          key={n.id}
-                          type="button"
-                          onClick={() => {
-                            if (!n.read) void markRead(n.id);
-                            setNotifOpen(false);
-                            if (n.link) router.push(n.link);
-                          }}
-                          className={[
-                            "w-full text-left px-4 py-3 border-b border-white/5 hover:bg-white/5 transition",
-                            n.read ? "opacity-80" : "bg-white/5",
-                          ].join(" ")}
-                        >
-                          <div className="text-white font-semibold text-sm">
-                            {n.title}
-                          </div>
-                          <div className="text-white/70 text-xs mt-1 line-clamp-2">
-                            {n.body}
-                          </div>
-                          <div className="text-white/40 text-[11px] mt-2">
-                            {new Date(n.createdAt).toLocaleString()}
-                          </div>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
+            {/* Create Post */}
             <button
               onClick={() => router.push("/addPost")}
-              className="hidden sm:flex h-9 lg:h-10 px-3 lg:px-4 rounded-xl
-                         bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600
-                         hover:brightness-110
-                         text-white transition items-center gap-2 text-sm font-semibold
-                         shadow-[0_4px_15px_rgba(79,70,229,0.4)]"
-              type="button"
+              className="
+                hidden sm:flex items-center gap-3 font-bold text-white
+                h-11 lg:h-14 3xl:h-32
+                px-4 lg:px-6 3xl:px-16
+                rounded-2xl
+                bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600
+                hover:brightness-110 transition
+                text-base lg:text-lg 3xl:text-4xl
+                shadow-[0_10px_30px_rgba(79,70,229,0.45)]
+              "
             >
-              <Plus className="w-4 h-4" />
-              <span className="hidden md:inline">Create Post</span>
+              <Plus className="w-5 h-5 3xl:w-9 3xl:h-9" />
+              Create Post
             </button>
 
+            {/* Help */}
             <button
               onClick={() => router.push("/helpcenter")}
-              className="hidden md:flex h-9 lg:h-10 px-3 lg:px-4 rounded-xl
-                         bg-white/5 border border-white/10
-                         hover:bg-white/10 hover:border-white/15
-                         text-white/80 transition items-center gap-2 text-sm"
-              type="button"
+              className="
+                hidden md:flex items-center gap-3
+                h-11 lg:h-14 3xl:h-32
+                px-4 lg:px-6 3xl:px-16
+                rounded-2xl
+                bg-white/5 border border-white/10
+                text-white/80 font-semibold
+                text-base lg:text-lg 3xl:text-4xl
+                hover:bg-white/10 transition
+              "
             >
-              <FaRegCircleQuestion className="text-white/70" />
-              <span className="hidden lg:inline">Help</span>
+              <FaRegCircleQuestion className="3xl:text-4xl" />
+              Help
             </button>
 
+            {/* Auth */}
             <SignedOut>
               <SignInButton>
                 <Button
-                  variant="secondary"
-                  className="h-9 lg:h-10 px-3 sm:px-4 lg:px-5 rounded-xl text-sm bg-white/10 text-white border border-white/15 hover:bg-white/15 cursor-pointer"
+                  className="
+                    h-11 lg:h-14 3xl:h-32
+                    px-5 lg:px-7 3xl:px-20
+                    rounded-2xl
+                    text-base lg:text-lg 3xl:text-4xl
+                    bg-white/10 text-white border border-white/15
+                    hover:bg-white/20
+                  "
                 >
                   Login
                 </Button>
               </SignInButton>
-              <SignUpButton>
-                <Button
-                  variant="secondary"
-                  className="hidden sm:flex h-9 lg:h-10 px-3 sm:px-4 lg:px-5 rounded-xl text-sm bg-white/10 text-white border border-white/15 hover:bg-white/15 cursor-pointer"
-                >
-                  Sign Up
-                </Button>
-              </SignUpButton>
             </SignedOut>
 
             <SignedIn>
-              <div className="flex items-center gap-2 sm:gap-3">
-                <button
-                  onClick={() => router.push("/pointPage")}
-                  className="
-                    group h-9 lg:h-10 px-2.5 sm:px-3 lg:px-4 rounded-xl
-                    flex items-center gap-1.5 sm:gap-2
-                    border border-yellow-400/30
-                    bg-linear-to-r from-yellow-400/10 via-amber-400/10 to-orange-400/10
-                    hover:border-yellow-300/60
-                    hover:bg-yellow-400/15
-                    transition
-                    shadow-[0_0_0_rgba(0,0,0,0)]
-                    hover:shadow-[0_0_22px_rgba(250,204,21,0.25)]
-                  "
-                  type="button"
-                  title="Points"
-                >
-                  <span className="scale-90 sm:scale-95 group-hover:scale-105 transition">
-                    <CoinIcon />
-                  </span>
-                  <span className="text-yellow-200 font-extrabold text-xs sm:text-sm lg:text-base tabular-nums">
-                    {points ?? 0}
-                  </span>
-                </button>
+              <button
+                onClick={() => router.push("/pointPage")}
+                className="
+                  flex items-center gap-3
+                  h-11 lg:h-14 3xl:h-32
+                  px-4 lg:px-6 3xl:px-16
+                  rounded-2xl
+                  bg-linear-to-r from-yellow-400/15 to-orange-400/15
+                  border border-yellow-400/40
+                  hover:bg-yellow-400/25 transition
+                "
+              >
+                <span className="3xl:scale-[1.7]">
+                  <CoinIcon />
+                </span>
+                <span className="font-black text-yellow-300 tabular-nums text-base lg:text-lg 3xl:text-4xl">
+                  {points ?? 0}
+                </span>
+              </button>
 
-                <div className="h-9 lg:h-10 px-2 rounded-xl border border-white/10 bg-white/5 flex items-center">
+              <div className="hidden sm:flex h-11 lg:h-14 3xl:h-32 px-3 3xl:px-10 rounded-2xl border border-white/10 bg-white/5 items-center">
+                <div className="3xl:scale-[1.4]">
                   <UserButton />
-                </div>
-
-                <div className="relative hidden sm:block">
-                  <button
-                    className="cursor-pointer p-1"
-                    onClick={() => setSettingsOpen(!settingsOpen)}
-                  >
-                    <ChevronDown
-                      className={`w-5 h-5 ${settingsOpen ? "text-white rotate-180 transition" : "text-gray-500 rotate-0 transition"}`}
-                    />
-                  </button>
-                  {settingsOpen && (
-                    <div className="absolute top-12 right-0 border border-gray-600 bg-black/90 backdrop-blur-xl text-white py-2 rounded-xl w-48 shadow-xl">
-                      <button
-                        className="cursor-pointer flex items-center gap-2 w-full hover:bg-white/10 transition text-sm px-4 py-2.5 text-gray-300"
-                        onClick={() => {
-                          router.push("/savedPosts");
-                          setSettingsOpen(false);
-                        }}
-                      >
-                        <BookmarkCheck className="w-4 h-4" />
-                        Saved Posts
-                      </button>
-                    </div>
-                  )}
                 </div>
               </div>
             </SignedIn>
 
+
             <button
-              className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              type="button"
+              className="lg:hidden p-2 rounded-lg hover:bg-white/10"
             >
               {mobileMenuOpen ? (
-                <X className="w-5 h-5 text-white" />
+                <X className="w-6 h-6 text-white" />
               ) : (
-                <Menu className="w-5 h-5 text-white" />
+                <Menu className="w-6 h-6 text-white" />
               )}
             </button>
           </div>
         </div>
       </div>
-
-      {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-white/10 bg-black/95 backdrop-blur-xl">
-          <div className="px-4 py-4 space-y-2">
-            {nav.map((item) => {
-              const active = isActive(item.href);
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.href}
-                  onClick={() => router.push(item.href)}
-                  className={[
-                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition",
-                    active
-                      ? "bg-white/10 text-white"
-                      : "text-white/70 hover:bg-white/5 hover:text-white",
-                  ].join(" ")}
-                  type="button"
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{item.label}</span>
-                </button>
-              );
-            })}
-
-            <div className="h-px bg-white/10 my-3" />
-
-            <button
-              onClick={() => router.push("/addPost")}
-              className="sm:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                         bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600
-                         text-white font-semibold"
-              type="button"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Create Post</span>
-            </button>
-
-            <button
-              onClick={() => router.push("/helpcenter")}
-              className="md:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                         bg-white/5 border border-white/10 text-white/80"
-              type="button"
-            >
-              <FaRegCircleQuestion className="w-5 h-5" />
-              <span>Help Center</span>
-            </button>
-
-            <SignedIn>
-              <button
-                onClick={() => router.push("/savedPosts")}
-                className="sm:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                           bg-white/5 border border-white/10 text-white/80"
-                type="button"
-              >
-                <BookmarkCheck className="w-5 h-5" />
-                <span>Saved Posts</span>
-              </button>
-            </SignedIn>
-          </div>
-        </div>
-      )}
     </header>
   );
 }
