@@ -12,7 +12,6 @@ import { ChatbotPage } from "./components/chatbot";
 import { PointsProvider } from "./providers/PointProvider";
 import { CreateUser } from "./components/createUser";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -23,8 +22,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
-
 export const metadata: Metadata = {
   title: "Software Community",
   description: "Test your WebSite & developer communtiy",
@@ -34,9 +31,7 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>)
-
- {
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body

@@ -190,7 +190,7 @@ export default function SubmitPage() {
 
                 {formData.screenshot ? (
                   <div>
-                    <div className="h-60 w-full relative">
+                    <div className="h-100 flex shrink-0 w-full relative">
                       <Image
                         src={formData.screenshot}
                         alt="image"
