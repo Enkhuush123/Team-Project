@@ -2,9 +2,9 @@ import AdminCard from "@/app/components/admin/AdminCard";
 
 
 const MOCK_REPORTS = [
-  { id: "r1", title: "Spam post", type: "POST", status: "OPEN", createdAt: "2026-01-13" },
-  { id: "r2", title: "Broken link", type: "TEST", status: "IN_REVIEW", createdAt: "2026-01-12" },
-  { id: "r3", title: "Harassment", type: "USER", status: "RESOLVED", createdAt: "2026-01-11" },
+  { id: "r1", title: "Spam post",  status: "OPEN", createdAt: "2026-01-13" },
+  { id: "r2", title: "Broken link",  status: "IN_REVIEW", createdAt: "2026-01-12" },
+  { id: "r3", title: "Harassment",  status: "RESOLVED", createdAt: "2026-01-11" },
 ];
 
 function StatusPill({ s }: { s: string }) {
@@ -33,7 +33,7 @@ export default function AdminReportsPage() {
             <thead className="text-white/55 text-xs">
               <tr className="border-b border-white/10">
                 <th className="px-5 py-3 font-medium">Title</th>
-                <th className="px-5 py-3 font-medium">Type</th>
+
                 <th className="px-5 py-3 font-medium">Status</th>
                 <th className="px-5 py-3 font-medium">Created</th>
                 <th className="px-5 py-3 font-medium text-right">Action</th>
@@ -44,7 +44,7 @@ export default function AdminReportsPage() {
               {MOCK_REPORTS.map((r) => (
                 <tr key={r.id} className="border-b border-white/10 hover:bg-white/[0.03] transition">
                   <td className="px-5 py-4">{r.title}</td>
-                  <td className="px-5 py-4 text-white/60">{r.type}</td>
+               
                   <td className="px-5 py-4">
                     <StatusPill s={r.status} />
                   </td>
