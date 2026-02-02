@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server";
 
 type NewsItem = {
-<<<<<<< Updated upstream
-  title: string;
-  time: string; // "2h ago" гэх мэт болгоно
-=======
   id: number;
   title: string;
   time: string; // "2h ago" гэх мэт
->>>>>>> Stashed changes
   tag: string;
   url: string;
 };
@@ -40,46 +35,6 @@ function tagFromTitle(title: string) {
   return "Dev";
 }
 
-<<<<<<< Updated upstream
-// GET /api/news?limit=8
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const limit = Math.min(Number(searchParams.get("limit") || 20), 20);
-
-  try {
-    // Hacker News top stories
-    const idsRes = await fetch(
-      "https://hacker-news.firebaseio.com/v0/topstories.json",
-      { next: { revalidate: 60 } } // 60s cache
-    );
-    const ids: number[] = await idsRes.json();
-
-    const pick = ids.slice(0, limit);
-
-    const items = await Promise.all(
-      pick.map(async (id) => {
-        const r = await fetch(
-          `https://hacker-news.firebaseio.com/v0/item/${id}.json`,
-          { next: { revalidate: 60 } }
-        );
-        const x = await r.json();
-        const title = (x?.title as string) || "Untitled";
-        const url =
-          (x?.url as string) || `https://news.ycombinator.com/item?id=${id}`;
-
-        const out: NewsItem = {
-          title,
-          time: x?.time ? timeAgo(Number(x.time)) : "—",
-          tag: tagFromTitle(title),
-          url,
-        };
-        return out;
-      })
-    );
-
-    return NextResponse.json(
-      { items, source: "HackerNews", updatedAt: new Date().toISOString() },
-=======
 // concurrency limit helper
 async function mapLimit<T, R>(
   arr: T[],
@@ -153,22 +108,17 @@ export async function GET(req: Request) {
         nextStart: hasMore ? nextStart : null,
         hasMore,
       },
->>>>>>> Stashed changes
       { status: 200 }
     );
   } catch (err) {
     console.error("news api error:", err);
     return NextResponse.json(
-<<<<<<< Updated upstream
-      { items: [], error: "Failed to fetch news" },
-=======
       {
         items: [],
         error: "Failed to fetch news",
         nextStart: null,
         hasMore: false,
       },
->>>>>>> Stashed changes
       { status: 500 }
     );
   }
