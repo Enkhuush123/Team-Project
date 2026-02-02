@@ -28,7 +28,9 @@ import {
   Newspaper,
 } from "lucide-react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { playNotificationSound } from "../utils/sound";
 
 type NotificationItem = {
   id: string;
@@ -52,6 +54,15 @@ export default function Header() {
   const [notification, setNotification] = useState<NotificationItem[]>([]);
 
   const unreadCount = notification.filter((n) => !n.read).length;
+  const prevUnreadCount = useRef(0);
+
+
+  useEffect(() => {
+    if (unreadCount > prevUnreadCount.current && prevUnreadCount.current !== 0) {
+      playNotificationSound();
+    }
+    prevUnreadCount.current = unreadCount;
+  }, [unreadCount]);
 
   const loadNotification = async () => {
     try {
@@ -94,7 +105,7 @@ export default function Header() {
     void loadNotification();
   }, [pathname]);
 
-  // ESC to close popovers / mobile menu
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -123,11 +134,11 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl">
-      {/* ======= CONTAINER ======= */}
+
       <div className="mx-auto w-full max-w-8xl 3xl:max-w-none px-4 sm:px-6 lg:px-8 3xl:px-24">
-        {/* ======= TOP BAR ======= */}
+
         <div className="h-14 sm:h-16 lg:h-20 3xl:h-40 flex items-center justify-between">
-          {/* ======= LOGO ======= */}
+
           <div className="flex items-center min-w-0">
             <button
               onClick={() => router.push("/")}
@@ -150,7 +161,7 @@ export default function Header() {
                   Software
                 </span>
 
-                {/* ✅ FIXED: desktop дээр жижигрүүлдэг байсан class-ийг зөв болголоо */}
+
                 <span
                   className="
                     hidden lg:inline
@@ -167,7 +178,7 @@ export default function Header() {
             </button>
           </div>
 
-          {/* ======= DESKTOP NAV ======= */}
+
           <nav className="hidden lg:flex items-center justify-center gap-6 xl:gap-10 2xl:gap-12 3xl:gap-28">
             {nav.map((item) => {
               const active = isActive(item.href);
@@ -192,96 +203,9 @@ export default function Header() {
             })}
           </nav>
 
-          {/* ======= RIGHT ACTIONS ======= */}
+
           <div className="flex items-center gap-2 sm:gap-3 3xl:gap-6">
-            {/* ======= NOTIFICATIONS ======= */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={async () => {
-                  const next = !notifOpen;
-                  setNotifOpen(next);
-                  if (next) await loadNotification();
-                }}
-                className="
-                  relative rounded-xl hover:bg-white/10 transition text-white/80
-                  p-2 sm:p-2.5
-                  3xl:p-4
-                "
-                aria-label="Notifications"
-              >
-                <IoMdNotificationsOutline className="w-5 h-5 sm:w-6 sm:h-6 3xl:w-11 3xl:h-11" />
 
-                {unreadCount > 0 && (
-                  <span
-                    className="
-                      absolute -top-0.5 -right-0.5
-                      min-w-5 h-5 px-1
-                      sm:min-w-6 sm:h-6 sm:text-xs
-                      3xl:min-w-11 3xl:h-11 3xl:text-lg 3xl:px-2
-                      rounded-full bg-red-500 text-white font-bold
-                      flex items-center justify-center
-                    "
-                  >
-                    {unreadCount > 99 ? "99+" : unreadCount}
-                  </span>
-                )}
-              </button>
-
-              {notifOpen && (
-                <div className="absolute right-0 mt-2 w-[86vw] max-w-sm sm:w-96 3xl:w-[520px] rounded-2xl border border-white/10 bg-black/95 backdrop-blur-xl shadow-xl overflow-hidden">
-                  <div className="px-4 py-3 3xl:px-6 3xl:py-5 border-b border-white/10 flex items-center justify-between">
-                    <div className="text-white font-semibold text-sm sm:text-base 3xl:text-2xl">
-                      Notifications
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setNotifOpen(false)}
-                      className="text-white/60 hover:text-white transition text-sm 3xl:text-xl"
-                    >
-                      Close
-                    </button>
-                  </div>
-
-                  <div className="max-h-96 3xl:max-h-[560px] overflow-auto">
-                    {notification.length === 0 ? (
-                      <div className="p-4 3xl:p-6 text-white/60 text-sm 3xl:text-xl">
-                        No notifications
-                      </div>
-                    ) : (
-                      notification.map((n) => (
-                        <button
-                          key={n.id}
-                          type="button"
-                          onClick={() => {
-                            if (!n.read) void markRead(n.id);
-                            setNotifOpen(false);
-                            if (n.link) router.push(n.link);
-                          }}
-                          className={[
-                            "w-full text-left border-b border-white/5 hover:bg-white/5 transition",
-                            "px-4 py-3 3xl:px-6 3xl:py-5",
-                            n.read ? "opacity-80" : "bg-white/5",
-                          ].join(" ")}
-                        >
-                          <div className="text-white font-semibold text-sm 3xl:text-2xl">
-                            {n.title}
-                          </div>
-                          <div className="text-white/70 text-xs 3xl:text-lg mt-1 line-clamp-2">
-                            {n.body}
-                          </div>
-                          <div className="text-white/40 text-[11px] 3xl:text-base mt-2">
-                            {new Date(n.createdAt).toLocaleString()}
-                          </div>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* ======= CREATE POST ======= */}
             <button
               onClick={() => router.push("/addPost")}
               className="
@@ -301,7 +225,6 @@ export default function Header() {
               <span className="md:hidden">Post</span>
             </button>
 
-            {/* ======= AUTH ======= */}
             <SignedOut>
               <SignInButton>
                 <Button
@@ -339,44 +262,164 @@ export default function Header() {
 
             <SignedIn>
               <div className="flex items-center gap-2 sm:gap-3 3xl:gap-6">
-                {/* ======= POINTS ======= */}
+
                 <button
                   onClick={() => router.push("/pointPage")}
                   className="
-                    group flex items-center
-                    gap-1.5 sm:gap-2 3xl:gap-6
-                    border border-yellow-400/30
-                    bg-linear-to-r from-yellow-400/10 via-amber-400/10 to-orange-400/10
-                    hover:border-yellow-300/60
-                    hover:bg-yellow-400/15
-                    transition
-                    hover:shadow-[0_0_22px_rgba(250,204,21,0.25)]
-                    rounded-xl
-                    h-9 lg:h-10 2xl:h-11 3xl:h-28
-                    px-2.5 sm:px-3 lg:px-4 2xl:px-5 3xl:px-14
+                    group flex items-center justify-center gap-2 sm:gap-2.5 3xl:gap-5
+                    bg-zinc-800/80 hover:bg-zinc-700/80
+                    rounded-full
+                    h-9 lg:h-10 2xl:h-11 3xl:h-24
+                    pl-2 pr-3 sm:pl-2.5 sm:pr-4 lg:pl-3 lg:pr-5 3xl:pl-6 3xl:pr-10
+                    transition-all duration-200
                   "
                   type="button"
-                  title="Points"
                 >
-                  <span className="scale-90 sm:scale-95 group-hover:scale-105 transition">
-                    <span className="block 3xl:scale-[1.55]">
-                      <CoinIcon />
-                    </span>
+                  <span className="flex items-center justify-center scale-90 sm:scale-100 3xl:scale-150">
+                    <CoinIcon animated={false} />
                   </span>
-
-                  <span className="text-yellow-200 font-extrabold tabular-nums text-xs sm:text-sm lg:text-base 2xl:text-lg 3xl:text-4xl">
-                    {points ?? 0}
+                  <span className="text-white font-bold tabular-nums text-sm sm:text-base lg:text-lg 2xl:text-xl 3xl:text-4xl leading-none">
+                    {(points ?? 0).toLocaleString()}
                   </span>
                 </button>
 
-                {/* ======= USER BUTTON ======= */}
+                {/* ======= NOTIFICATION BUTTON ======= */}
+                <div className="relative">
+                  <button
+                    onClick={async () => {
+                      await loadNotification();
+                      setNotifOpen(!notifOpen);
+                    }}
+                    className="
+                      relative flex items-center justify-center
+                      w-9 h-9 lg:w-10 lg:h-10 2xl:w-11 2xl:h-11 3xl:w-24 3xl:h-24
+                      bg-zinc-800/80 hover:bg-zinc-700/80
+                      rounded-full
+                      transition-all duration-200
+                    "
+                    type="button"
+                    aria-label="Notifications"
+                  >
+                    <IoMdNotificationsOutline className="w-5 h-5 lg:w-5 lg:h-5 2xl:w-6 2xl:h-6 3xl:w-10 3xl:h-10 text-white/80" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 text-[10px] 3xl:min-w-6 3xl:h-6 3xl:text-sm bg-red-500 text-white font-bold rounded-full flex items-center justify-center shadow-lg shadow-red-500/50">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
+                  </button>
+
+
+                  {notifOpen && (
+                    <>
+
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setNotifOpen(false)}
+                      />
+
+
+                      <div className="absolute top-12 right-0 z-50 w-[340px] sm:w-[400px] 3xl:w-[520px] rounded-2xl border border-white/10 bg-gradient-to-b from-zinc-800/95 to-zinc-900/98 backdrop-blur-xl shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)] overflow-hidden">
+
+                        <div className="relative px-5 py-4 border-b border-white/10">
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/5 to-transparent" />
+                          <div className="relative flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                                <IoMdNotificationsOutline className="w-4 h-4 text-white" />
+                              </div>
+                              <div>
+                                <span className="text-white font-bold text-base 3xl:text-lg">Мэдэгдэл</span>
+                                {unreadCount > 0 && (
+                                  <span className="ml-2 px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-semibold rounded-full">
+                                    {unreadCount}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setNotifOpen(false)}
+                              className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all hover:scale-105"
+                            >
+                              <X className="w-4 h-4 text-white/60" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="overflow-y-auto max-h-[400px]">
+                          {notification.length === 0 ? (
+                            <div className="py-14 px-6 text-center">
+                              <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-white/5 to-white/[0.02] flex items-center justify-center">
+                                <IoMdNotificationsOutline className="w-7 h-7 text-white/20" />
+                              </div>
+                              <p className="text-white/50 text-sm font-medium">Мэдэгдэл байхгүй</p>
+                              <p className="text-white/30 text-xs mt-1">Шинэ мэдэгдэл ирэхэд энд харагдана</p>
+                            </div>
+                          ) : (
+                            <div className="p-2">
+                              {notification.map((n, idx) => (
+                                <button
+                                  key={n.id}
+                                  type="button"
+                                  onClick={() => {
+                                    if (!n.read) void markRead(n.id);
+                                    setNotifOpen(false);
+                                    if (n.link) router.push(n.link);
+                                  }}
+                                  className={`
+                                    w-full text-left p-3 rounded-xl transition-all duration-200 mb-1 last:mb-0
+                                    ${!n.read
+                                      ? "bg-gradient-to-r from-blue-500/10 via-purple-500/5 to-transparent hover:from-blue-500/15 border-l-2 border-blue-500"
+                                      : "hover:bg-white/5 opacity-70 hover:opacity-100"
+                                    }
+                                  `}
+                                >
+                                  <div className="flex gap-3 items-start">
+                                    <div className={`
+                                      w-9 h-9 rounded-xl flex items-center justify-center shrink-0
+                                      ${!n.read
+                                        ? "bg-gradient-to-br from-blue-500/20 to-purple-500/20"
+                                        : "bg-white/5"
+                                      }
+                                    `}>
+                                      <IoMdNotificationsOutline className={`w-4 h-4 ${!n.read ? "text-blue-400" : "text-white/30"}`} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <h4 className={`text-sm line-clamp-1 flex-1 ${!n.read ? "text-white font-semibold" : "text-white/70"}`}>
+                                          {n.title}
+                                        </h4>
+                                        {!n.read && (
+                                          <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
+                                        )}
+                                      </div>
+                                      <p className="text-white/40 text-xs mt-1 line-clamp-2 leading-relaxed">
+                                        {n.body}
+                                      </p>
+                                      <p className="text-white/25 text-[10px] mt-2 font-medium">
+                                        {new Date(n.createdAt).toLocaleString("mn-MN")}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+
                 <div className="h-9 lg:h-10 2xl:h-11 3xl:h-28 px-2 2xl:px-3 3xl:px-10 rounded-xl border border-white/10 bg-white/5 flex items-center">
                   <div className="3xl:scale-[1.35] origin-center">
                     <UserButton />
                   </div>
                 </div>
 
-                {/* ======= SETTINGS DROPDOWN ======= */}
+
                 <div className="relative hidden sm:block">
                   <button
                     className="cursor-pointer p-1 3xl:p-2"
@@ -393,56 +436,64 @@ export default function Header() {
                     />
                   </button>
 
-                  {settingsOpen && (
-                    <div className="absolute top-12 right-0 border border-white/10 bg-black/90 backdrop-blur-xl text-white py-2 3xl:py-4 rounded-xl w-52 3xl:w-80 shadow-xl">
-                      <button
-                        className="cursor-pointer flex items-center gap-2 w-full hover:bg-white/10 transition px-4 py-2.5 3xl:px-6 3xl:py-4 text-gray-300 text-sm 3xl:text-2xl"
-                        onClick={() => {
-                          router.push("/savedPosts");
-                          setSettingsOpen(false);
-                        }}
-                        type="button"
+                  <AnimatePresence>
+                    {settingsOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute top-12 right-0 border border-white/10 bg-black/95 backdrop-blur-xl text-white p-2 3xl:p-3 rounded-2xl w-56 3xl:w-80 shadow-2xl origin-top-right"
                       >
-                        <BookmarkCheck className="w-4 h-4 3xl:w-8 3xl:h-8" />
-                        Saved Posts
-                      </button>
+                        {/* Saved Posts */}
+                        <motion.button
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.05 }}
+                          className="cursor-pointer flex items-center gap-3 w-full hover:bg-white/10 transition-all px-3 py-3 3xl:px-5 3xl:py-4 rounded-xl group"
+                          onClick={() => {
+                            router.push("/savedPosts");
+                            setSettingsOpen(false);
+                          }}
+                          type="button"
+                        >
+                          <div className="w-9 h-9 3xl:w-12 3xl:h-12 rounded-lg bg-linear-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center group-hover:from-violet-500/30 group-hover:to-purple-500/30 transition-all">
+                            <BookmarkCheck className="w-4 h-4 3xl:w-6 3xl:h-6 text-violet-400" />
+                          </div>
+                          <div className="text-left">
+                            <div className="text-white font-medium text-sm 3xl:text-lg">Saved Posts</div>
+                            <div className="text-white/50 text-xs 3xl:text-sm">Your bookmarks</div>
+                          </div>
+                        </motion.button>
 
-                      <button
-                        className="cursor-pointer flex items-center gap-2 w-full hover:bg-white/10 transition px-4 py-2.5 3xl:px-6 3xl:py-4 text-gray-300 text-sm 3xl:text-2xl"
-                        onClick={async () => {
-                          setSettingsOpen(false);
-                          await loadNotification();
-                          setNotifOpen(true);
-                        }}
-                        type="button"
-                      >
-                        <IoMdNotificationsOutline className="w-4 h-4 3xl:w-8 3xl:h-8" />
-                        Notifications
-                        {unreadCount > 0 && (
-                          <span className="ml-auto bg-red-500 text-white text-xs 3xl:text-lg px-2 py-0.5 rounded-full">
-                            {unreadCount > 99 ? "99+" : unreadCount}
-                          </span>
-                        )}
-                      </button>
 
-                      <button
-                        className="cursor-pointer flex items-center gap-2 w-full hover:bg-white/10 transition px-4 py-2.5 3xl:px-6 3xl:py-4 text-gray-300 text-sm 3xl:text-2xl"
-                        onClick={() => {
-                          router.push("/helpcenter");
-                          setSettingsOpen(false);
-                        }}
-                        type="button"
-                      >
-                        <FaRegCircleQuestion className="w-4 h-4 3xl:w-8 3xl:h-8" />
-                        Help Center
-                      </button>
-                    </div>
-                  )}
+                        <motion.button
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 }}
+                          className="cursor-pointer flex items-center gap-3 w-full hover:bg-white/10 transition-all px-3 py-3 3xl:px-5 3xl:py-4 rounded-xl group"
+                          onClick={() => {
+                            router.push("/helpcenter");
+                            setSettingsOpen(false);
+                          }}
+                          type="button"
+                        >
+                          <div className="w-9 h-9 3xl:w-12 3xl:h-12 rounded-lg bg-linear-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center group-hover:from-emerald-500/30 group-hover:to-teal-500/30 transition-all">
+                            <FaRegCircleQuestion className="w-4 h-4 3xl:w-6 3xl:h-6 text-emerald-400" />
+                          </div>
+                          <div className="text-left">
+                            <div className="text-white font-medium text-sm 3xl:text-lg">Help Center</div>
+                            <div className="text-white/50 text-xs 3xl:text-sm">Get support</div>
+                          </div>
+                        </motion.button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </SignedIn>
 
-            {/* ======= MOBILE MENU TOGGLE ======= */}
+
             <button
               className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -459,7 +510,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* ======= MOBILE DRAWER ======= */}
+
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-white/10 bg-black/95 backdrop-blur-xl">
           <div className="px-4 py-4 space-y-2">
@@ -527,6 +578,7 @@ export default function Header() {
           </div>
         </div>
       )}
+
     </header>
   );
 }

@@ -1,18 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Spinner } from "@/components/ui/spinner";
+import { ArrowDownLeft, ArrowUpRight, Clock, History, Loader } from "lucide-react";
+import CoinIcon from "../_icons/CoinIcon";
 
-type Transactions = {
+type Transaction = {
   id: string;
   amount: number;
   fromUserId: string;
@@ -24,86 +16,132 @@ type Transactions = {
 };
 
 const TransferHistory = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [userId, setUserId] = useState({});
-
-  const [loading, setLoading] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [userId, setUserId] = useState<string>("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUserData = async () => {
-      const res = await fetch("/api/user", { method: "GET" });
-      const data = await res.json();
-      setUserId(data.id);
-      console.log(data);
-    };
-
-    getUserData();
-
-    const getHistory = async () => {
+    const loadData = async () => {
       setLoading(true);
 
-      const res = await fetch("api/points/history", {
-        method: "GET",
-      });
+      const [userRes, historyRes] = await Promise.all([
+        fetch("/api/user"),
+        fetch("/api/points/history"),
+      ]);
 
-      const data = await res.json();
-      console.log(data);
-      setTransactions(data);
+      const userData = await userRes.json();
+      const historyData = await historyRes.json();
 
+      setUserId(userData.id);
+      setTransactions(historyData ?? []);
       setLoading(false);
     };
-    getHistory();
+
+    loadData();
   }, []);
 
+  const isReceived = (item: Transaction) => userId !== item.fromUserId;
+
   return (
-    <div className="mx-auto mt-5 w-[80%] h-fit py-10 border border-gray-700 rounded-xl">
-      <Table>
-        {loading && (
-          <TableCaption>
-            <Spinner />A list of your recent transfers.
-          </TableCaption>
-        )}
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-25 text-white">Amount</TableHead>
-            <TableHead className="text-white">Description</TableHead>
-            <TableHead className="text-white">Recipent/Sender</TableHead>
-            <TableHead className="text-white">Time</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {transactions.map((item: Transactions) => (
-            <TableRow className="text-white" key={item.id}>
-              <TableCell
-                key={item.id}
-                className="text-white flex justify-between px-5"
-              >
+    <div className="min-h-screen">
+      {/* Header */}
+      <div className="relative overflow-hidden border-b border-white/10">
+        <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 via-cyan-500/5 to-teal-500/10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.15),transparent_50%)]" />
+
+        <div className="relative max-w-4xl mx-auto px-6 py-12">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+              <History className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Transfer History</h1>
+              <p className="text-white/60 mt-1">View all your point transactions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader className="w-8 h-8 text-blue-500 animate-spin mb-4" />
+            <p className="text-white/50">Loading transactions...</p>
+          </div>
+        ) : transactions.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-4">
+              <Clock className="w-10 h-10 text-white/20" />
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">No transactions yet</h3>
+            <p className="text-white/50">Your transfer history will appear here</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {transactions.map((item) => {
+              const received = isReceived(item);
+              return (
                 <div
-                  style={{
-                    color: userId !== item.fromUserId ? "green" : "red",
-                  }}
+                  key={item.id}
+                  className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/[0.07] transition-all"
                 >
-                  {userId === item.fromUserId ? <span>-</span> : <span>+</span>}
-                  {item.amount}
+                  {/* Left: Icon & Info */}
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                        received
+                          ? "bg-linear-to-br from-green-500/20 to-emerald-500/20"
+                          : "bg-linear-to-br from-red-500/20 to-rose-500/20"
+                      }`}
+                    >
+                      {received ? (
+                        <ArrowDownLeft className="w-6 h-6 text-green-400" />
+                      ) : (
+                        <ArrowUpRight className="w-6 h-6 text-red-400" />
+                      )}
+                    </div>
+
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-white">
+                          {received ? "Received from" : "Sent to"}
+                        </span>
+                        <span className="text-white/60 text-sm">
+                          {received ? item.fromUserEmail : item.toUserEmail}
+                        </span>
+                      </div>
+                      {item.description && (
+                        <p className="text-white/50 text-sm mt-0.5 line-clamp-1">
+                          {item.description}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-1.5 text-white/40 text-xs mt-1">
+                        <Clock className="w-3 h-3" />
+                        {new Date(item.createdAt).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Amount */}
+                  <div className="flex items-center gap-2">
+                    <div className="scale-75">
+                      <CoinIcon />
+                    </div>
+                    <span
+                      className={`text-xl font-bold ${
+                        received ? "text-green-400" : "text-red-400"
+                      }`}
+                    >
+                      {received ? "+" : "-"}{item.amount.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
-              </TableCell>
-              <TableCell>
-                <p>{item.description}</p>
-              </TableCell>
-              <TableCell>
-                <p>
-                  {item.toUserId === userId
-                    ? item.fromUserEmail
-                    : item.toUserEmail}
-                </p>
-              </TableCell>
-              <TableCell>
-                <p>{new Date(item.createdAt).toLocaleString()}</p>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
