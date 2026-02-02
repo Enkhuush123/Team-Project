@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import CoinIcon from "../_icons/CoinIcon";
 import { FaRegCircleQuestion } from "react-icons/fa6";
 import { IoMdNotificationsOutline } from "react-icons/io";
+
 import {
   SignInButton,
   SignUpButton,
@@ -13,6 +14,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+
 import { usePoints } from "../providers/PointProvider";
 import {
   BookmarkCheck,
@@ -25,16 +27,85 @@ import {
   BookOpen,
   Newspaper,
 } from "lucide-react";
+
 import { useEffect, useState } from "react";
+
+type NotificationItem = {
+  id: string;
+  title: string;
+  body: string;
+  link: string | null;
+  read: boolean;
+  createdAt: string;
+};
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { points } = usePoints();
 
-  const isAdmin = pathname.startsWith("/admin");
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin");
 
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notification, setNotification] = useState<NotificationItem[]>([]);
+
+  const unreadCount = notification.filter((n) => !n.read).length;
+
+  const loadNotification = async () => {
+    try {
+      const res = await fetch("/api/notification", { cache: "no-store" });
+      const data = await res.json();
+
+      const list = Array.isArray(data.notifications)
+        ? data.notifications
+        : Array.isArray(data.notification)
+          ? data.notification
+          : [];
+
+      setNotification(list);
+    } catch (e) {
+      setNotification([]);
+    }
+  };
+
+  const markRead = async (id: string) => {
+    // optimistic UI
+    setNotification((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+    );
+
+    try {
+      await fetch(`/api/notification/read`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setSettingsOpen(false);
+    setNotifOpen(false);
+    void loadNotification();
+  }, [pathname]);
+
+  // ESC to close popovers / mobile menu
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setNotifOpen(false);
+        setSettingsOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   const nav = [
     { label: "Home", href: "/", icon: Home },
@@ -43,44 +114,61 @@ export default function Header() {
     { label: "News", href: "/itnews", icon: Newspaper },
   ];
 
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname?.startsWith(href);
+  };
 
   if (isAdmin) return null;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl">
-      <div className="mx-auto w-full max-w-8xl 3xl:max-w-none px-4 sm:px-6 lg:px-8 3xl:px-28">
-
-        <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24 3xl:h-44">
-
-          <button
-            onClick={() => router.push("/")}
-            className="flex items-baseline gap-3 select-none"
-          >
-            <span
-              className="
-                bg-linear-to-r from-cyan-300 via-blue-400 to-violet-400
-                bg-clip-text text-transparent font-black tracking-tight
-                text-xl sm:text-2xl lg:text-4xl
-                2xl:text-5xl
-                3xl:text-8xl
-              "
+      {/* ======= CONTAINER ======= */}
+      <div className="mx-auto w-full max-w-8xl 3xl:max-w-none px-4 sm:px-6 lg:px-8 3xl:px-24">
+        {/* ======= TOP BAR ======= */}
+        <div className="h-14 sm:h-16 lg:h-20 3xl:h-40 flex items-center justify-between">
+          {/* ======= LOGO ======= */}
+          <div className="flex items-center min-w-0">
+            <button
+              onClick={() => router.push("/")}
+              className="select-none flex items-center gap-2 min-w-0"
+              type="button"
+              aria-label="Go Home"
             >
-              Software
-            </span>
-            <span
-              className="
-                hidden lg:inline text-white/90 font-bold
-                text-2xl 2xl:text-3xl 3xl:text-7xl
-              "
-            >
-              Community
-            </span>
-          </button>
+              <span className="font-extrabold tracking-tight min-w-0 flex items-baseline gap-2">
+                <span
+                  className="
+                    bg-linear-to-r from-cyan-300 via-blue-400 to-violet-400
+                    bg-clip-text text-transparent
+                    drop-shadow-[0_0_18px_rgba(99,102,241,0.35)]
+                    text-lg sm:text-xl lg:text-3xl
+                    2xl:text-4xl
+                    3xl:text-7xl
+                    whitespace-nowrap
+                  "
+                >
+                  Software
+                </span>
 
+                {/* ✅ FIXED: desktop дээр жижигрүүлдэг байсан class-ийг зөв болголоо */}
+                <span
+                  className="
+                    hidden lg:inline
+                    text-white/90
+                    text-xl lg:text-2xl
+                    2xl:text-3xl
+                    3xl:text-6xl
+                    whitespace-nowrap
+                  "
+                >
+                  Community
+                </span>
+              </span>
+            </button>
+          </div>
 
-          <nav className="hidden lg:flex items-center gap-8 2xl:gap-14 3xl:gap-32">
+          {/* ======= DESKTOP NAV ======= */}
+          <nav className="hidden lg:flex items-center justify-center gap-6 xl:gap-10 2xl:gap-12 3xl:gap-28">
             {nav.map((item) => {
               const active = isActive(item.href);
               return (
@@ -88,125 +176,346 @@ export default function Header() {
                   key={item.href}
                   onClick={() => router.push(item.href)}
                   className={[
-                    "relative font-bold transition",
-                    "text-lg 2xl:text-xl 3xl:text-4xl",
-                    active
-                      ? "text-white"
-                      : "text-white/60 hover:text-white",
+                    "relative px-1 py-2 font-semibold transition",
+                    // responsive size
+                    "text-[15px] xl:text-base 2xl:text-lg 3xl:text-3xl",
+                    active ? "text-white" : "text-white/60 hover:text-white",
                   ].join(" ")}
+                  type="button"
                 >
                   {item.label}
                   {active && (
-                    <span className="absolute -bottom-2 left-0 right-0 h-1 rounded-full bg-linear-to-r from-cyan-400 via-blue-500 to-violet-500" />
+                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full bg-linear-to-r from-cyan-400 via-blue-500 to-violet-500" />
                   )}
                 </button>
               );
             })}
           </nav>
 
+          {/* ======= RIGHT ACTIONS ======= */}
+          <div className="flex items-center gap-2 sm:gap-3 3xl:gap-6">
+            {/* ======= NOTIFICATIONS ======= */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={async () => {
+                  const next = !notifOpen;
+                  setNotifOpen(next);
+                  if (next) await loadNotification();
+                }}
+                className="
+                  relative rounded-xl hover:bg-white/10 transition text-white/80
+                  p-2 sm:p-2.5
+                  3xl:p-4
+                "
+                aria-label="Notifications"
+              >
+                <IoMdNotificationsOutline className="w-5 h-5 sm:w-6 sm:h-6 3xl:w-11 3xl:h-11" />
 
-          <div className="flex items-center gap-2 sm:gap-3 3xl:gap-8">
+                {unreadCount > 0 && (
+                  <span
+                    className="
+                      absolute -top-0.5 -right-0.5
+                      min-w-5 h-5 px-1
+                      sm:min-w-6 sm:h-6 sm:text-xs
+                      3xl:min-w-11 3xl:h-11 3xl:text-lg 3xl:px-2
+                      rounded-full bg-red-500 text-white font-bold
+                      flex items-center justify-center
+                    "
+                  >
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+              </button>
 
-            <button className="p-2 3xl:p-4 rounded-xl hover:bg-white/10 transition">
-              <IoMdNotificationsOutline className="w-6 h-6 3xl:w-12 3xl:h-12 text-white" />
-            </button>
+              {notifOpen && (
+                <div className="absolute right-0 mt-2 w-[86vw] max-w-sm sm:w-96 3xl:w-[520px] rounded-2xl border border-white/10 bg-black/95 backdrop-blur-xl shadow-xl overflow-hidden">
+                  <div className="px-4 py-3 3xl:px-6 3xl:py-5 border-b border-white/10 flex items-center justify-between">
+                    <div className="text-white font-semibold text-sm sm:text-base 3xl:text-2xl">
+                      Notifications
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setNotifOpen(false)}
+                      className="text-white/60 hover:text-white transition text-sm 3xl:text-xl"
+                    >
+                      Close
+                    </button>
+                  </div>
 
-            {/* Create Post */}
+                  <div className="max-h-96 3xl:max-h-[560px] overflow-auto">
+                    {notification.length === 0 ? (
+                      <div className="p-4 3xl:p-6 text-white/60 text-sm 3xl:text-xl">
+                        No notifications
+                      </div>
+                    ) : (
+                      notification.map((n) => (
+                        <button
+                          key={n.id}
+                          type="button"
+                          onClick={() => {
+                            if (!n.read) void markRead(n.id);
+                            setNotifOpen(false);
+                            if (n.link) router.push(n.link);
+                          }}
+                          className={[
+                            "w-full text-left border-b border-white/5 hover:bg-white/5 transition",
+                            "px-4 py-3 3xl:px-6 3xl:py-5",
+                            n.read ? "opacity-80" : "bg-white/5",
+                          ].join(" ")}
+                        >
+                          <div className="text-white font-semibold text-sm 3xl:text-2xl">
+                            {n.title}
+                          </div>
+                          <div className="text-white/70 text-xs 3xl:text-lg mt-1 line-clamp-2">
+                            {n.body}
+                          </div>
+                          <div className="text-white/40 text-[11px] 3xl:text-base mt-2">
+                            {new Date(n.createdAt).toLocaleString()}
+                          </div>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ======= CREATE POST ======= */}
             <button
               onClick={() => router.push("/addPost")}
               className="
-                hidden sm:flex items-center gap-3 font-bold text-white
-                h-11 lg:h-14 3xl:h-32
-                px-4 lg:px-6 3xl:px-16
-                rounded-2xl
+                hidden sm:flex items-center gap-2 font-semibold text-white transition
+                h-9 lg:h-10 2xl:h-11 3xl:h-28
+                px-3 lg:px-4 2xl:px-5 3xl:px-14
+                rounded-xl
                 bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600
-                hover:brightness-110 transition
-                text-base lg:text-lg 3xl:text-4xl
-                shadow-[0_10px_30px_rgba(79,70,229,0.45)]
+                hover:brightness-110
+                text-sm 2xl:text-base 3xl:text-3xl
+                shadow-[0_4px_15px_rgba(79,70,229,0.4)]
               "
+              type="button"
             >
-              <Plus className="w-5 h-5 3xl:w-9 3xl:h-9" />
-              Create Post
+              <Plus className="w-4 h-4 2xl:w-5 2xl:h-5 3xl:w-8 3xl:h-8" />
+              <span className="hidden md:inline">Create Post</span>
+              <span className="md:hidden">Post</span>
             </button>
 
-            {/* Help */}
+            {/* ======= HELP ======= */}
             <button
               onClick={() => router.push("/helpcenter")}
               className="
-                hidden md:flex items-center gap-3
-                h-11 lg:h-14 3xl:h-32
-                px-4 lg:px-6 3xl:px-16
-                rounded-2xl
+                hidden md:flex items-center gap-2 text-white/80 transition
+                h-9 lg:h-10 2xl:h-11 3xl:h-28
+                px-3 lg:px-4 2xl:px-5 3xl:px-14
+                rounded-xl
                 bg-white/5 border border-white/10
-                text-white/80 font-semibold
-                text-base lg:text-lg 3xl:text-4xl
-                hover:bg-white/10 transition
+                hover:bg-white/10 hover:border-white/15
+                text-sm 2xl:text-base 3xl:text-3xl
               "
+              type="button"
             >
-              <FaRegCircleQuestion className="3xl:text-4xl" />
-              Help
+              <FaRegCircleQuestion className="text-white/70 text-base 3xl:text-3xl" />
+              <span className="hidden lg:inline">Help</span>
+              <span className="lg:hidden">Help</span>
             </button>
 
-            {/* Auth */}
+            {/* ======= AUTH ======= */}
             <SignedOut>
               <SignInButton>
                 <Button
+                  variant="secondary"
                   className="
-                    h-11 lg:h-14 3xl:h-32
-                    px-5 lg:px-7 3xl:px-20
-                    rounded-2xl
-                    text-base lg:text-lg 3xl:text-4xl
+                    h-9 lg:h-10 2xl:h-11 3xl:h-28
+                    px-3 sm:px-4 lg:px-5 2xl:px-6 3xl:px-16
+                    rounded-xl
+                    text-sm 2xl:text-base 3xl:text-3xl
                     bg-white/10 text-white border border-white/15
-                    hover:bg-white/20
+                    hover:bg-white/15 cursor-pointer
                   "
                 >
                   Login
                 </Button>
               </SignInButton>
+
+              <SignUpButton>
+                <Button
+                  variant="secondary"
+                  className="
+                    hidden sm:flex
+                    h-9 lg:h-10 2xl:h-11 3xl:h-28
+                    px-3 sm:px-4 lg:px-5 2xl:px-6 3xl:px-16
+                    rounded-xl
+                    text-sm 2xl:text-base 3xl:text-3xl
+                    bg-white/10 text-white border border-white/15
+                    hover:bg-white/15 cursor-pointer
+                  "
+                >
+                  Sign Up
+                </Button>
+              </SignUpButton>
             </SignedOut>
 
             <SignedIn>
-              <button
-                onClick={() => router.push("/pointPage")}
-                className="
-                  flex items-center gap-3
-                  h-11 lg:h-14 3xl:h-32
-                  px-4 lg:px-6 3xl:px-16
-                  rounded-2xl
-                  bg-linear-to-r from-yellow-400/15 to-orange-400/15
-                  border border-yellow-400/40
-                  hover:bg-yellow-400/25 transition
-                "
-              >
-                <span className="3xl:scale-[1.7]">
-                  <CoinIcon />
-                </span>
-                <span className="font-black text-yellow-300 tabular-nums text-base lg:text-lg 3xl:text-4xl">
-                  {points ?? 0}
-                </span>
-              </button>
+              <div className="flex items-center gap-2 sm:gap-3 3xl:gap-6">
+                {/* ======= POINTS ======= */}
+                <button
+                  onClick={() => router.push("/pointPage")}
+                  className="
+                    group flex items-center
+                    gap-1.5 sm:gap-2 3xl:gap-6
+                    border border-yellow-400/30
+                    bg-linear-to-r from-yellow-400/10 via-amber-400/10 to-orange-400/10
+                    hover:border-yellow-300/60
+                    hover:bg-yellow-400/15
+                    transition
+                    hover:shadow-[0_0_22px_rgba(250,204,21,0.25)]
+                    rounded-xl
+                    h-9 lg:h-10 2xl:h-11 3xl:h-28
+                    px-2.5 sm:px-3 lg:px-4 2xl:px-5 3xl:px-14
+                  "
+                  type="button"
+                  title="Points"
+                >
+                  <span className="scale-90 sm:scale-95 group-hover:scale-105 transition">
+                    <span className="block 3xl:scale-[1.55]">
+                      <CoinIcon />
+                    </span>
+                  </span>
 
-              <div className="hidden sm:flex h-11 lg:h-14 3xl:h-32 px-3 3xl:px-10 rounded-2xl border border-white/10 bg-white/5 items-center">
-                <div className="3xl:scale-[1.4]">
-                  <UserButton />
+                  <span className="text-yellow-200 font-extrabold tabular-nums text-xs sm:text-sm lg:text-base 2xl:text-lg 3xl:text-4xl">
+                    {points ?? 0}
+                  </span>
+                </button>
+
+                {/* ======= USER BUTTON ======= */}
+                <div className="h-9 lg:h-10 2xl:h-11 3xl:h-28 px-2 2xl:px-3 3xl:px-10 rounded-xl border border-white/10 bg-white/5 flex items-center">
+                  <div className="3xl:scale-[1.35] origin-center">
+                    <UserButton />
+                  </div>
+                </div>
+
+                {/* ======= SETTINGS DROPDOWN ======= */}
+                <div className="relative hidden sm:block">
+                  <button
+                    className="cursor-pointer p-1 3xl:p-2"
+                    onClick={() => setSettingsOpen(!settingsOpen)}
+                    type="button"
+                    aria-label="Open settings"
+                  >
+                    <ChevronDown
+                      className={[
+                        "transition",
+                        settingsOpen ? "rotate-180 text-white" : "rotate-0 text-gray-400",
+                        "w-5 h-5 2xl:w-6 2xl:h-6 3xl:w-10 3xl:h-10",
+                      ].join(" ")}
+                    />
+                  </button>
+
+                  {settingsOpen && (
+                    <div className="absolute top-12 right-0 border border-white/10 bg-black/90 backdrop-blur-xl text-white py-2 3xl:py-4 rounded-xl w-52 3xl:w-80 shadow-xl">
+                      <button
+                        className="cursor-pointer flex items-center gap-2 w-full hover:bg-white/10 transition px-4 py-2.5 3xl:px-6 3xl:py-4 text-gray-300 text-sm 3xl:text-2xl"
+                        onClick={() => {
+                          router.push("/savedPosts");
+                          setSettingsOpen(false);
+                        }}
+                        type="button"
+                      >
+                        <BookmarkCheck className="w-4 h-4 3xl:w-8 3xl:h-8" />
+                        Saved Posts
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </SignedIn>
 
-
+            {/* ======= MOBILE MENU TOGGLE ======= */}
             <button
+              className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg hover:bg-white/10"
+              type="button"
+              aria-label="Open menu"
             >
               {mobileMenuOpen ? (
-                <X className="w-6 h-6 text-white" />
+                <X className="w-5 h-5 text-white" />
               ) : (
-                <Menu className="w-6 h-6 text-white" />
+                <Menu className="w-5 h-5 text-white" />
               )}
             </button>
           </div>
         </div>
       </div>
+
+      {/* ======= MOBILE DRAWER ======= */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-white/10 bg-black/95 backdrop-blur-xl">
+          <div className="px-4 py-4 space-y-2">
+            {nav.map((item) => {
+              const active = isActive(item.href);
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.href}
+                  onClick={() => router.push(item.href)}
+                  className={[
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition",
+                    active
+                      ? "bg-white/10 text-white"
+                      : "text-white/70 hover:bg-white/5 hover:text-white",
+                  ].join(" ")}
+                  type="button"
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium">{item.label}</span>
+                </button>
+              );
+            })}
+
+            <div className="h-px bg-white/10 my-3" />
+
+            <button
+              onClick={() => router.push("/addPost")}
+              className="
+                sm:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl
+                bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600
+                text-white font-semibold
+              "
+              type="button"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Create Post</span>
+            </button>
+
+            <button
+              onClick={() => router.push("/helpcenter")}
+              className="
+                md:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl
+                bg-white/5 border border-white/10 text-white/80
+              "
+              type="button"
+            >
+              <FaRegCircleQuestion className="w-5 h-5" />
+              <span>Help Center</span>
+            </button>
+
+            <SignedIn>
+              <button
+                onClick={() => router.push("/savedPosts")}
+                className="
+                  sm:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl
+                  bg-white/5 border border-white/10 text-white/80
+                "
+                type="button"
+              >
+                <BookmarkCheck className="w-5 h-5" />
+                <span>Saved Posts</span>
+              </button>
+            </SignedIn>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
