@@ -38,6 +38,15 @@ export default function Post() {
 
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
+  const [errors, setErrors] = useState<{ title?: boolean }>({});
+
+  const clearForm = () => {
+    setTitle("");
+    setDescription("");
+    setImage("");
+    setLink("");
+    if (fileRef.current) fileRef.current.value = "";
+  };
 
   const uploadToCloudinary = async (file: File) => {
     const formData = new FormData();
@@ -73,6 +82,13 @@ export default function Post() {
   const handlePost = async () => {
     if (posting) return;
 
+    // Validation - title is required
+    if (!title.trim()) {
+      setErrors({ title: true });
+      return;
+    }
+    setErrors({});
+
     try {
       setPosting(true);
       const res = await fetch("/api/blog", {
@@ -81,11 +97,13 @@ export default function Post() {
         body: JSON.stringify({ title, description, image, link }),
       });
 
-      const data = await res.json(); // ✅ FIX (await)
+      const data = await res.json();
       console.log(data);
 
-      // хүсвэл UI reset:
-      // setTitle(""); setDescription(""); setImage(""); setLink("");
+      // Auto-clear after successful post
+      if (res.ok) {
+        clearForm();
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -105,39 +123,51 @@ export default function Post() {
         <div className="mb-6">
           <h1 className="text-3xl font-extrabold tracking-tight">
             <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(99,102,241,0.45)]">
-              Create Post
+              Post нэмэх
             </span>
           </h1>
           <div className="mt-3 h-[2px] w-28 bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 rounded-full opacity-80" />
           <p className="mt-4 text-white/70 text-sm">
-            Share text, link, and an image (Cloudinary upload).
+            Текст, зураг, линк оруулах
           </p>
         </div>
 
         <GlassCard className="p-6 md:p-7 space-y-5">
           {/* Title */}
           <div className="space-y-2">
-            <label className="text-white/80 text-sm font-medium">Title</label>
+            <label className="text-white/80 text-sm font-medium">
+              Гарчиг <span className="text-red-400">*</span>
+            </label>
             <input
-              className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/15
-                         text-white text-sm placeholder:text-white/40
-                         focus:outline-none focus:border-white/30 transition"
-              placeholder="Post title..."
+              className={`w-full h-12 px-4 rounded-xl bg-white/5 text-white text-sm placeholder:text-white/30
+                         focus:outline-none focus:ring-2 transition-all
+                         ${errors.title
+                           ? "border border-red-500 focus:ring-red-500/50 focus:border-red-500"
+                           : "border border-white/10 focus:ring-indigo-500/50 focus:border-indigo-500/50 hover:border-white/20"
+                         }`}
+              placeholder="Гарчиг..."
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (errors.title) setErrors({});
+              }}
             />
+            {errors.title && (
+              <p className="text-sm text-red-400">Гарчиг оруулна уу</p>
+            )}
           </div>
 
           {/* Description */}
           <div className="space-y-2">
             <label className="text-white/80 text-sm font-medium">
-              Description
+              Тайлбар
             </label>
             <textarea
-              className="w-full min-h-[180px] px-4 py-3 rounded-xl bg-white/5 border border-white/15
-                         text-white text-sm placeholder:text-white/40 resize-none
-                         focus:outline-none focus:border-white/30 transition"
-              placeholder="Write something..."
+              className="w-full min-h-[180px] px-4 py-3 rounded-xl bg-white/5 border border-white/10
+                         text-white text-sm placeholder:text-white/30 resize-none
+                         focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50
+                         hover:border-white/20 transition-all"
+              placeholder="Тайлбар бичих..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -146,7 +176,7 @@ export default function Post() {
           {/* Upload */}
           <div className="space-y-2">
             <label className="text-white/80 text-sm font-medium">
-              Image (optional)
+              Зураг
             </label>
 
             <input
@@ -160,8 +190,8 @@ export default function Post() {
             <div
               onClick={() => fileRef.current?.click()}
               className="w-full h-52 rounded-2xl cursor-pointer
-                         bg-white/5 border border-white/15 hover:border-white/30 transition
-                         flex items-center justify-center overflow-hidden relative"
+                         bg-white/5 border-2 border-dashed border-white/10 hover:border-indigo-500/50 hover:bg-white/5 transition-all
+                         flex items-center justify-center overflow-hidden relative group"
             >
               {image ? (
                 <>
@@ -188,12 +218,12 @@ export default function Post() {
               ) : (
                 <div className="text-center px-6">
                   <div className="mx-auto h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                    <ImgIcon className="h-6 w-6 text-white/70" />
+                    <ImgIcon className="h-6 w-6 text-white/30 group-hover:text-indigo-400 transition-colors" />
                   </div>
-                  <div className="mt-3 text-white/80 font-medium">
-                    {uploading ? "Uploading..." : "Click to upload image"}
+                  <div className="mt-3 text-white/60 group-hover:text-white/80 font-medium transition-colors">
+                    {uploading ? "Uploading..." : "Зураг оруулах"}
                   </div>
-                  <div className="mt-1 text-white/45 text-sm">
+                  <div className="mt-1 text-white/40 text-sm">
                     PNG, JPG, WEBP supported
                   </div>
                 </div>
@@ -204,15 +234,16 @@ export default function Post() {
           {/* Link */}
           <div className="space-y-2">
             <label className="text-white/80 text-sm font-medium">
-              URL (optional)
+              Линк
             </label>
             <div className="relative">
               <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
               <input
                 type="url"
-                className="w-full h-11 pl-10 pr-4 rounded-xl bg-white/5 border border-white/15
-                           text-white text-sm placeholder:text-white/40
-                           focus:outline-none focus:border-white/30 transition"
+                className="w-full h-12 pl-10 pr-4 rounded-xl bg-white/5 border border-white/10
+                           text-white text-sm placeholder:text-white/30
+                           focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50
+                           hover:border-white/20 transition-all"
                 placeholder="https://example.com"
                 value={link}
                 onChange={(e) => setLink(e.target.value)}
@@ -221,17 +252,18 @@ export default function Post() {
           </div>
 
           {/* Action */}
-          <div className="pt-2 flex justify-end">
+          <div className="pt-4 flex justify-end">
             <button
               onClick={handlePost}
               disabled={posting || uploading}
-              className="h-11 px-6 rounded-full text-sm font-semibold text-white
-                         bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600
-                         shadow-[0_10px_28px_rgba(79,70,229,0.35)]
+              className="h-12 px-8 rounded-xl text-sm font-semibold text-white
+                         bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500
+                         shadow-[0_8px_30px_rgba(99,102,241,0.3)]
+                         hover:shadow-[0_8px_40px_rgba(99,102,241,0.5)]
                          hover:brightness-110 active:scale-[0.98]
-                         transition disabled:opacity-50 disabled:cursor-not-allowed"
+                         transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {posting ? "Posting..." : "Post"}
+              {posting ? "Нийтэлж байна..." : "Нийтлэх"}
               <ArrowRight className="ml-2 h-4 w-4 inline" />
             </button>
           </div>
