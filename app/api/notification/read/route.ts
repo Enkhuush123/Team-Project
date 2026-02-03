@@ -2,33 +2,30 @@ import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
-  const { userId: clerkId } = await auth();
-  if (!clerkId)
-    return NextResponse.json(
-      {
-        ok: false,
-      },
-      { status: 401 },
-    );
-  const me = await prisma.user.findUnique({
-    where: { clerkId },
-    select: { id: true },
-  });
-  if (!me)
-    return NextResponse.json(
-      { ok: false },
-      {
-        status: 401,
-      },
-    );
-  const { id } = await req.json();
+export const runtime = "nodejs";
 
-  await prisma.notification.updateMany({
-    where: { id, userId: me.id },
-    data: {
-      read: true,
-    },
-  });
-  return NextResponse.json({ ok: true });
+export async function POST(req: NextRequest) {
+  try {
+    const { userId: clerkId } = await auth();
+    if (!clerkId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = (await req.json()) as { id?: string };
+    const id = body?.id;
+
+    if (!id) {
+      return NextResponse.json({ message: "Missing id" }, { status: 400 });
+    }
+
+    await prisma.notification.updateMany({
+      where: { id, userId: clerkId },
+      data: { read: true },
+    });
+
+    return NextResponse.json({ message: "ok" }, { status: 200 });
+  } catch (e) {
+    console.error("NOTIFICATION READ ERROR:", e);
+    return NextResponse.json({ message: "FAILED" }, { status: 500 });
+  }
 }
