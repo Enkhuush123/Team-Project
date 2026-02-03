@@ -14,7 +14,6 @@ import {
   ArrowBigUp,
   ArrowBigDown,
 } from "lucide-react";
-import { NextResponse } from "next/server";
 import { usePathname, useRouter } from "next/navigation";
 
 type Blog = {
@@ -238,6 +237,20 @@ export default function Blogs() {
 
     setShowSaved((prev) => [...prev, blogId]);
   };
+  const unsavePost = async (blogId: string) => {
+    try {
+      const res = await fetch("/api/savedPosts", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId }),
+      });
+      if (!res.ok) return;
+
+      if (openCommentsFor === blogId) setOpenCommentsFor(null);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleShare = async (blogId: string) => {
     try {
@@ -398,7 +411,7 @@ export default function Blogs() {
 
                   {!existsInDb && !existsInCurrent ? (
                     <button
-                      className={`flex items-center gap-2  text-white/60 hover:text-white transition`}
+                      className={`flex items-center gap-2 cursor-pointer  text-white/60 hover:text-white transition`}
                       type="button"
                       onClick={() => savePost(item.id)}
                     >
@@ -407,11 +420,18 @@ export default function Blogs() {
                     </button>
                   ) : (
                     <button
-                      className={`flex items-center gap-2 transition text-white`}
                       type="button"
+                      className="group flex items-center gap-2 text-white transition cursor-pointer"
+                      onClick={() => unsavePost(item.id)}
                     >
-                      <Bookmark className="h-4 w-4" />
-                      <span className="text-sm">Saved</span>
+                      <Bookmark className="h-4 w-4 group-hover:text-red-400" />
+
+                      <span className="text-sm group-hover:text-red-400">
+                        <span className="group-hover:hidden">Saved</span>
+                        <span className="hidden group-hover:inline">
+                          Unsave
+                        </span>
+                      </span>
                     </button>
                   )}
                 </div>

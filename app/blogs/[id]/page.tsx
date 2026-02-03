@@ -35,6 +35,9 @@ export default function BlogPage() {
   const [blog, setBlog] = useState<Blog | null>(null);
 
   const [openCommentsFor, setOpenCommentsFor] = useState(false);
+  const [existsInCurrent, setExistsInCurrent] = useState(false);
+
+  const [savedPosts, setSavedPosts] = useState<string[]>([]);
 
   const pathName = usePathname();
 
@@ -53,6 +56,45 @@ export default function BlogPage() {
   useEffect(() => {
     console.log(blog);
   }, [blog]);
+
+  const savePost = async (blogId: string) => {
+    try {
+      const res = await fetch("/api/savedPosts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+    setExistsInCurrent(true);
+  };
+  const unsavePost = async (blogId: string) => {
+    try {
+      const res = await fetch("/api/savedPosts", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId }),
+      });
+      if (!res.ok) return;
+
+      if (openCommentsFor === true) setOpenCommentsFor(false);
+      setExistsInCurrent(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const getSaved = async () => {
+      const res = await fetch("/api/savedPosts");
+      const data = await res.json();
+      console.log(data);
+
+      setSavedPosts((prev) => [...prev, ...data.map((item: any) => item.id)]);
+    };
+    getSaved();
+  }, []);
 
   const handleVote = async (blogId: string, dir: 1 | -1) => {
     if (!blog) return;
@@ -87,6 +129,7 @@ export default function BlogPage() {
 
   const score = blog?.score;
   const mine = blog?.myVote;
+  const existsInDb = savedPosts.includes(blog?.id ?? "");
 
   const handleShare = async () => {
     try {
@@ -200,6 +243,29 @@ export default function BlogPage() {
               <span className="text-sm">Share</span>
             </button>
           </div>
+          {!existsInCurrent && !existsInCurrent ? (
+            <button
+              className={`flex items-center gap-2 cursor-pointer  text-white/60 hover:text-white transition`}
+              type="button"
+              onClick={() => savePost(blog?.id)}
+            >
+              <Bookmark className="h-4 w-4" />
+              <span className="text-sm">Save</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="group flex items-center gap-2 text-white transition cursor-pointer"
+              onClick={() => unsavePost(blog?.id)}
+            >
+              <Bookmark className="h-4 w-4 group-hover:text-red-400" />
+
+              <span className="text-sm group-hover:text-red-400">
+                <span className="group-hover:hidden">Saved</span>
+                <span className="hidden group-hover:inline">Unsave</span>
+              </span>
+            </button>
+          )}
         </div>
         {openCommentsFor && <CommentSection blogId={blog?.id} />}
 
