@@ -24,7 +24,7 @@ export default function AdminDashboard() {
   };
 
   const getReports = async () => {
-    const res = await fetch("/api/reports");
+    const res = await fetch("/api/report");
     if (!res.ok) return;
     const result = await res.json();
     setReportData(result);
