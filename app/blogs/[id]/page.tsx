@@ -201,7 +201,7 @@ export default function BlogPage() {
             >
               <button
                 type="button"
-                onClick={() => handleVote(blog?.id, 1)}
+                onClick={() => handleVote(blog?.id || "", 1)}
                 className={`transition ${
                   mine === 1 ? "text-white" : "text-white/55 hover:text-white"
                 }`}
@@ -216,7 +216,7 @@ export default function BlogPage() {
 
               <button
                 type="button"
-                onClick={() => handleVote(blog?.id, -1)}
+                onClick={() => handleVote(blog?.id || "", -1)}
                 className={`transition ${
                   mine === -1 ? "text-white" : "text-white/55 hover:text-white"
                 }`}
@@ -243,11 +243,11 @@ export default function BlogPage() {
               <span className="text-sm">Share</span>
             </button>
           </div>
-          {!existsInCurrent && !existsInCurrent ? (
+          {!existsInCurrent && !existsInDb ? (
             <button
               className={`flex items-center gap-2 cursor-pointer  text-white/60 hover:text-white transition`}
               type="button"
-              onClick={() => savePost(blog?.id)}
+              onClick={() => savePost(blog?.id || "")}
             >
               <Bookmark className="h-4 w-4" />
               <span className="text-sm">Save</span>
@@ -256,7 +256,7 @@ export default function BlogPage() {
             <button
               type="button"
               className="group flex items-center gap-2 text-white transition cursor-pointer"
-              onClick={() => unsavePost(blog?.id)}
+              onClick={() => unsavePost(blog?.id || "")}
             >
               <Bookmark className="h-4 w-4 group-hover:text-red-400" />
 
@@ -267,7 +267,7 @@ export default function BlogPage() {
             </button>
           )}
         </div>
-        {openCommentsFor && <CommentSection blogId={blog?.id} />}
+        {openCommentsFor && <CommentSection blogId={blog?.id || ""} />}
 
         {blog?.link && (
           <div className="mt-4">
