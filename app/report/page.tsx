@@ -50,6 +50,19 @@ export default function Report() {
 
     console.log("Report:", reportData);
 
+    const postReport = async () => {
+      const res = await fetch("/api/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reportData),
+      });
+
+      const data = await res.json();
+      console.log(data);
+    };
+
+    postReport();
+
     setSuccess(true);
     setTitle("");
     setDescription("");
