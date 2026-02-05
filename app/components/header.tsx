@@ -343,7 +343,7 @@ export default function Header() {
                               </div>
                               <div>
                                 <span className="text-white font-bold text-base 3xl:text-lg">
-                                  Мэдэгдэл
+                                  Мэдэгдэл.
                                 </span>
                                 {unreadCount > 0 && (
                                   <span className="ml-2 px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-semibold rounded-full">
@@ -369,7 +369,7 @@ export default function Header() {
                                 <IoMdNotificationsOutline className="w-7 h-7 text-white/20" />
                               </div>
                               <p className="text-white/50 text-sm font-medium">
-                                Мэдэгдэл байхгүй
+                                Мэдэгдэл байхгүй байна
                               </p>
                               <p className="text-white/30 text-xs mt-1">
                                 Шинэ мэдэгдэл ирэхэд энд харагдана
