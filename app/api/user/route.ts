@@ -1,26 +1,34 @@
+// app/api/user/route.ts
 import prisma from "@/lib/prisma";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const user = await currentUser();
-  if (!user) return new NextResponse("Unauthorized", { status: 401 });
+  try {
+    const user = await currentUser();
+    console.log("Current user:", user);
 
-  const userData = await prisma.user.findUnique({
-    where: { clerkId: user?.id },
-  });
+    if (!user) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-  const usersCount = await prisma.user.count();
+    // Бүх users-ийг авах
+    const allUsers = await prisma.user.findMany();
 
-  return NextResponse.json(
-    {
-      userData,
-      usersCount,
-    },
-    { status: 200 },
-  );
+    // Бүх users-ийн тоо
+    const usersCount = await prisma.user.count();
 
-  console.log(userData);
+    return NextResponse.json(
+      {
+        usersCount, // бүх user-ийн тоо
+        allUsers, // бүх user-ийн мэдээлэл
+      },
+      { status: 200 },
+    );
+  } catch (err) {
+    console.error("API GET error:", err);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {

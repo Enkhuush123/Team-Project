@@ -13,10 +13,8 @@ import {
 const NAV = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Users", href: "/admin/useress", icon: Users },
-  { label: "Posts", href: "/admin/postesss", icon: FileText },
   { label: "Reports", href: "/admin/reporteses", icon: Flag },
   { label: "Tests", href: "/admin/testesss", icon: Beaker },
- 
 ];
 
 export default function AdminSidebar() {
