@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 export const CreateUser = () => {
   const { user } = useUser();
+
   const createUser = async () => {
     try {
       await fetch(`/api/user`, {
@@ -19,9 +20,10 @@ export const CreateUser = () => {
       console.log(err, "err");
     }
   };
+
   useEffect(() => {
     if (user) createUser();
   }, [user]);
 
-  return <></>;
+  return null;
 };
