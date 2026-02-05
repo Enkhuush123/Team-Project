@@ -6,25 +6,49 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   try {
     const user = await currentUser();
-    console.log("Current user:", user);
 
     if (!user) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Бүх users-ийг авах
-    const allUsers = await prisma.user.findMany();
-
-    // Бүх users-ийн тоо
-    const usersCount = await prisma.user.count();
-
-    return NextResponse.json(
-      {
-        usersCount, // бүх user-ийн тоо
-        allUsers, // бүх user-ийн мэдээлэл
+    // Одоогийн хэрэглэгчийн мэдээллийг авах
+    const userData = await prisma.user.findUnique({
+      where: { clerkId: user.id },
+      select: {
+        id: true,
+        clerkId: true,
+        email: true,
+        name: true,
+        points: true,
+        imageUrl: true,
+        role: true,
       },
-      { status: 200 },
-    );
+    });
+
+    // Хэрэв database-д байхгүй бол үүсгэх
+    if (!userData) {
+      const newUser = await prisma.user.create({
+        data: {
+          clerkId: user.id,
+          email: user.emailAddresses[0]?.emailAddress ?? "",
+          name: user.fullName ?? user.firstName ?? null,
+          imageUrl: user.imageUrl ?? null,
+        },
+        select: {
+          id: true,
+          clerkId: true,
+          email: true,
+          name: true,
+          points: true,
+          imageUrl: true,
+          role: true,
+        },
+      });
+
+      return NextResponse.json({ userData: newUser }, { status: 200 });
+    }
+
+    return NextResponse.json({ userData }, { status: 200 });
   } catch (err) {
     console.error("API GET error:", err);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
