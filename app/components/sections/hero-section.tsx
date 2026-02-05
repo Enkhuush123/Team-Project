@@ -8,25 +8,35 @@ const HeroSection = () => {
   const router = useRouter();
 
   return (
-    <section id="hero" className={cn("relative w-full h-screen flex items-center justify-center")}>
+    <section
+      id="hero"
+      className={cn(
+        "relative w-full h-screen flex items-center justify-center",
+      )}
+    >
       <div className="container mx-auto px-6 md:px-10 z-10">
-        <div className="max-w-3xl">
-          <h1 className={cn(
-            "text-6xl md:text-8xl font-extrabold tracking-tight leading-tight",
-            "text-transparent bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400",
-            "bg-clip-text drop-shadow-[0_0_30px_rgba(99,102,241,0.5)]"
-          )}>
+        <div className="max-w-2xl">
+          <h1
+            className={cn(
+              "text-6xl md:text-8xl font-extrabold tracking-tight leading-tight",
+              "text-transparent bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400",
+              "bg-clip-text drop-shadow-[0_0_30px_rgba(99,102,241,0.5)]",
+            )}
+          >
             Software Community
           </h1>
 
           <div className="mt-6 h-1 w-48 bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 rounded-full" />
 
-          <p className={cn(
-            "mt-8 text-xl md:text-2xl leading-relaxed",
-            "text-transparent bg-gradient-to-r from-white via-blue-100 to-cyan-100",
-            "bg-clip-text drop-shadow-[0_2px_10px_rgba(255,255,255,0.3)]"
-          )}>
-            Өөрийн веб болон апп-аа олон хүмүүсээр шалгуулж, bug олуулаад оноо авах, мөн бусдын төслийг шалгаж оноо цуглуулах боломжтой.
+          <p
+            className={cn(
+              "mt-8 text-xl md:text-2xl leading-relaxed",
+              "text-transparent bg-gradient-to-r from-white via-blue-100 to-cyan-100",
+              "bg-clip-text drop-shadow-[0_2px_10px_rgba(255,255,255,0.3)]",
+            )}
+          >
+            Өөрийн веб болон апп-аа олон хүмүүсээр шалгуулж, bug олуулаад оноо
+            авах, мөн бусдын төслийг шалгаж оноо цуглуулах боломжтой.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-4">

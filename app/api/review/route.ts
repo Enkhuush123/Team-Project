@@ -163,10 +163,11 @@ export async function POST(req: NextRequest) {
       });
       await tx.notification.create({
         data: {
-          userId: website.userId,
+          userId: website.user!.clerkId,
           title: "New bug report submitted",
-          body: `${clerk.fullName ?? "a user "} submitted a bug report (${status})`,
-          link: `/websites/${website.id}`,
+          body: `${clerk.fullName ?? clerk.emailAddresses?.[0]?.emailAddress ?? "Someone"} submitted a bug report (${status})`,
+          link: `/reviews/${review.id}`,
+          reviewId: review.id,
         },
       });
 
