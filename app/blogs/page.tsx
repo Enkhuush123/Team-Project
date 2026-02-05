@@ -14,8 +14,7 @@ import {
   ArrowBigUp,
   ArrowBigDown,
 } from "lucide-react";
-import { NextResponse } from "next/server";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 type Blog = {
   id: string;
@@ -43,6 +42,7 @@ type CommentItem = {
     imageUrl: string | null;
   };
 };
+
 function CommentSection({ blogId }: { blogId: string }) {
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
@@ -162,6 +162,8 @@ function CommentSection({ blogId }: { blogId: string }) {
   );
 }
 
+export { CommentSection };
+
 export default function Blogs() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
 
@@ -171,6 +173,7 @@ export default function Blogs() {
   const [showSaved, setShowSaved] = useState<string[]>([]);
 
   const router = useRouter();
+  const pathName = usePathname();
 
   useEffect(() => {
     const getBlogs = async () => {
@@ -234,6 +237,32 @@ export default function Blogs() {
 
     setShowSaved((prev) => [...prev, blogId]);
   };
+  const unsavePost = async (blogId: string) => {
+    try {
+      const res = await fetch("/api/savedPosts", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId }),
+      });
+      if (!res.ok) return;
+
+      if (openCommentsFor === blogId) setOpenCommentsFor(null);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleShare = async (blogId: string) => {
+    try {
+      await navigator.clipboard.writeText(
+        `localhost:3000${pathName}/${blogId}`,
+      ); // insert the domain link before pathname here
+    } catch (err) {
+      console.log(err, "failed to copy");
+    }
+
+    window.alert("Link Copied");
+  };
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -260,7 +289,6 @@ export default function Blogs() {
               key={item.id}
               className="w-full overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl
                          shadow-[0_20px_60px_rgba(99,102,241,0.12)] hover:border-white/20 transition"
-              onClick={() => router.push(`/blogs/${item.id}`)}
             >
               <div
                 className="flex items-center gap-3
@@ -280,7 +308,10 @@ export default function Blogs() {
                 </div>
                 <div>{item.user.email}</div>
               </div>
-              <div className="px-5 sm:px-6 py-4 border-b border-white/10 flex items-center justify-between">
+              <div
+                className="px-5 sm:px-6 py-4 border-b border-white/10 flex items-center justify-between"
+                onClick={() => router.push(`/blogs/${item.id}`)}
+              >
                 <div className="min-w-0">
                   <h2 className="text-white font-extrabold text-lg sm:text-xl leading-snug truncate">
                     {item.title}
@@ -369,6 +400,9 @@ export default function Blogs() {
                     <button
                       className="flex items-center gap-2 text-white/60 hover:text-white transition"
                       type="button"
+                      onClick={() => {
+                        handleShare(item.id);
+                      }}
                     >
                       <Send className="h-4 w-4" />
                       <span className="text-sm">Share</span>
@@ -377,7 +411,7 @@ export default function Blogs() {
 
                   {!existsInDb && !existsInCurrent ? (
                     <button
-                      className={`flex items-center gap-2  text-white/60 hover:text-white transition`}
+                      className={`flex items-center gap-2 cursor-pointer  text-white/60 hover:text-white transition`}
                       type="button"
                       onClick={() => savePost(item.id)}
                     >
@@ -386,11 +420,18 @@ export default function Blogs() {
                     </button>
                   ) : (
                     <button
-                      className={`flex items-center gap-2 transition text-white`}
                       type="button"
+                      className="group flex items-center gap-2 text-white transition cursor-pointer"
+                      onClick={() => unsavePost(item.id)}
                     >
-                      <Bookmark className="h-4 w-4" />
-                      <span className="text-sm">Saved</span>
+                      <Bookmark className="h-4 w-4 group-hover:text-red-400" />
+
+                      <span className="text-sm group-hover:text-red-400">
+                        <span className="group-hover:hidden">Saved</span>
+                        <span className="hidden group-hover:inline">
+                          Unsave
+                        </span>
+                      </span>
                     </button>
                   )}
                 </div>

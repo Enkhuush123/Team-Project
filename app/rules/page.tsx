@@ -46,8 +46,8 @@ export default function CommunityRules() {
   return (
     <div className="relative min-h-screen bg-black">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 -left-40 h-[420px] w-[420px] rounded-full bg-violet-500/20 blur-[120px]" />
-        <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-[120px]" />
+        <div className="absolute -top-40 -left-40 h-105 w-105 rounded-full bg-violet-500/20 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-105 w-105 rounded-full bg-cyan-400/20 blur-[120px]" />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-6 py-14">
@@ -77,7 +77,7 @@ export default function CommunityRules() {
                 className="
                   mb-4 h-12 w-12 rounded-xl
                   flex items-center justify-center
-                  bg-gradient-to-br from-violet-500/20 to-cyan-400/20
+                  bg-linear-to-br from-violet-500/20 to-cyan-400/20
                   text-violet-300 text-xl
                   group-hover:scale-110 transition
                 "
