@@ -1,19 +1,29 @@
-import { useEffect, useRef, useState } from 'react';
-import type { Socket } from 'socket.io-client';
+import { useEffect, useRef, useState } from "react";
+import type { Socket } from "socket.io-client";
 
-export const useTyping = (socket: Socket | null, currentUser: { name: string } | undefined, scrollToBottom: (smooth: boolean) => void, isAtBottom: boolean) => {
-  const [typingUsers, setTypingUsers] = useState<Map<string, { username: string, timeout: NodeJS.Timeout }>>(new Map());
+export const useTyping = (
+  socket: Socket | null,
+  currentUser: { name: string } | undefined,
+  scrollToBottom: (smooth: boolean) => void,
+  isAtBottom: boolean,
+) => {
+  const [typingUsers, setTypingUsers] = useState<
+    Map<string, { username: string; timeout: NodeJS.Timeout }>
+  >(new Map());
   const lastTypingSent = useRef<number>(0);
 
   // Handle typing events
   useEffect(() => {
     if (!socket) return;
 
-    const handleTypingReceive = (data: { socketId: string, username: string }) => {
+    const handleTypingReceive = (data: {
+      socketId: string;
+      username: string;
+    }) => {
       // Don't show typing for self
       if (data.socketId === socket.id) return;
 
-      setTypingUsers(prev => {
+      setTypingUsers((prev) => {
         const newMap = new Map(prev);
 
         // Clear existing timeout if any
@@ -23,7 +33,7 @@ export const useTyping = (socket: Socket | null, currentUser: { name: string } |
 
         // Set new timeout to clear typing status after 3 seconds
         const timeout = setTimeout(() => {
-          setTypingUsers(current => {
+          setTypingUsers((current) => {
             const updated = new Map(current);
             updated.delete(data.socketId);
             return updated;
@@ -60,16 +70,17 @@ export const useTyping = (socket: Socket | null, currentUser: { name: string } |
 
   const getTypingText = () => {
     if (typingUsers.size === 0) return null;
-    const names = Array.from(typingUsers.values()).map(u => u.username);
+    const names = Array.from(typingUsers.values()).map((u) => u.username);
     if (names.length === 1) return `${names[0]} is typing...`;
     if (names.length === 2) return `${names[0]} and ${names[1]} are typing...`;
-    if (names.length === 3) return `${names[0]}, ${names[1]}, and ${names[2]} are typing...`;
+    if (names.length === 3)
+      return `${names[0]}, ${names[1]}, and ${names[2]} are typing...`;
     return "Several people are typing...";
   };
 
   return {
     typingUsers,
     handleTyping,
-    getTypingText
+    getTypingText,
   };
 };
