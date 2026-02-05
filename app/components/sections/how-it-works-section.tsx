@@ -11,14 +11,14 @@ const steps = [
   },
   {
     number: "02",
-    title: "Апп сонгох",
-    description: "Шалгах гэж буй апп-аа сонгох",
+    title: "Веб сонгох",
+    description: "Шалгах гэж буй веб-ээ сонгох",
     color: "from-blue-500 to-cyan-600"
   },
   {
     number: "03",
     title: "Bug олох",
-    description: "Апп-ыг ашиглаж bug олох",
+    description: "Веб-ийг ашиглаж bug олох",
     color: "from-pink-500 to-rose-600"
   },
   {
