@@ -248,10 +248,10 @@ export default function TestPage() {
               </div>
             </div>
 
-            <div className="w-full lg:w-[420px]">
+            <div className="w-full lg:w-105">
               <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
                 {selected.imageUrl ? (
-                  <div className="relative w-full h-[240px] lg:h-[260px]">
+                  <div className="relative w-full h-60 lg:h-65">
                     <Image
                       src={selected.imageUrl}
                       alt={selected.title}
@@ -260,7 +260,7 @@ export default function TestPage() {
                     />
                   </div>
                 ) : (
-                  <div className="w-full h-[240px] lg:h-[260px] flex items-center justify-center text-white/40 text-sm">
+                  <div className="w-full h-60 lg:h-65 flex items-center justify-center text-white/40 text-sm">
                     Image байхгүй
                   </div>
                 )}
@@ -335,7 +335,7 @@ export default function TestPage() {
                     </Button>
                   </DialogTrigger>
 
-                  <DialogContent className="sm:max-w-[520px] bg-[#0b0b0f] border border-white/10 text-white">
+                  <DialogContent className="sm:max-w-130 bg-[#0b0b0f] border border-white/10 text-white">
                     <form onSubmit={submitBug}>
                       <DialogHeader>
                         <DialogTitle>Submit Bug</DialogTitle>
