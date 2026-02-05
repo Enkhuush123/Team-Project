@@ -15,6 +15,17 @@ import {
   ArrowBigDown,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type Blog = {
   id: string;
@@ -172,6 +183,12 @@ export default function Blogs() {
   const [savedPosts, setSavedPosts] = useState<string[]>([]);
   const [showSaved, setShowSaved] = useState<string[]>([]);
 
+  const [openReportDialog, setOpenReportDialog] = useState(false);
+
+  const [reportTitle, setReportTitle] = useState("");
+  const [reportDescription, setReportDescription] = useState("");
+  const [reporterEmail, setReporterEmail] = useState("");
+
   const router = useRouter();
   const pathName = usePathname();
 
@@ -264,6 +281,30 @@ export default function Blogs() {
     window.alert("Link Copied");
   };
 
+  const handleReport = async (blogId: string) => {
+    try {
+      const res = await fetch("/api/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          blogId,
+          title: reportTitle,
+          description: reportDescription,
+          email: reporterEmail,
+        }),
+      });
+      const data = await res.json();
+      console.log(data);
+
+      setReportTitle("");
+      setReportDescription("");
+      setReporterEmail("");
+      setOpenReportDialog(false);
+    } catch (err) {
+      console.log(err, "failed to report");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="pointer-events-none fixed inset-0">
@@ -291,22 +332,70 @@ export default function Blogs() {
                          shadow-[0_20px_60px_rgba(99,102,241,0.12)] hover:border-white/20 transition"
             >
               <div
-                className="flex items-center gap-3
+                className="flex items-center gap-3 justify-between
               font-bold p-2"
               >
-                <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40 ">
-                  {item.user.imageUrl ? (
-                    <Image
-                      src={item.user.imageUrl}
-                      alt={item.user.name || "User"}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-white/10" />
-                  )}
+                <div className="flex items-center gap-2">
+                  <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-black/40 ">
+                    {item.user.imageUrl ? (
+                      <Image
+                        src={item.user.imageUrl}
+                        alt={item.user.name || "User"}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-white/10" />
+                    )}
+                  </div>
+                  <div>{item.user.email}</div>
                 </div>
-                <div>{item.user.email}</div>
+                <Dialog
+                  open={openReportDialog}
+                  onOpenChange={setOpenReportDialog}
+                >
+                  <DialogTrigger>
+                    <Button
+                      variant="destructive"
+                      className="rounded-full bg-red-500/20 hover:bg-red-500/100 text-white"
+                    >
+                      !
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Describe the content</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-2">
+                      <input
+                        placeholder="Title"
+                        className="border w-full p-2 rounded-xl"
+                        value={reportTitle}
+                        onChange={(e) => setReportTitle(e.target.value)}
+                      />
+                      <input
+                        placeholder="Description"
+                        className="border w-full p-2 rounded-xl"
+                        value={reportDescription}
+                        onChange={(e) => setReportDescription(e.target.value)}
+                      />
+                      <input
+                        placeholder="Email"
+                        className="border w-full p-2 rounded-xl"
+                        value={reporterEmail}
+                        onChange={(e) => setReporterEmail(e.target.value)}
+                      />
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleReport(item.id)}
+                      >
+                        Send Report
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
               <div
                 className="px-5 sm:px-6 py-4 border-b border-white/10 flex items-center justify-between"

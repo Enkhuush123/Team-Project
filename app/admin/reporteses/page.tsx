@@ -1,20 +1,7 @@
-import AdminCard from "@/app/components/admin/AdminCard";
+"use client";
 
-const MOCK_REPORTS = [
-  { id: "r1", title: "Spam post", status: "OPEN", createdAt: "2026-01-13" },
-  {
-    id: "r2",
-    title: "Broken link",
-    status: "IN_REVIEW",
-    createdAt: "2026-01-12",
-  },
-  {
-    id: "r3",
-    title: "Harassment",
-    status: "RESOLVED",
-    createdAt: "2026-01-11",
-  },
-];
+import AdminCard from "@/app/components/admin/AdminCard";
+import { useEffect, useState } from "react";
 
 function StatusPill({ s }: { s: string }) {
   const cls =
@@ -31,6 +18,24 @@ function StatusPill({ s }: { s: string }) {
 }
 
 export default function AdminReportsPage() {
+  const [reports, setReports] = useState([]);
+
+  useEffect(() => {
+    const getReports = async () => {
+      const res = await fetch("/api/report");
+      const data = await res.json();
+      console.log(data);
+
+      setReports(data.reports);
+    };
+
+    getReports();
+  }, []);
+
+  useEffect(() => {
+    console.log(reports);
+  }, [reports]);
+
   return (
     <div className="space-y-6">
       <div>
@@ -58,7 +63,7 @@ export default function AdminReportsPage() {
             </thead>
 
             <tbody className="text-white/80 text-sm">
-              {MOCK_REPORTS.map((r) => (
+              {reports.map((r) => (
                 <tr
                   key={r.id}
                   className="border-b border-white/10 hover:bg-white/3 transition"
