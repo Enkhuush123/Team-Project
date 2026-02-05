@@ -3,23 +3,25 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const userId = params.id;
-    const body = await req.json();
-    const { role, banned } = body;
+    const resolvedParams = await params;
 
-    const data: any = {};
+    const userId = resolvedParams.id;
+    const body = await req.json();
+    const { role, banned } = body as { role?: string; banned?: boolean };
+
+    const data: Record<string, unknown> = {};
     if (role !== undefined) data.role = role;
     if (banned !== undefined) data.banned = banned;
 
-    await prisma.user.update({
+    const updated = await prisma.user.update({
       where: { id: userId },
       data,
     });
 
-    return NextResponse.json(data);
+    return NextResponse.json(updated);
   } catch (err) {
     console.error("Update user error:", err);
     return NextResponse.json(

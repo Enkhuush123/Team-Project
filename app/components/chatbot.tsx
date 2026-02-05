@@ -48,10 +48,10 @@ export const ChatbotPage = () => {
           { role: "assistant", content: data.text },
         ]);
       }
-    } catch (err: any) {
+    } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: `Error: ${err?.message || err}` },
+        { role: "assistant", content: `Error: ${err}` },
       ]);
     } finally {
       setLoading(false);
@@ -97,7 +97,9 @@ export const ChatbotPage = () => {
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h3 className="text-white font-semibold text-sm">AI Assistant</h3>
+                <h3 className="text-white font-semibold text-sm">
+                  AI Assistant
+                </h3>
                 <p className="text-white/70 text-xs">Always here to help</p>
               </div>
             </div>

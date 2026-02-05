@@ -13,7 +13,7 @@ interface Star {
 const StarsBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const starsRef = useRef<Star[]>([]);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number>(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
