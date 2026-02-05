@@ -1,17 +1,35 @@
 "use client";
+
 import styles from "./style.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { opacity, slideUp } from "./anim";
 import { usePreloader } from ".";
+import type { Variants } from "framer-motion";
 
 export default function Index() {
   const { loadingPercent } = usePreloader();
-  const [dimension, setDimension] = useState({ width: 0, height: 0 });
+
+  const mounted = useRef(false);
+
+  const [dimension, setDimension] = useState(() => ({
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+    height: typeof window !== "undefined" ? window.innerHeight : 0,
+  }));
 
   useEffect(() => {
-    setDimension({ width: window.innerWidth, height: window.innerHeight });
+    mounted.current = true;
+    const resize = () => {
+      setDimension({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
   }, []);
+  if (!mounted) return null;
 
   const initialPath = `M0 0 L${dimension.width} 0 L${dimension.width} ${
     dimension.height
@@ -22,14 +40,21 @@ export default function Index() {
     dimension.height
   } Q${dimension.width / 2} ${dimension.height} 0 ${dimension.height}  L0 0`;
 
-  const curve = {
+  const curve: Variants = {
     initial: {
       d: initialPath,
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] },
+      transition: {
+        duration: 0.7,
+        ease: "easeInOut",
+      },
     },
     exit: {
       d: targetPath,
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: 0.3 },
+      transition: {
+        duration: 0.7,
+        ease: "easeInOut",
+        delay: 0.3,
+      },
     },
   };
 
