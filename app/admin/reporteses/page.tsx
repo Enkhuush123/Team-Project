@@ -17,8 +17,15 @@ function StatusPill({ s }: { s: string }) {
   );
 }
 
+type Report = {
+  id: string;
+  status: string;
+  createdAt: string;
+  title: string;
+};
+
 export default function AdminReportsPage() {
-  const [reports, setReports] = useState([]);
+  const [reports, setReports] = useState<Report[]>([]);
 
   useEffect(() => {
     const getReports = async () => {
